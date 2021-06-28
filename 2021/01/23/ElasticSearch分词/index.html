@@ -1,0 +1,326 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ElasticSearch分词 | Silence</title><meta name="description" content="分词器是es中专门处理分词的组件，就是按照一定的逻辑，将一段文本分析成多个词语的工具 分词器组成如下：  character filters：针对原始文本进行处理，比如去除html特殊标记符 tokenizer：将原始文本按照一定规则切分为单词 token filters：针对tokenizer处理的单词进行再加工，比如转小写、删除或新增等处理  分词器es自带了以下的分词器：  standard"><meta name="keywords" content="ELK Stack"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/01/23/ElasticSearch%E5%88%86%E8%AF%8D/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="ElasticSearch分词"><meta property="og:url" content="http://yoursite.com/2021/01/23/ElasticSearch%E5%88%86%E8%AF%8D/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="分词器是es中专门处理分词的组件，就是按照一定的逻辑，将一段文本分析成多个词语的工具 分词器组成如下：  character filters：针对原始文本进行处理，比如去除html特殊标记符 tokenizer：将原始文本按照一定规则切分为单词 token filters：针对tokenizer处理的单词进行再加工，比如转小写、删除或新增等处理  分词器es自带了以下的分词器：  standard"><meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea"><meta property="article:published_time" content="2021-01-23T03:45:01.000Z"><meta property="article:modified_time" content="2021-03-21T06:48:32.354Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-03-21 14:48:32'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E8%AF%8D%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">分词器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Standard-Analyzer"><span class="toc-number">2.</span> <span class="toc-text">Standard Analyzer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Simple-Analyzer"><span class="toc-number">3.</span> <span class="toc-text">Simple Analyzer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Whitespace-Analyzer"><span class="toc-number">4.</span> <span class="toc-text">Whitespace Analyzer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Stop-Analyzer"><span class="toc-number">5.</span> <span class="toc-text">Stop Analyzer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Keyword-Analyze"><span class="toc-number">6.</span> <span class="toc-text">Keyword Analyze</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pattern-Analyzer"><span class="toc-number">7.</span> <span class="toc-text">Pattern Analyzer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Language-Analyzers"><span class="toc-number">8.</span> <span class="toc-text">Language Analyzers</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E8%AF%8D"><span class="toc-number">9.</span> <span class="toc-text">自定义分词</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Character-Filters"><span class="toc-number">9.1.</span> <span class="toc-text">Character Filters</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tokenizer"><span class="toc-number">9.2.</span> <span class="toc-text">Tokenizer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Token-Filters"><span class="toc-number">9.3.</span> <span class="toc-text">Token Filters</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E8%AF%8D%E5%99%A8"><span class="toc-number">10.</span> <span class="toc-text">自定义分词器</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">ElasticSearch分词</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-01-23T03:45:01.000Z" title="发表于 2021-01-23 11:45:01">2021-01-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-21T06:48:32.354Z" title="更新于 2021-03-21 14:48:32">2021-03-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ELK-Stack/">ELK Stack</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>分词器是es中专门处理分词的组件，就是按照一定的逻辑，将一段文本分析成多个词语的工具</p>
+<p>分词器组成如下：</p>
+<ul>
+<li>character filters：针对原始文本进行处理，比如去除html特殊标记符</li>
+<li>tokenizer：将原始文本按照一定规则切分为单词</li>
+<li>token filters：针对tokenizer处理的单词进行再加工，比如转小写、删除或新增等处理</li>
+</ul>
+<h2 id="分词器"><a href="#分词器" class="headerlink" title="分词器"></a>分词器</h2><p>es自带了以下的分词器：</p>
+<ul>
+<li>standard（默认）</li>
+<li>simple</li>
+<li>whitespace</li>
+<li>stop</li>
+<li>keyword</li>
+<li>pattern</li>
+<li>language</li>
+</ul>
+<h2 id="Standard-Analyzer"><a href="#Standard-Analyzer" class="headerlink" title="Standard Analyzer"></a>Standard Analyzer</h2><p>标准分词器是默认分词器，如未指定，则使用该分词器</p>
+<p>描述&amp;特征：</p>
+<ul>
+<li>默认分词器，如果未指定，则使用该分词器</li>
+<li>按词切分，支持多语言</li>
+<li>小写处理，它删除大多数标点符号、小写术语，并支持删除停止词</li>
+</ul>
+<p>standard由以下组成：</p>
+<ul>
+<li>tokenizer：standard tokenizer</li>
+<li>token filter：standard token filter 、lower case token filter、stop token filter</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;analyzer&quot;: &quot;standard&quot;,</span><br><span class="line">  &quot;text&quot;: &quot;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生以下结果</p>
+<p>[2, running, quick, brown, foxes, leap, over, lazy, dogs, in, the, summer, evening]</p>
+<h2 id="Simple-Analyzer"><a href="#Simple-Analyzer" class="headerlink" title="Simple Analyzer"></a>Simple Analyzer</h2><p>描述&amp;特征：</p>
+<ul>
+<li>按照非字母切分</li>
+<li>小写处理</li>
+</ul>
+<p>standard由以下组成：</p>
+<ul>
+<li>tokenizer：Lower Case Tokenizer</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;analyzer&quot;: &quot;simple&quot;,</span><br><span class="line">  &quot;text&quot;: &quot;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生以下结果</p>
+<p>[running, quick, brown, foxes, leap, over, lazy, dogs, in, the, summer, evening]</p>
+<h2 id="Whitespace-Analyzer"><a href="#Whitespace-Analyzer" class="headerlink" title="Whitespace Analyzer"></a>Whitespace Analyzer</h2><p>描述&amp;特征：</p>
+<ul>
+<li>空白字符作为分隔符，当遇到任何空白字符，空白分词器将文本分成术语</li>
+</ul>
+<p>whitespace由以下组成：</p>
+<ul>
+<li>Tokenizer：Whitespace Tokenizer</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;analyzer&quot;: &quot;whitespace&quot;,</span><br><span class="line">  &quot;text&quot;: &quot;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生以下结果</p>
+<p>[2, running, Quick, brown, foxes, leap, over, lazy, dogs, in, the, summer, evening.]</p>
+<h2 id="Stop-Analyzer"><a href="#Stop-Analyzer" class="headerlink" title="Stop Analyzer"></a>Stop Analyzer</h2><p>描述&amp;特征：</p>
+<ul>
+<li>删除停止词，停止词指 the、an、的、这等等</li>
+</ul>
+<p>stop由以下组成：</p>
+<ul>
+<li>Tokenizer：Lower Case Tokenizer</li>
+<li>Token Filters：Stop Token Filter</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;analyzer&quot;: &quot;stop&quot;,</span><br><span class="line">  &quot;text&quot;: &quot;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生以下结果</p>
+<p>[running, quick, brown, foxes, leap, over, lazy, dogs, summer, evening]</p>
+<h2 id="Keyword-Analyze"><a href="#Keyword-Analyze" class="headerlink" title="Keyword Analyze"></a>Keyword Analyze</h2><p>描述&amp;特征：</p>
+<ul>
+<li>不分词，直接将输入作为一个单词输出</li>
+</ul>
+<p>keyword由以下组成：</p>
+<ul>
+<li>Tokenizer：Keyword Tokenizer</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;analyzer&quot;: &quot;keyword&quot;,</span><br><span class="line">  &quot;text&quot;: &quot;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生以下结果</p>
+<p>[2 running Quick brown-foxes leap over lazy dogs in the summer evening.]</p>
+<h2 id="Pattern-Analyzer"><a href="#Pattern-Analyzer" class="headerlink" title="Pattern Analyzer"></a>Pattern Analyzer</h2><p>描述&amp;特征：</p>
+<ul>
+<li>通过正则表达式自定义分隔符，默认是\W+，即非字词的符号作为分隔符</li>
+</ul>
+<p>pattern由以下组成：</p>
+<ul>
+<li>Tokenizer：Pattern Tokenizer</li>
+<li>Token Filters：Lower case Token Filter、Stop Token Filter</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;analyzer&quot;: &quot;pattern&quot;,</span><br><span class="line">  &quot;text&quot;: &quot;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>[2, running, quick, brown, foxes, leap, over, lazy, dogs, in, the, summer, evening]</p>
+<h2 id="Language-Analyzers"><a href="#Language-Analyzers" class="headerlink" title="Language Analyzers"></a>Language Analyzers</h2><p>es提供多语言特定的分析工具</p>
+<h2 id="自定义分词"><a href="#自定义分词" class="headerlink" title="自定义分词"></a>自定义分词</h2><p>当自带的分词无法满足需求时，可以自定义分词，自定义分词主要通过自定义Character Filters、Tokenizer和Token Filter实现</p>
+<h3 id="Character-Filters"><a href="#Character-Filters" class="headerlink" title="Character Filters"></a>Character Filters</h3><p>在Tokenizer之前对原始文本进行处理，比如增加、删除或替换字符串等，会影响后续tokenizer解析的position和offest信息</p>
+<p>自带的如下：</p>
+<ul>
+<li>HTML Strip去除html标签和转换html实体</li>
+<li>Mapping进行字符替换操作</li>
+<li>Pattern Replace进行正则匹配替换</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;tokenizer&quot;: &quot;keyword&quot;,</span><br><span class="line">  &quot;char_filter&quot;: [&quot;html_strip&quot;],</span><br><span class="line">  &quot;text&quot;: &quot;&lt;p&gt;I&amp;apos;m so &lt;b&gt;happy&lt;&#x2F;b&gt;!&lt;&#x2F;p&gt;&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生下面输出</p>
+<p>[I’m so happy!]</p>
+<h3 id="Tokenizer"><a href="#Tokenizer" class="headerlink" title="Tokenizer"></a>Tokenizer</h3><p>将原始文本按照一定规则切分为单词</p>
+<p>自带的如下：</p>
+<ul>
+<li>standard 按照单词进行分割</li>
+<li>letter 按照非字符类进行分割</li>
+<li>whitespace 按照空格进行分割</li>
+<li>UAX URL Email 按照standard分割，但不会分割邮箱和url</li>
+<li>NGram和Edge NGram连词分割</li>
+<li>Path Hierarchy 按照文件路径进行切割</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;tokenizer&quot;: &quot;path_hierarchy&quot;,</span><br><span class="line">  &quot;text&quot;: &quot;&#x2F;es&#x2F;data&#x2F;log&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生下面输出</p>
+<p>[/es, /es/data, /es/data/log]</p>
+<h3 id="Token-Filters"><a href="#Token-Filters" class="headerlink" title="Token Filters"></a>Token Filters</h3><p>对tokenizer输出的单词进行增加、删除、修改等操作</p>
+<p>自带的如下：</p>
+<ul>
+<li>lowercase将所有单词转换为小写</li>
+<li>stop删除stop words</li>
+<li>NGram和Edge NGram连词分割</li>
+<li>Synonym添加近义词</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;text&quot;: &quot;a Hello,world!&quot;,</span><br><span class="line">  &quot;tokenizer&quot;: &quot;standard&quot;,</span><br><span class="line">  &quot;filter&quot;: [</span><br><span class="line">    &quot;stop&quot;,</span><br><span class="line">    &quot;lowercase&quot;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;type&quot;: &quot;ngram&quot;,</span><br><span class="line">      &quot;min_gram&quot;: 4,</span><br><span class="line">      &quot;max_gram&quot;: 4</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生下面输出</p>
+<p>[hell, ello, worl, orld]</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPOST http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;_analyze?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;text&quot;: &quot;a Hello,world!&quot;,</span><br><span class="line">  &quot;tokenizer&quot;: &quot;standard&quot;,</span><br><span class="line">  &quot;filter&quot;: [</span><br><span class="line">    &quot;stop&quot;,</span><br><span class="line">    &quot;lowercase&quot;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;type&quot;: &quot;ngram&quot;,</span><br><span class="line">      &quot;min_gram&quot;: 2,</span><br><span class="line">      &quot;max_gram&quot;: 3</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>会产生下面输出</p>
+<p>[he, hel, el, ell, ll, llo, lo, wo, wor, or, orl, rl, rld, ld]</p>
+<h2 id="自定义分词器"><a href="#自定义分词器" class="headerlink" title="自定义分词器"></a>自定义分词器</h2><p>创建一个 my_custom_analyzer 名称的分词器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPUT http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;test_index_1?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;settings&quot;: &#123;</span><br><span class="line">    &quot;analysis&quot;: &#123;</span><br><span class="line">      &quot;analyzer&quot;: &#123;</span><br><span class="line">        &quot;my_custom_analyzer&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;custom&quot;,</span><br><span class="line">          &quot;tokenizer&quot;: &quot;standard&quot;,</span><br><span class="line">          &quot;char_filter&quot;: [</span><br><span class="line">            &quot;html_strip&quot;</span><br><span class="line">          ],</span><br><span class="line">          &quot;filter&quot;: [</span><br><span class="line">            &quot;lowercase&quot;,</span><br><span class="line">            &quot;asciifolding&quot;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>来个有难度的分词器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -H &#39;Content-Type: application&#x2F;json&#39; -XPUT http:&#x2F;&#x2F;10.244.2.18:9200&#x2F;test_index_2?pretty -d &#39;</span><br><span class="line">&#123; </span><br><span class="line">  &quot;settings&quot;: &#123;</span><br><span class="line">    &quot;analysis&quot;: &#123;</span><br><span class="line">      &quot;analyzer&quot;: &#123;</span><br><span class="line">        &quot;my_custom_analyzer2&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;custom&quot;,</span><br><span class="line">          &quot;tokenizer&quot;: &quot;punctuation&quot;,</span><br><span class="line">          &quot;char_filter&quot;: [</span><br><span class="line">            &quot;emoticons&quot;</span><br><span class="line">          ],</span><br><span class="line">          &quot;filter&quot;: [</span><br><span class="line">            &quot;lowercase&quot;,</span><br><span class="line">            &quot;english_stop&quot;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;tokenizer&quot;: &#123;</span><br><span class="line">        &quot;punctuation&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;pattern&quot;,</span><br><span class="line">          &quot;pattern&quot;: &quot;[ .,!?]&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;char_filter&quot;: &#123;</span><br><span class="line">        &quot;emoticons&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;mapping&quot;,</span><br><span class="line">          &quot;mappings&quot;: [</span><br><span class="line">            &quot;:) &#x3D;&gt; _happy_&quot;,</span><br><span class="line">            &quot;:( &#x3D;&gt; _sad_&quot;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;filter&quot;: &#123;</span><br><span class="line">        &quot;english_stop&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;stop&quot;,</span><br><span class="line">          &quot;stopwords&quot;: &quot;_english_&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#39;</span><br></pre></td></tr></table></figure>
+
+<p>查看效果</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/23/ElasticSearch%E5%88%86%E8%AF%8D/a1.png"></p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ELK-Stack/">ELK Stack</a></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/01/23/ElasticSearch%E4%B9%8Bmapping/"><img class="prev-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ElasticSearch之mapping</div></div></a></div><div class="next-post pull-right"><a href="/2021/01/23/ElasticSearch%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"><img class="next-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ElasticSearch基本知识</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch之Search/" title="ElasticSearch之Search"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch之Search</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/26/ElasticSearch分布式特性/" title="ElasticSearch分布式特性"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-26</div><div class="relatedPosts_title">ElasticSearch分布式特性</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch之mapping/" title="ElasticSearch之mapping"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch之mapping</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch基本知识/" title="ElasticSearch基本知识"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch基本知识</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/26/ElasticSearch集群org-elasticsearch-discovery-MasterNotDiscoveredException问题/" title="ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-26</div><div class="relatedPosts_title">ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题</div></div></a></div><div class="relatedPosts_item"><a href="/2021/04/13/logstash收集java日志/" title="logstash收集java日志"><img class="relatedPosts_cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-04-13</div><div class="relatedPosts_title">logstash收集java日志</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '5abde49ab1e4018d029a826fa462f948',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

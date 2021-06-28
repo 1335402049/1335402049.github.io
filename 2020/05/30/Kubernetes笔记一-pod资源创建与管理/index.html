@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kubernetes笔记一(pod资源创建与管理) | Silence</title><meta name="description" content="pod是kubernetes最重要的基本概念，它是kubernetes系统中最小的调度单位。每一个pod都有一个特殊的pause根容器，kubernetes为每个pod都提供了一个根容器，如果单独对一组容器进行管理，那么一个容器死亡，到底算不算整体死亡，为了解决这个难题，巧妙的设计了pause根容器对业务容器进行管理，所有的业务容器共享pause容器的IP、挂载的volume，简化了容器之间的"><meta name="keywords" content="Kubernetes"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2020/05/30/Kubernetes%E7%AC%94%E8%AE%B0%E4%B8%80-pod%E8%B5%84%E6%BA%90%E5%88%9B%E5%BB%BA%E4%B8%8E%E7%AE%A1%E7%90%86/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Kubernetes笔记一(pod资源创建与管理)"><meta property="og:url" content="http://yoursite.com/2020/05/30/Kubernetes%E7%AC%94%E8%AE%B0%E4%B8%80-pod%E8%B5%84%E6%BA%90%E5%88%9B%E5%BB%BA%E4%B8%8E%E7%AE%A1%E7%90%86/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="pod是kubernetes最重要的基本概念，它是kubernetes系统中最小的调度单位。每一个pod都有一个特殊的pause根容器，kubernetes为每个pod都提供了一个根容器，如果单独对一组容器进行管理，那么一个容器死亡，到底算不算整体死亡，为了解决这个难题，巧妙的设计了pause根容器对业务容器进行管理，所有的业务容器共享pause容器的IP、挂载的volume，简化了容器之间的"><meta property="og:image" content="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg"><meta property="article:published_time" content="2020-05-30T04:47:08.000Z"><meta property="article:modified_time" content="2020-09-15T12:39:48.524Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-15 20:39:48'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#pod%E7%AE%A1%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">pod管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pod%E4%B8%AD%E6%A0%87%E7%AD%BE%E4%B8%8E%E6%A0%87%E7%AD%BE%E9%80%89%E6%8B%A9%E5%99%A8%E7%9A%84%E5%AE%9A%E4%B9%89%E4%B8%8E%E7%AE%A1%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">pod中标签与标签选择器的定义与管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pod%E8%8A%82%E7%82%B9%E9%80%89%E6%8B%A9%E5%99%A8"><span class="toc-number">3.</span> <span class="toc-text">Pod节点选择器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pod%E8%B5%84%E6%BA%90%E6%B3%A8%E8%A7%A3"><span class="toc-number">4.</span> <span class="toc-text">Pod资源注解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pod%E8%B5%84%E6%BA%90%E5%AD%98%E6%B4%BB%E6%80%A7%E6%A3%80%E6%B5%8B"><span class="toc-number">5.</span> <span class="toc-text">Pod资源存活性检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Pod%E7%9A%84%E5%B0%B1%E7%BB%AA%E6%80%A7%E6%8E%A2%E6%B5%8B"><span class="toc-number">6.</span> <span class="toc-text">Pod的就绪性探测</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Kubernetes笔记一(pod资源创建与管理)</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-05-30T04:47:08.000Z" title="发表于 2020-05-30 12:47:08">2020-05-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-15T12:39:48.524Z" title="更新于 2020-09-15 20:39:48">2020-09-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Kubernetes/">Kubernetes</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>  pod是kubernetes最重要的基本概念，它是kubernetes系统中最小的调度单位。每一个pod都有一个特殊的pause根容器，kubernetes为每个pod都提供了一个根容器，如果单独对一组容器进行管理，那么一个容器死亡，到底算不算整体死亡，为了解决这个难题，巧妙的设计了pause根容器对业务容器进行管理，所有的业务容器共享pause容器的IP、挂载的volume，简化了容器之间的通信问题。<br>  pod分为普通的pod和静态pod。普通pod一旦被创建，就会被放入etcd中存储，随后被kubernetes master调度到node上进行绑定，接着pod被node上的kubelet进程实例化成一组相关的docker容器并启动。静态pod比较特殊，它并不存储在etcd里，而是被保存在某个具体node上的一个具体文件中。</p>
+<a id="more"></a>
+<h2 id="pod管理"><a href="#pod管理" class="headerlink" title="pod管理"></a>pod管理</h2><p>Pod在kubernetes中也是一种资源，pod资源的定义是通过“apiVersion”、“kind”、“metadata”、“spec”、“status”五个部分组成，除了“status”字段中的信息是系统自动生成外，其余各字段都需要管理员定义。<br>（1）Containers中关于容器的字段常用字段有：<br>    1）name：必选字段，用于指定容器名称<br>    2）image：可选字段，定义容器运行时的镜像，但是自助式pod不能省略此字段<br>    3）imagePullPolicy：用于指定镜像的获取策略，主要的值有：<br>        Always：当镜像不存在或不是最新镜像时，则从指定仓库中拉取镜像<br>        IfNotPresent：当需要运行的镜像在本地不存在时，则从指定的仓库中下载镜像<br>        Nerver：仅使用本地镜像，不去仓库中下载镜像<br>（2）暴露pod中服务的端口<br>    Containers字段中的ports字段用于暴露容器的端口，容器的ports字段的值是一个列表，由一到多个端口对象组成，常用的嵌套字段如下：<br>        1）containerPort：必选字段，指定在Pod对象的ip地址上暴露的容器端口<br>        2）name：当前容器端口的名称，需在当前pod中唯一，此端口可以被Service资源调用<br>        3）protocol：端口相关的协议，值为tcp或udp<br>    Pod对象的ip地址仅可在当前集群内可达，集群外是无法访问的，当集群外需要访问pod中的服务时，可定义node节点的IP地址及端口，将pod中的服务端口映射到node上，外部通过node节点访问，一般都不建议这样做，常用的做法是通过service的NodePort模式访问pod内的服务<br>        4）hostPort：主机端口<br>        5）hostIP：主机端口要绑定主机ip</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: myweb</span><br><span class="line">  labels:</span><br><span class="line">    app: nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: twf/nginx:v1</span><br><span class="line">    imagePullPolicy: IfNotPresent</span><br><span class="line">    ports:</span><br><span class="line">    - name: http</span><br><span class="line">      containerPort: 80</span><br><span class="line">      protocol: TCP</span><br></pre></td></tr></table></figure>
+<p>（3）为pod的容器定义环境变量</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: env-test</span><br><span class="line">  labels:</span><br><span class="line">    app: env</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx-env</span><br><span class="line">    image: twf/nginx:v1</span><br><span class="line">    ports:</span><br><span class="line">    - name: http</span><br><span class="line">      containerPort: 80</span><br><span class="line">    env:</span><br><span class="line">    - name: NGINX_ENV</span><br><span class="line">      value: <span class="string">&#x27;twf-v1&#x27;</span></span><br><span class="line">    - name: NGINX_PORT</span><br><span class="line">      value: <span class="string">&#x27;80&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>（4）为pod容器共享节点的网络名称空间<br>通过hostNetwork设置true</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: hostnetwork</span><br><span class="line">  labels:</span><br><span class="line">    app: hostnetwork</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx-hostnetwork</span><br><span class="line">    image: nginx</span><br><span class="line">    imagePullPolicy: IfNotPresent</span><br><span class="line">    ports:</span><br><span class="line">    - containerPort: 80</span><br><span class="line">  hostNetwork: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#node节点查看暴露的服务</span></span><br><span class="line">netstat -anpt |grep 80</span><br></pre></td></tr></table></figure>
+<p>（5）pod资源中安全设置<br>Pod对象的安全定义在spec.securityContext字段中，容器的安全定义在spec.containers.securityContext字段中</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: <span class="built_in">test</span>-busybox</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: busybox</span><br><span class="line">    image: busybox</span><br><span class="line">    <span class="built_in">command</span>: [<span class="string">&quot;/bin/sh&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;sleep 3600&quot;</span>]</span><br><span class="line">    securityContext:</span><br><span class="line">      runAsNonRoot: <span class="literal">true</span></span><br><span class="line">      runAsUser: 1000</span><br><span class="line">      allowPrivilegeEscalation: <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">kubectl <span class="built_in">exec</span> <span class="built_in">test</span>-busybox -it -- ps</span><br></pre></td></tr></table></figure>
+
+<h2 id="pod中标签与标签选择器的定义与管理"><a href="#pod中标签与标签选择器的定义与管理" class="headerlink" title="pod中标签与标签选择器的定义与管理"></a>pod中标签与标签选择器的定义与管理</h2><p>Pod中标签（label）的主要功能就是对pod进行分类管理，从而提升运维及管理效率；而标签选择器（label selector）则可以挑选出符合过滤条件的资源完成需要的操作。<br>标签是键值类型的数据，能够附加于kubernetes的任何资源对象上，标签可以在创建资源时指定也可以按需添加，一个对象可以拥有多个标签。<br>（1）pod资源的标签管理<br>Pod资源的标签在metadata.labels中定义</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#在pod资源中定义标签</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: <span class="built_in">test</span>-nginx</span><br><span class="line">  labels:</span><br><span class="line">    env: dev</span><br><span class="line">    version: v1.0</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: nginx</span><br><span class="line"><span class="comment">#查看所有的标签</span></span><br><span class="line">kubectl get pods --show-labels</span><br><span class="line"><span class="comment">#列出有指定标签的资源信息</span></span><br><span class="line">kubectl get pods -L env</span><br></pre></td></tr></table></figure>
+<p>当pod创建好之后，也可以通过“kubectl label”命令为pod资源添加标签，如果pod中已经有了指定键名的标签，可以通过“–overwrite”命令强制覆盖原有标签</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#为指定pod资源添加标签</span></span><br><span class="line">kubectl label pods <span class="built_in">test</span>-nginx app=cache</span><br><span class="line"><span class="comment">#修改指定pod资源标签</span></span><br><span class="line">kubectl label pods <span class="built_in">test</span>-nginx env=pro --overwrite</span><br></pre></td></tr></table></figure>
+<p>（2）标签选择器的使用<br>标签选择器用于表达标签的查询条件或选择标准，在使用标签选择器时，要注意多个选择器之间的关系为“与”操作，使用空值的标签选择器意味着每个资源对象都被选中，空的标签选择器无法选出任何内容。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#列出app不等于cache的资源</span></span><br><span class="line">kubectl get pods -l <span class="string">&quot;app!=cache&quot;</span> --show-labels</span><br><span class="line"><span class="comment">#列出标签app不等于cache且run等于nginx-deploy的pod资源</span></span><br><span class="line">kubectl get pods -l <span class="string">&quot;app!=cache,run=nginx-deploy&quot;</span> -L run,app</span><br></pre></td></tr></table></figure>
+<p>kubernetes api支持基于等值关系和集合关系的选择器，基于集合关系的标签选择器支持in、notin、exists三种操作符。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#列出标签app为cache或者backend的pod资源</span></span><br><span class="line">kubectl get pods -l <span class="string">&quot;app in (cache,backend)&quot;</span> -L app</span><br><span class="line"><span class="comment">#列出不等于env标签的pod资源</span></span><br><span class="line">kubectl get pods -l <span class="string">&quot;!env&quot;</span> --show-labels</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pod节点选择器"><a href="#Pod节点选择器" class="headerlink" title="Pod节点选择器"></a>Pod节点选择器</h2><p>Pod节点选择器nodeSelector能够让pod对象基于集群中的工作节点的标签来挑选运行pod的node节点。在使用pod节点选择器之前，需要为node资源添加标签，添加标签的方法同为pod资源添加标签方法相同。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#为两个node节点分别添加标签</span></span><br><span class="line">kubectl label nodes k8s-node1 server=nginx</span><br></pre></td></tr></table></figure>
+<p>Pod资源中定义节点选择器时通过spec.nodeSelector字段定义</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#定义一个pod资源，让其运行在node1节点上</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata: </span><br><span class="line">  name: <span class="built_in">test</span>-nginx</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: nginx:1.12</span><br><span class="line">  nodeSelector:</span><br><span class="line">    server: nginx</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pod资源注解"><a href="#Pod资源注解" class="headerlink" title="Pod资源注解"></a>Pod资源注解</h2><p>除了标签之外，Pod与其他各种资源还能使用资源注解（annotation）；与标签类似，注解也是通过键值类型的数据，注解仅用于为资源提供元数据信息。而资源的注解可由用户手动添加，也可由工具程序自动附加使用。<br>（1）管理资源注解<br>资源注解的创建可在定义资源时使用metadata.annotations字段指定，也可在资源创建后通过“kubectl annotate”命令进行附加。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#定义资源时添加资源注解</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: <span class="built_in">test</span>-annotation</span><br><span class="line">  labels:</span><br><span class="line">    env: dev</span><br><span class="line">  annotations:</span><br><span class="line">    server-explain: nginx server is node1</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: nginx:1.12</span><br><span class="line">  nodeSelector:</span><br><span class="line">    server: nginx</span><br><span class="line">    </span><br><span class="line"><span class="comment">#为创建好的资源添加资源注解</span></span><br><span class="line">kubectl annotate pods <span class="built_in">test</span>-annotation auth=<span class="string">&quot;123&quot;</span> </span><br></pre></td></tr></table></figure>
+<p>（2）查看资源注解<br>资源注解的查看可以通过“kubectl describe”查看，或者pod导出为yaml格式查看</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#查看资源注解</span></span><br><span class="line">kubectl describe pods <span class="built_in">test</span>-annotation</span><br></pre></td></tr></table></figure>
+
+<h2 id="Pod资源存活性检测"><a href="#Pod资源存活性检测" class="headerlink" title="Pod资源存活性检测"></a>Pod资源存活性检测</h2><p>kubernetes对容器的存活性检测能够发现不可能用状态的容器，并对该容器进行重启等操作。jubernetes存活性探测的主要方法有ExecAction、TCPSocketAction、HTTPGetAction。<br>（1）使用exec探针检测容器的存活性<br>Exec探针通过在目标容器中执行由用户自定义的命令来判断容器的健康状态，exec探针由“spec.containers.livenessProbe.exec”字段组成，该字段只有一个“command”属性来定义要执行的命令。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: <span class="built_in">test</span>-exec</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: busybox</span><br><span class="line">    image: busybox</span><br><span class="line">    args: [<span class="string">&quot;/bin/sh&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;touch /tem/test123;sleep 60;rm -rf /tem/test123;sleep 300&quot;</span>]</span><br><span class="line">    livenessProbe:</span><br><span class="line">      <span class="built_in">exec</span>:</span><br><span class="line">        <span class="built_in">command</span>: [<span class="string">&quot;test&quot;</span>,<span class="string">&quot;-f&quot;</span>,<span class="string">&quot;/tem/test123&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">#一段时间后查看pod重启情况</span></span><br><span class="line">kubectl get pods</span><br></pre></td></tr></table></figure>
+<p>（2）使用http探针<br>基于http的探测是向目标容器发起一个http请求，根据其相应码进行结果的判定，该字段通过“spec.containers.livenessProbe.httpGet”字段定义，相关的字段有：<br>    1）port：必选字段，用于定义请求的端口<br>    2）httpHeaders：自定义的请求报文首部<br>    3）path：请求http资源的路径<br>    4）scheme：建立连接使用的协议，默认为http</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: <span class="built_in">test</span>-http</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: nginx</span><br><span class="line">    ports:</span><br><span class="line">    - name: http</span><br><span class="line">      containerPort: 80</span><br><span class="line">    lifecycle:</span><br><span class="line">      portStart:</span><br><span class="line">        <span class="built_in">exec</span>:</span><br><span class="line">          <span class="built_in">command</span>: [<span class="string">&quot;/bin/sh&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;echo testhttp &gt; /usr/share/nginx/html/testhttp&quot;</span>]</span><br><span class="line">  livenessProbe:</span><br><span class="line">    httpGet:</span><br><span class="line">      port: http</span><br><span class="line">      path: /testhttp</span><br><span class="line">      scheme: HTTP</span><br></pre></td></tr></table></figure>
+<p>（3）使用TCP探针<br>基于TCP的存活性探测是用于向容器的特定端口发起TCP请求并尝试建立连接建立结果判定。该探针的使用主要是通过“spec.containers.livenessProbe.tcpSocket”字段来定义。主要字段有：<br>    1）host：请求连接的目标IP地址，默认为Pod ip<br>    2）port：必选字段，请求连接的目标端口</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: myweb</span><br><span class="line">  labels:</span><br><span class="line">    app: web</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: nginx</span><br><span class="line">    ports:</span><br><span class="line">    - containerPort: 80</span><br><span class="line">    livenessProbe:</span><br><span class="line">      tcpSocket:</span><br><span class="line">        port: 80</span><br><span class="line">      initialDelaySeconds: 15</span><br><span class="line">      periodSeconds: 20</span><br></pre></td></tr></table></figure>
+<p>（4）存活性探测的行为属性<br>除了探测器自身字段属性行为，还可以配置一些其他的行为属性，其他的行为属性字段在“spec.containers.livenessProbe”字段下设置，主要有：<br>    1）initialDelySeconds：设置存活性探测的延迟时长，即容器启动多久之后开始第一次探测，默认为0。<br>    2）timeoutSeconds：存活性探测的超时时长，默认为1s，最小值也为1s。<br>    3）periodSeconds：存活性探测的频度，默认为10s，最小值可设置为1s。<br>    4）successThreshold：处于失败状态时，探测器操作连续多少次的成功才被认为是通过检测，默认为1。<br>    5）failureThreshold：处于成功状态时，探测器操作至少连续多少次的失败才被视为是检测不通过。默认为3。<br>这些属性设置后都可以通过“kubectl describe”命令查看，各项设置在命令输出的liveness字段中，delay为存活性探测的延迟时长，timeout为存活性探测的超时时长，period为存活性探测的频率，success为失败状态转为成功状态的探测成功次数，failure为成功状态转为失败状态时的探测失败次数。</p>
+<h2 id="Pod的就绪性探测"><a href="#Pod的就绪性探测" class="headerlink" title="Pod的就绪性探测"></a>Pod的就绪性探测</h2><p>Pod的就绪性探测主要用于在探测到容器尚未就绪时，触发依赖于其就绪状态的操作，确保不会有客户端请求接入此pod操作。就绪性探测也支持Exec、HTTP GET和TCP Socket三种探测方式。就绪性探测的使用方法同存活性探测使用方法基本相同，就绪性探测主要通过“pod.spec.containers.readinessProbe”字段设置<br>在未定义就绪性的Pod对象在Pod进入Running状态后将立即就绪</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: myweb</span><br><span class="line">  labels:</span><br><span class="line">    app: web</span><br><span class="line">spec:</span><br><span class="line">  containers:</span><br><span class="line">  - name: nginx</span><br><span class="line">    image: nginx</span><br><span class="line">    ports:</span><br><span class="line">    - containerPort: 80</span><br><span class="line">    readinessProbe:</span><br><span class="line">      tcpSocket:</span><br><span class="line">        port: 80</span><br><span class="line">      initialDelaySeconds: 5</span><br><span class="line">      periodSeconds: 10</span><br><span class="line">    livenessProbe:</span><br><span class="line">      tcpSocket:</span><br><span class="line">        port: 80</span><br><span class="line">      initialDelaySeconds: 15</span><br><span class="line">      periodSeconds: 20</span><br></pre></td></tr></table></figure></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Kubernetes/">Kubernetes</a></div><div class="post_share"><div class="social-share" data-image="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/06/03/Kubernetes%E7%AC%94%E8%AE%B0%E4%BA%8C-pod%E6%8E%A7%E5%88%B6%E5%99%A8%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E7%AE%A1%E7%90%86/"><img class="prev-cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Kubernetes笔记二(pod控制器的创建与管理)</div></div></a></div><div class="next-post pull-right"><a href="/2020/05/29/logrotate%E4%BD%BF%E7%94%A8%E7%AE%80%E4%BB%8B/"><img class="next-cover" data-lazy-src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3941395320,3856176046&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">logrotate使用简介</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/01/23/Ingress-nginx配置basic认证/" title="Ingress-nginx配置basic认证"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">Ingress-nginx配置basic认证</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/14/Kubeadm-join流程/" title="Kubeadm join流程"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-14</div><div class="relatedPosts_title">Kubeadm join流程</div></div></a></div><div class="relatedPosts_item"><a href="/2019/10/26/Kubeadm部署Kubernetes集群/" title="Kubeadm部署Kubernetes集群"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-10-26</div><div class="relatedPosts_title">Kubeadm部署Kubernetes集群</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/14/Kubeadm-init流程/" title="Kubeadm init流程"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-14</div><div class="relatedPosts_title">Kubeadm init流程</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/02/Kubeadm重新获取token/" title="Kubeadm重新获取token"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-02</div><div class="relatedPosts_title">Kubeadm重新获取token</div></div></a></div><div class="relatedPosts_item"><a href="/2020/09/28/Kubernetes中command、args和Dockerfile中entrypoint、cmd之间的作用/" title="Kubernetes中command、args和Dockerfile中entrypoint、cmd之间的作用"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-28</div><div class="relatedPosts_title">Kubernetes中command、args和Dockerfile中entrypoint、cmd之间的作用</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '230f9127b52029d89aa8ae060d430bb7',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

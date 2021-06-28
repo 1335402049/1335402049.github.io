@@ -1,0 +1,236 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kubeadm init流程 | Silence</title><meta name="description" content="1.引导前检查（pre-flight checks）kubeadm init执行之后，首先会进行pre-flight checks检查，确保master节点可以满足master组件可以安装的所有条件  error级别的检查：  kubeadm版本要与kubernetes版本的对比检查，kubeadm版本不小于kubernetes版本 kubernetes安装的系统需求检查，内核版本需大于3.10以"><meta name="keywords" content="Kubernetes"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Kubeadm init流程"><meta property="og:url" content="http://yoursite.com/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="1.引导前检查（pre-flight checks）kubeadm init执行之后，首先会进行pre-flight checks检查，确保master节点可以满足master组件可以安装的所有条件  error级别的检查：  kubeadm版本要与kubernetes版本的对比检查，kubeadm版本不小于kubernetes版本 kubernetes安装的系统需求检查，内核版本需大于3.10以"><meta property="og:image" content="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg"><meta property="article:published_time" content="2021-01-14T11:09:05.000Z"><meta property="article:modified_time" content="2021-01-14T11:25:49.838Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-01-14 19:25:49'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%BC%95%E5%AF%BC%E5%89%8D%E6%A3%80%E6%9F%A5%EF%BC%88pre-flight-checks%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">1.引导前检查（pre-flight checks）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%94%9F%E6%88%90%E7%A7%81%E9%92%A5%E5%92%8C%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6"><span class="toc-number">2.</span> <span class="toc-text">2.生成私钥和数字证书</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%BB%BACA"><span class="toc-number">2.1.</span> <span class="toc-text">自建CA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#apiserver%E7%A7%81%E9%92%A5%E5%92%8C%E5%85%AC%E9%92%A5%E8%AF%81%E4%B9%A6"><span class="toc-number">2.2.</span> <span class="toc-text">apiserver私钥和公钥证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#apiserver%E8%AE%BF%E9%97%AEkubelet%E4%BD%BF%E7%94%A8%E7%9A%84%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%A7%81%E9%92%A5%E4%B8%8E%E8%AF%81%E4%B9%A6"><span class="toc-number">2.3.</span> <span class="toc-text">apiserver访问kubelet使用的客户端私钥与证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#serviceaccount%E7%A7%81%E9%92%A5%E5%92%8C%E5%85%AC%E9%92%A5"><span class="toc-number">2.4.</span> <span class="toc-text">serviceaccount私钥和公钥</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Etcd%E7%9B%B8%E5%85%B3%E7%A7%81%E9%92%A5%E5%92%8C%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6"><span class="toc-number">2.5.</span> <span class="toc-text">Etcd相关私钥和数字证书</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E6%8E%A7%E5%88%B6%E5%B9%B3%E9%9D%A2%E7%BB%84%E4%BB%B6kubeconfig%E6%96%87%E4%BB%B6%EF%BC%8C%E8%BF%99%E4%BA%9B%E9%85%8D%E7%BD%AE%E7%94%A8%E4%BA%8E%E7%BB%84%E4%BB%B6%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E9%89%B4%E6%9D%83"><span class="toc-number">3.</span> <span class="toc-text">3.生成控制平面组件kubeconfig文件，这些配置用于组件间的通信鉴权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%94%9F%E6%88%90%E6%8E%A7%E5%88%B6%E5%B9%B3%E9%9D%A2%E7%BB%84%E4%BB%B6manifest%E6%96%87%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">4.生成控制平面组件manifest文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F%EF%BC%8C%E7%AD%89%E5%BE%85%E6%8E%A7%E5%88%B6%E5%B9%B3%E9%9D%A2%E7%BB%84%E4%BB%B6%E5%90%AF%E5%8A%A8"><span class="toc-number">5.</span> <span class="toc-text">5.下载镜像，等待控制平面组件启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%94%A8kubeadm-config%E4%BF%9D%E5%AD%98Configuration"><span class="toc-number">6.</span> <span class="toc-text">6.用kubeadm-config保存Configuration</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E8%AE%BE%E5%AE%9AMaster%E6%A0%87%E5%BF%97"><span class="toc-number">7.</span> <span class="toc-text">7.设定Master标志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E7%94%9F%E6%88%90bootstrap-token"><span class="toc-number">8.</span> <span class="toc-text">8.生成bootstrap token</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%AE%89%E8%A3%85DNS%E5%92%8Ckube-proxy%E7%BB%84%E4%BB%B6"><span class="toc-number">9.</span> <span class="toc-text">9.安装DNS和kube-proxy组件</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Kubeadm init流程</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-01-14T11:09:05.000Z" title="发表于 2021-01-14 19:09:05">2021-01-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-01-14T11:25:49.838Z" title="更新于 2021-01-14 19:25:49">2021-01-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Kubernetes/">Kubernetes</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="1-引导前检查（pre-flight-checks）"><a href="#1-引导前检查（pre-flight-checks）" class="headerlink" title="1.引导前检查（pre-flight checks）"></a>1.引导前检查（pre-flight checks）</h2><p>kubeadm init执行之后，首先会进行pre-flight checks检查，确保master节点可以满足master组件可以安装的所有条件</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a1.png"></p>
+<p>error级别的检查：</p>
+<ul>
+<li>kubeadm版本要与kubernetes版本的对比检查，kubeadm版本不小于kubernetes版本</li>
+<li>kubernetes安装的系统需求检查，内核版本需大于3.10以上，4.x以上，是否设置了cgroups子系统，后端服务是否正常工作</li>
+<li>其他检查：用户、主机、端口、swap、工具等</li>
+</ul>
+<h2 id="2-生成私钥和数字证书"><a href="#2-生成私钥和数字证书" class="headerlink" title="2.生成私钥和数字证书"></a>2.生成私钥和数字证书</h2><p>kubeadm会为整个集群生成多组私钥和数字证书，如果不指定外部的证书授权机构，kubeadm init会自建证书授权机构，并生成ca的私钥（ca.key）、自签署的公钥数字证书（ca.crt），用于签发后续kubernetes需要的其他公钥证书</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a2.png"></p>
+<blockquote>
+<p>kubeadm init生成的证书都在/etc/kubernetes/pki目录下</p>
+</blockquote>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a3.png"></p>
+<h3 id="自建CA"><a href="#自建CA" class="headerlink" title="自建CA"></a>自建CA</h3><p>如果不指定外部的证书授权机构，kubeadm init会自建证书授权机构，并生成ca的私钥（ca.key）、自签署的公钥数字证书（ca.crt），用于签发后续kubernetes需要的其他公钥证书</p>
+<p>查看ca.crt证书内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@k8s-master pki]# openssl x509 -in ca.crt -noout -text</span><br><span class="line">Certificate:</span><br><span class="line">    Data:</span><br><span class="line">        Version: 3 (0x2)</span><br><span class="line">        Serial Number: 0 (0x0)</span><br><span class="line">    Signature Algorithm: sha256WithRSAEncryption</span><br><span class="line">        Issuer: CN&#x3D;kubernetes</span><br><span class="line">        Validity</span><br><span class="line">            Not Before: Jan 14 02:37:42 2021 GMT</span><br><span class="line">            Not After : Jan 12 02:37:42 2031 GMT</span><br><span class="line">        Subject: CN&#x3D;kubernetes</span><br><span class="line">        Subject Public Key Info:</span><br><span class="line">            Public Key Algorithm: rsaEncryption</span><br><span class="line">                Public-Key: (2048 bit)</span><br><span class="line">                Modulus:</span><br><span class="line">                    00:e1:9d:a8:43:d5:8f:74:99:40:21:df:88:a9:7b:</span><br><span class="line">                    cf:37:24:00:fc:87:73:3d:29:0c:5c:f1:53:46:40:</span><br><span class="line">                    56:16:97:fb:a4:c8:fb:2e:23:74:bc:18:e0:c6:c8:</span><br><span class="line">                    7e:d5:35:49:c6:23:5b:1a:82:80:ed:90:be:c2:2b:</span><br><span class="line">                    0f:94:fc:27:d3:7f:f7:3f:80:be:f9:e4:6e:64:d4:</span><br><span class="line">                    dc:1a:49:d0:f2:64:4b:45:6f:a3:9e:e3:c1:c9:a5:</span><br><span class="line">                    a0:20:51:65:b2:78:85:09:00:49:f6:ae:07:3a:e0:</span><br><span class="line">                    e1:c4:b5:10:fd:7b:fc:e3:c5:83:86:77:22:f8:34:</span><br><span class="line">                    26:df:c6:8d:7e:51:b4:cf:24:3e:08:9f:1e:6d:dd:</span><br><span class="line">                    85:99:16:6f:3f:f0:ea:78:6c:4f:15:e7:4a:40:03:</span><br><span class="line">                    0b:ab:a0:6f:c5:e1:b9:3b:43:69:94:44:09:88:fe:</span><br><span class="line">                    7d:48:6e:6c:ec:8e:7b:31:4a:e3:dd:c0:1d:48:33:</span><br><span class="line">                    05:93:5b:ec:9b:18:e9:a0:d1:bd:31:7b:60:0b:4e:</span><br><span class="line">                    6f:74:d6:5d:5c:7b:70:ce:43:ba:cd:7c:4c:93:32:</span><br><span class="line">                    db:e4:58:3d:73:11:bc:66:53:6c:a7:57:17:66:95:</span><br><span class="line">                    6e:12:90:5e:5f:5b:f6:a6:9e:9c:bc:45:40:e6:50:</span><br><span class="line">                    5c:b4:56:6b:a1:e8:55:e7:2f:29:20:fe:37:74:d0:</span><br><span class="line">                    fa:b7</span><br><span class="line">                Exponent: 65537 (0x10001)</span><br><span class="line">        X509v3 extensions:</span><br><span class="line">            X509v3 Key Usage: critical</span><br><span class="line">                Digital Signature, Key Encipherment, Certificate Sign</span><br><span class="line">            X509v3 Basic Constraints: critical</span><br><span class="line">                CA:TRUE</span><br><span class="line">    Signature Algorithm: sha256WithRSAEncryption</span><br><span class="line">         88:d5:b9:ed:94:25:bd:57:a8:f0:da:eb:ec:98:6b:c0:f0:ee:</span><br><span class="line">         0b:27:a9:bd:52:3a:2e:35:78:ee:35:a1:a0:a3:a7:52:8a:f6:</span><br><span class="line">         52:bd:a2:b4:f7:bc:2b:39:2c:a3:a8:9d:be:02:3a:fd:79:cc:</span><br><span class="line">         32:aa:a4:44:fc:85:91:d2:89:88:20:fd:8f:e0:de:19:23:78:</span><br><span class="line">         cd:f5:7c:ae:fd:41:c6:bd:e3:e1:27:43:b5:74:00:f7:ae:c6:</span><br><span class="line">         a5:25:7d:f9:d6:e4:4e:c6:7c:94:9b:f0:38:f3:53:be:8b:35:</span><br><span class="line">         68:20:7e:0e:b7:ad:96:47:3b:6b:e3:4b:10:47:df:b3:c3:44:</span><br><span class="line">         4e:58:91:82:e0:4d:b3:b2:6d:49:44:d0:cc:2d:8b:66:63:dc:</span><br><span class="line">         37:67:44:0c:ca:51:ea:ca:ac:bf:8b:60:dc:b3:d8:fd:7b:4f:</span><br><span class="line">         8a:c9:9f:4b:32:37:bb:83:5c:af:8b:59:f5:32:35:b0:3d:82:</span><br><span class="line">         c3:50:af:5f:6c:9b:79:98:7c:1d:07:21:57:dc:fb:92:6a:54:</span><br><span class="line">         47:24:e6:2c:24:c4:80:17:21:a5:ac:90:e3:f4:54:ea:d0:2f:</span><br><span class="line">         6c:44:84:9e:51:62:66:76:e9:91:32:c4:a8:cc:12:ff:43:43:</span><br><span class="line">         4e:16:71:22:d6:c2:5d:7d:bb:f1:ff:3c:a7:ce:cc:38:29:ca:</span><br><span class="line">         fb:ca:44:98</span><br></pre></td></tr></table></figure>
+
+<h3 id="apiserver私钥和公钥证书"><a href="#apiserver私钥和公钥证书" class="headerlink" title="apiserver私钥和公钥证书"></a>apiserver私钥和公钥证书</h3><p>kubeadm会生成apiserver的私钥文件（apiserver.key），用ca来签发apiserver的公钥数字证书（apiserver.crt）</p>
+<p>查看apiserver.crt证书内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@k8s-master pki]# openssl x509 -in apiserver.crt -noout -text</span><br><span class="line">Certificate:</span><br><span class="line">    Data:</span><br><span class="line">        Version: 3 (0x2)</span><br><span class="line">        Serial Number: 6548373687643854637 (0x5ae07f2c9486d72d)</span><br><span class="line">    Signature Algorithm: sha256WithRSAEncryption</span><br><span class="line">        Issuer: CN&#x3D;kubernetes</span><br><span class="line">        Validity</span><br><span class="line">            Not Before: Jan 14 02:37:42 2021 GMT</span><br><span class="line">            Not After : Jan 14 02:37:43 2022 GMT</span><br><span class="line">        Subject: CN&#x3D;kube-apiserver</span><br><span class="line">        Subject Public Key Info:</span><br><span class="line">            Public Key Algorithm: rsaEncryption</span><br><span class="line">                Public-Key: (2048 bit)</span><br><span class="line">                Modulus:</span><br><span class="line">                    00:cd:8c:87:bf:18:0a:61:b4:51:d3:22:20:e3:72:</span><br><span class="line">                    42:4e:ac:32:cc:d2:0a:41:3c:f0:70:eb:34:3c:09:</span><br><span class="line">                    0a:68:a4:f5:6d:c6:0a:8d:5f:93:dc:dd:9c:9f:68:</span><br><span class="line">                    21:97:f9:3d:95:da:4a:2f:69:82:ae:35:f1:e2:c4:</span><br><span class="line">                    cd:78:3a:98:55:9a:0f:24:d5:ae:19:92:c6:d7:8b:</span><br><span class="line">                    ff:5f:81:99:a6:52:0c:c3:9c:eb:d3:e9:91:47:f9:</span><br><span class="line">                    cf:51:1e:6b:a5:83:0d:c0:37:e0:61:3d:b7:ee:09:</span><br><span class="line">                    02:e9:25:b4:ef:2d:58:9b:e7:2a:b5:74:bf:e8:a1:</span><br><span class="line">                    62:f4:8c:ae:58:25:b3:bc:a8:c3:af:58:db:25:e6:</span><br><span class="line">                    85:14:2e:39:70:86:1f:c4:27:70:50:6c:05:85:aa:</span><br><span class="line">                    e5:8e:9b:1c:55:b0:95:96:25:e7:df:f2:f6:42:be:</span><br><span class="line">                    6e:ed:85:46:72:c7:db:64:e2:23:d7:ca:38:e9:9a:</span><br><span class="line">                    24:7b:de:1b:ca:e3:b4:ac:c2:41:fa:bc:af:88:7e:</span><br><span class="line">                    0c:15:72:f7:f7:2b:3a:a9:fd:7a:57:1d:95:2c:c9:</span><br><span class="line">                    61:c6:48:ac:cf:2d:db:62:4d:41:be:e6:69:01:a0:</span><br><span class="line">                    97:5f:0f:66:b7:c3:3d:2f:12:84:3f:78:fc:87:40:</span><br><span class="line">                    8c:74:7e:23:4c:c0:f0:c8:f0:9e:1a:4f:1b:7e:a5:</span><br><span class="line">                    db:3f</span><br><span class="line">                Exponent: 65537 (0x10001)</span><br><span class="line">        X509v3 extensions:</span><br><span class="line">            X509v3 Key Usage: critical</span><br><span class="line">                Digital Signature, Key Encipherment</span><br><span class="line">            X509v3 Extended Key Usage: </span><br><span class="line">                TLS Web Server Authentication</span><br><span class="line">            X509v3 Subject Alternative Name: </span><br><span class="line">                DNS:k8s-master, DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster.local, IP Address:10.1.0.1, IP Address:192.168.83.128</span><br><span class="line">    Signature Algorithm: sha256WithRSAEncryption</span><br><span class="line">         41:04:f1:f1:ec:03:61:30:1e:57:4e:bf:d5:f1:29:0e:ab:99:</span><br><span class="line">         68:3d:51:0e:d4:e4:98:d3:87:4f:9d:4c:d5:3a:50:73:0a:87:</span><br><span class="line">         49:a6:fe:a6:99:34:4f:24:40:ca:ee:a8:37:bf:09:3c:c3:d8:</span><br><span class="line">         36:f4:f6:9f:29:ad:e8:71:90:aa:1d:cf:fc:db:4a:50:9b:3d:</span><br><span class="line">         c4:3f:e5:f8:07:4f:d3:9a:c4:7f:50:ca:2f:92:65:42:e5:b4:</span><br><span class="line">         27:7e:41:bb:87:17:5a:1c:01:e0:f7:70:38:59:a6:f3:e5:03:</span><br><span class="line">         07:a6:c7:de:03:b9:32:e7:f7:79:8d:ed:d6:3d:0f:6e:e2:79:</span><br><span class="line">         a4:22:a7:50:95:d4:83:8e:42:fa:59:10:02:cd:82:80:27:16:</span><br><span class="line">         80:e0:45:99:b0:85:60:76:d7:e9:07:ed:cc:68:c5:80:b0:82:</span><br><span class="line">         6a:b9:24:b9:3c:b9:4d:5e:88:a6:54:7a:45:79:35:46:5e:68:</span><br><span class="line">         7b:77:f2:78:5c:3c:60:79:63:de:96:79:c3:c6:85:3b:ef:d2:</span><br><span class="line">         3f:02:de:70:d7:f6:5c:4d:64:fb:ad:f9:31:62:ae:1b:ae:8c:</span><br><span class="line">         b6:b6:cf:9e:cc:ac:a9:3a:b5:f4:63:6d:80:95:c8:79:e8:d9:</span><br><span class="line">         8f:88:1d:80:15:97:58:c6:65:ce:98:4b:b1:6c:1b:29:ec:60:</span><br><span class="line">         8c:39:65:b5</span><br></pre></td></tr></table></figure>
+
+<h3 id="apiserver访问kubelet使用的客户端私钥与证书"><a href="#apiserver访问kubelet使用的客户端私钥与证书" class="headerlink" title="apiserver访问kubelet使用的客户端私钥与证书"></a>apiserver访问kubelet使用的客户端私钥与证书</h3><p>apiserver需要向各个node的kubelet主动发起连接，kubelet会通过client端的ssl证书，校验apiserver建立的连接</p>
+<p>apiserver-kubelet-client.crt和apiserver-kubelet-client.key用来校验apiserver身份的数字证书</p>
+<h3 id="serviceaccount私钥和公钥"><a href="#serviceaccount私钥和公钥" class="headerlink" title="serviceaccount私钥和公钥"></a>serviceaccount私钥和公钥</h3><p>sa.key和sa.pub是一对数字证书</p>
+<h3 id="Etcd相关私钥和数字证书"><a href="#Etcd相关私钥和数字证书" class="headerlink" title="Etcd相关私钥和数字证书"></a>Etcd相关私钥和数字证书</h3><p>首先etcd是整个k8s集群的数据中心，只有apiserver才可以访问，所有组件都是通过apiserver存储数据的，为了建立apiserver和etcd的安全通信，kubeadm init会生成apiserver访问etcd的安全证书，即apiserver-etcd-client.crt和apiserver-etcd-client.key，其中apiserver-etcd-client.crt并不是由ca.crt签发的，而是有pki/etcd/ca.crt签发</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 并不是由&#x2F;etc&#x2F;kubernetes&#x2F;pki&#x2F;ca.crt签发</span><br><span class="line">[root@k8s-master pki]# openssl verify -CAfile ca.crt apiserver-etcd-client.crt </span><br><span class="line">apiserver-etcd-client.crt: O &#x3D; system:masters, CN &#x3D; kube-apiserver-etcd-client</span><br><span class="line">error 20 at 0 depth lookup:unable to get local issuer certificate</span><br><span class="line"># 是由&#x2F;etc&#x2F;kubernetes&#x2F;pki&#x2F;etcd&#x2F;ca.crt签发</span><br><span class="line">[root@k8s-master pki]# openssl verify -CAfile etcd&#x2F;ca.crt apiserver-etcd-client.crt </span><br><span class="line">apiserver-etcd-client.crt: OK</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-生成控制平面组件kubeconfig文件，这些配置用于组件间的通信鉴权"><a href="#3-生成控制平面组件kubeconfig文件，这些配置用于组件间的通信鉴权" class="headerlink" title="3.生成控制平面组件kubeconfig文件，这些配置用于组件间的通信鉴权"></a>3.生成控制平面组件kubeconfig文件，这些配置用于组件间的通信鉴权</h2><p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a4.png"></p>
+<p>这些文件生成在/etc/kubernetes目录下</p>
+<ul>
+<li>kubelet.conf：被kubelet组件使用，用于访问apiserver</li>
+<li>scheduler.conf：被scheduler组件使用，用于访问apiserver</li>
+<li>controller-manager.conf：被controller-manager组件使用，用于访问apiserver</li>
+<li>admin.conf：包含整个集群的最高权限配置数据</li>
+</ul>
+<p>admin.conf中包含cluster、user和context信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[root@k8s-master kubernetes]# cat admin.conf </span><br><span class="line">apiVersion: v1</span><br><span class="line">clusters:</span><br><span class="line">- cluster:</span><br><span class="line">    certificate-authority-data: </span><br><span class="line">    server: https:&#x2F;&#x2F;192.168.83.128:6443</span><br><span class="line">  name: kubernetes</span><br><span class="line">contexts:</span><br><span class="line">- context:</span><br><span class="line">    cluster: kubernetes</span><br><span class="line">    user: kubernetes-admin</span><br><span class="line">  name: kubernetes-admin@kubernetes</span><br><span class="line">current-context: kubernetes-admin@kubernetes</span><br><span class="line">kind: Config</span><br><span class="line">preferences: &#123;&#125;</span><br><span class="line">users:</span><br><span class="line">- name: kubernetes-admin</span><br><span class="line">  user:</span><br><span class="line">    client-certificate-data: </span><br><span class="line">    client-key-data: </span><br></pre></td></tr></table></figure>
+
+<p>一旦配置 $KUBECONFIG 变量，指向/etc/kubernetes/admin.conf，则kubectl就会使用KUBECONFIG变量所配置的信息。contexts用来将users和clusters绑定，从而通过切换context来变换不通身份管理不同集群</p>
+<h2 id="4-生成控制平面组件manifest文件"><a href="#4-生成控制平面组件manifest文件" class="headerlink" title="4.生成控制平面组件manifest文件"></a>4.生成控制平面组件manifest文件</h2><p>这些文件会被master节点的kubelet读取，并且启动控制平面组件，并维护控制平面组件状态</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a5.png"></p>
+<p>这些文件存在/etc/kubernetes/manifests目录下</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a6.png"></p>
+<h2 id="5-下载镜像，等待控制平面组件启动"><a href="#5-下载镜像，等待控制平面组件启动" class="headerlink" title="5.下载镜像，等待控制平面组件启动"></a>5.下载镜像，等待控制平面组件启动</h2><p>kubeadm会依赖kubelet下载镜像并且启动static pod，kubelet会一直探测 localhost:6443/healthz（apiserver存活性探针）</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a7.png"></p>
+<p>查看 kube-apiserver.yaml</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">    livenessProbe:</span><br><span class="line">      failureThreshold: 8</span><br><span class="line">      httpGet:</span><br><span class="line">        host: 192.168.83.128</span><br><span class="line">        path: &#x2F;healthz</span><br><span class="line">        port: 6443</span><br><span class="line">        scheme: HTTPS</span><br><span class="line">      initialDelaySeconds: 15</span><br><span class="line">      timeoutSeconds: 15</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-用kubeadm-config保存Configuration"><a href="#6-用kubeadm-config保存Configuration" class="headerlink" title="6.用kubeadm-config保存Configuration"></a>6.用kubeadm-config保存Configuration</h2><p>kubeadm-config是ConfigMap</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a8.png"></p>
+<h2 id="7-设定Master标志"><a href="#7-设定Master标志" class="headerlink" title="7.设定Master标志"></a>7.设定Master标志</h2><p>将当前节点设置为master，即打上相关的labels和taints</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a9.png"></p>
+<h2 id="8-生成bootstrap-token"><a href="#8-生成bootstrap-token" class="headerlink" title="8.生成bootstrap token"></a>8.生成bootstrap token</h2><p>node节点可以使用这个token加入kubernetes集群，在生成token之后，kubeadm会将ca.crt等master重要信息通过configmap保存在etcd，这个configmap名字是cluster-info</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a10.png"></p>
+<h2 id="9-安装DNS和kube-proxy组件"><a href="#9-安装DNS和kube-proxy组件" class="headerlink" title="9.安装DNS和kube-proxy组件"></a>9.安装DNS和kube-proxy组件</h2><p><img src= "/img/loading.gif" data-lazy-src="/2021/01/14/Kubeadm-init%E6%B5%81%E7%A8%8B/a11.png"></p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Kubernetes/">Kubernetes</a></div><div class="post_share"><div class="social-share" data-image="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/01/14/Kubeadm-join%E6%B5%81%E7%A8%8B/"><img class="prev-cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Kubeadm join流程</div></div></a></div><div class="next-post pull-right"><a href="/2021/01/14/%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%90%AD%E5%BB%BAKubernetes%E9%9B%86%E7%BE%A4/"><img class="next-cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">二进制搭建Kubernetes集群</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/01/23/Ingress-nginx配置basic认证/" title="Ingress-nginx配置basic认证"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">Ingress-nginx配置basic认证</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/14/Kubeadm-join流程/" title="Kubeadm join流程"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-14</div><div class="relatedPosts_title">Kubeadm join流程</div></div></a></div><div class="relatedPosts_item"><a href="/2019/10/26/Kubeadm部署Kubernetes集群/" title="Kubeadm部署Kubernetes集群"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-10-26</div><div class="relatedPosts_title">Kubeadm部署Kubernetes集群</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/02/Kubeadm重新获取token/" title="Kubeadm重新获取token"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-02</div><div class="relatedPosts_title">Kubeadm重新获取token</div></div></a></div><div class="relatedPosts_item"><a href="/2020/09/28/Kubernetes中command、args和Dockerfile中entrypoint、cmd之间的作用/" title="Kubernetes中command、args和Dockerfile中entrypoint、cmd之间的作用"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-28</div><div class="relatedPosts_title">Kubernetes中command、args和Dockerfile中entrypoint、cmd之间的作用</div></div></a></div><div class="relatedPosts_item"><a href="/2020/09/16/Kubernetes中使用NFS的StorageClass/" title="Kubernetes中使用NFS的StorageClass"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-16</div><div class="relatedPosts_title">Kubernetes中使用NFS的StorageClass</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '4f683ae320fd374fa2b318fc55785bc8',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

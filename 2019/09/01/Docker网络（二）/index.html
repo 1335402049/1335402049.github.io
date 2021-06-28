@@ -1,0 +1,223 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Docker网络（二） | Silence</title><meta name="description" content="前言已经介绍了Docker的镜像和容器，下面主要涉及Docker网络相关知识   Linux网络命名空间#进入一个已经运行的容器docker exec -it 61512b362534 bash#执行ip aip a 会发现有一些接口，这就是这个容器自己的network namespace退出容器，在宿主机执行ip a显示出来的是宿主机的network namespace，这2个network n"><meta name="keywords" content="Docker"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Docker网络（二）"><meta property="og:url" content="http://yoursite.com/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="前言已经介绍了Docker的镜像和容器，下面主要涉及Docker网络相关知识   Linux网络命名空间#进入一个已经运行的容器docker exec -it 61512b362534 bash#执行ip aip a 会发现有一些接口，这就是这个容器自己的network namespace退出容器，在宿主机执行ip a显示出来的是宿主机的network namespace，这2个network n"><meta property="og:image" content="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1597249323913&amp;di=bd98155560fc85017f57d751c6626871&amp;imgtype=0&amp;src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><meta property="article:published_time" content="2019-09-01T08:20:10.000Z"><meta property="article:modified_time" content="2020-08-12T13:37:11.536Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-08-12 21:37:11'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux%E7%BD%91%E7%BB%9C%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="toc-number">1.</span> <span class="toc-text">Linux网络命名空间</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">底层原理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-Bridge0"><span class="toc-number">2.</span> <span class="toc-text">Docker Bridge0</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#link"><span class="toc-number">3.</span> <span class="toc-text">link</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84"><span class="toc-number">4.</span> <span class="toc-text">端口映射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#none%E5%92%8Chost-network"><span class="toc-number">5.</span> <span class="toc-text">none和host network</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%9C%BA%E9%80%9A%E4%BF%A1"><span class="toc-number">6.</span> <span class="toc-text">多机通信</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDetcd"><span class="toc-number">6.1.</span> <span class="toc-text">下载etcd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1"><span class="toc-number">6.2.</span> <span class="toc-text">启动服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8Bcluster%E6%98%AF%E5%90%A6%E5%BB%BA%E7%AB%8B"><span class="toc-number">6.3.</span> <span class="toc-text">查看cluster是否建立</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%90%AFdocker"><span class="toc-number">6.4.</span> <span class="toc-text">重启docker</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAoverlay"><span class="toc-number">6.5.</span> <span class="toc-text">创建overlay</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AE%B9%E5%99%A8"><span class="toc-number">6.6.</span> <span class="toc-text">创建容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B2%E4%B8%AA%E5%AE%B9%E5%99%A8%E7%9A%84ip%EF%BC%8C%E6%98%AF%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84"><span class="toc-number">6.7.</span> <span class="toc-text">查看2个容器的ip，是不一致的</span></a></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Docker网络（二）</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-09-01T08:20:10.000Z" title="发表于 2019-09-01 16:20:10">2019-09-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-08-12T13:37:11.536Z" title="更新于 2020-08-12 21:37:11">2020-08-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Docker/">Docker</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>前言已经介绍了Docker的镜像和容器，下面主要涉及Docker网络相关知识</p>
+<a id="more"></a>
+
+<h2 id="Linux网络命名空间"><a href="#Linux网络命名空间" class="headerlink" title="Linux网络命名空间"></a>Linux网络命名空间</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#进入一个已经运行的容器</span></span><br><span class="line">docker <span class="built_in">exec</span> -it 61512b362534 bash</span><br><span class="line"><span class="comment">#执行ip a</span></span><br><span class="line">ip a</span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/a1.png"><br>会发现有一些接口，这就是这个容器自己的network namespace<br>退出容器，在宿主机执行ip a<br><img src= "/img/loading.gif" data-lazy-src="/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/a2.png"><br>显示出来的是宿主机的network namespace，这2个network namespace是不一样的<br>再创建第二个容器，2个docker容器的network namespace也是不一样的，他们之前是隔离开的。并且2个容器是可以ping通的</p>
+<h3 id="底层原理"><a href="#底层原理" class="headerlink" title="底层原理"></a>底层原理</h3><p><img src= "/img/loading.gif" data-lazy-src="/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/a3.png"><br>（1）创建network namespace</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#创建2个network namespace</span></span><br><span class="line">ip netns add test1</span><br><span class="line">ip netns add test2</span><br><span class="line"><span class="comment">#删除network namespace</span></span><br><span class="line">ip netns delete test1</span><br><span class="line"><span class="comment">#查看创建network namespace</span></span><br><span class="line">ip netns list</span><br></pre></td></tr></table></figure>
+<p>（2）查看test1、test2的network namespace信息</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> test1 ip a</span><br><span class="line">ip netns <span class="built_in">exec</span> test2 ip a</span><br></pre></td></tr></table></figure>
+<p>（3） 使lo端口up起来</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> test1 ip link <span class="built_in">set</span> dev lo</span><br></pre></td></tr></table></figure>
+<p>（4） 添加一对veth接口</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ip link add veth-test1 <span class="built_in">type</span> veth peer name veth-test2</span><br></pre></td></tr></table></figure>
+<p>（5） 将veth-test1添加到test1中，veth-test2添加到test2</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ip link <span class="built_in">set</span> veth-test1 netns test1</span><br><span class="line">ip link <span class="built_in">set</span> veth-test2 netns test2</span><br><span class="line"><span class="comment">#查看是否添加成功</span></span><br><span class="line">ip netns <span class="built_in">exec</span> test1 ip link</span><br><span class="line">ip netns <span class="built_in">exec</span> test2 ip link</span><br></pre></td></tr></table></figure>
+<p>（6）给veth-test1、veth-test2分配端口</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> test1 ip addr add 192.168.1.1/24 dev veth-test1</span><br><span class="line">ip netns <span class="built_in">exec</span> test2 ip addr add 192.168.1.2/24 dev veth-test2</span><br></pre></td></tr></table></figure>
+<p>（7）将veth-test1、veth-test2端口up,并查看ip</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#up端口</span></span><br><span class="line">ip netns <span class="built_in">exec</span> test1 ip link <span class="built_in">set</span> dev veth-test1</span><br><span class="line">ip netns <span class="built_in">exec</span> test2 ip link <span class="built_in">set</span> dev veth-test2</span><br><span class="line"><span class="comment">#查看ip</span></span><br><span class="line">ip netns <span class="built_in">exec</span> test1 ip a</span><br><span class="line">ip netns <span class="built_in">exec</span> test2 ip a</span><br></pre></td></tr></table></figure>
+<p>（8）查看互相是否可以通信</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ip netns <span class="built_in">exec</span> test1 ping 192.168.1.2</span><br><span class="line">ip netns <span class="built_in">exec</span> test2 ping 192.168.1.1</span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/a4.png"><br>其实docker容器之间的通信也是通过这种技术实现的</p>
+<h2 id="Docker-Bridge0"><a href="#Docker-Bridge0" class="headerlink" title="Docker Bridge0"></a>Docker Bridge0</h2><p>Container Test1容器通过自己端口与宿主机的docker0的veth端口相连，Container Test2容器通过自己的端口与宿主机另外一个veth端口相连，这样就保证了2个容器可以互相通信<br><img src= "/img/loading.gif" data-lazy-src="/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/a5.png"></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#查看docker的network</span></span><br><span class="line">docker network ls</span><br><span class="line"><span class="comment">#查看bridge中有哪些容器</span></span><br><span class="line">docker network inspect &lt;network ID&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ip a</span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/a6.png"></p>
+<h2 id="link"><a href="#link" class="headerlink" title="link"></a>link</h2><p>与其他容器通信时，通过ip来访问的。创建容器时使用–link <name>来实现容器连接，这样通过name也可以访问了,但是link这种方式是单向的<br>除非2个容器都是连接在用户自己创建的network上，可以使用name来访问</name></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run -d --name test2 --link test1 container1</span><br><span class="line">docker <span class="built_in">exec</span> -it test2 bash</span><br><span class="line">ping test1 </span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#创建network</span></span><br><span class="line">docker network create net3</span><br><span class="line"><span class="comment">#删除network</span></span><br><span class="line">docker network rm net3</span><br><span class="line"><span class="comment">#新建容器，使用net3，使用--network</span></span><br><span class="line">docker run -d --name test2 --network net3 container1</span><br><span class="line"><span class="comment">#将已经存在的容器连接到net3上</span></span><br><span class="line">docker network connect net3 container1</span><br></pre></td></tr></table></figure>
+
+<h2 id="端口映射"><a href="#端口映射" class="headerlink" title="端口映射"></a>端口映射</h2><p>我们pull了一个nginx镜像，创建nginx容器，但是我们在外面无法访问nginx容器的80端口，这时就要将nginx服务暴露给外面，可以将nginx的80端口映射到本地</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># -p表示端口映射</span></span><br><span class="line">docker run --name nginx -d -p 80:80</span><br></pre></td></tr></table></figure>
+
+<h2 id="none和host-network"><a href="#none和host-network" class="headerlink" title="none和host network"></a>none和host network</h2><p>当容器连接到none时，不存在ip和mac地址，none是与外界隔绝的network<br>当容器连接到host时，他没有独立的network，他与宿主机的network共享一套network（如果创建2个nginx都绑定在80端口，容易端口冲突）</p>
+<h2 id="多机通信"><a href="#多机通信" class="headerlink" title="多机通信"></a>多机通信</h2><p><img src= "/img/loading.gif" data-lazy-src="/2019/09/01/Docker%E7%BD%91%E7%BB%9C%EF%BC%88%E4%BA%8C%EF%BC%89/a7.png"><br>docker提供了overlay来实现2台linux主机之间的通信<br>2台linux主机通信，必须保证2个主机上的docker容器的ip不一样，我们使用etcd来实现</p>
+<h3 id="下载etcd"><a href="#下载etcd" class="headerlink" title="下载etcd"></a>下载etcd</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#下载</span></span><br><span class="line">wget https://github.com/coreos/etcd/releases/download/v3.0.12/etcd-v3.0.12-linux-amd64.tar.gz</span><br><span class="line"><span class="comment">#解压缩</span></span><br><span class="line">tar zxvf etcd-v3.0.12-linux-amd64.tar.gz</span><br><span class="line"><span class="comment">#进入etcd-v3.0.12-linux-amd64目录下</span></span><br><span class="line"><span class="built_in">cd</span> etcd-v3.0.12-linux-amd64</span><br></pre></td></tr></table></figure>
+<h3 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#启动第一台node1主机etcd服务</span></span><br><span class="line">nohup ./etcd --name docker-node1 --initial-advertise-peer-urls http://192.168.186.129:2380 \</span><br><span class="line">--listen-peer-urls http://192.168.186.129:2380 \</span><br><span class="line">--listen-client-urls http://192.168.186.129:2379,http://127.0.0.1:2379 \</span><br><span class="line">--advertise-client-urls http://192.168.186.129:2379 \</span><br><span class="line">--initial-cluster-token etcd-cluster \</span><br><span class="line">--initial-cluster docker-node1=http://192.168.186.129:2380,docker-node2=http://192.168.186.130:2380 \</span><br><span class="line">--initial-cluster-state new&amp;</span><br><span class="line"><span class="comment">#启动另一台node2主机etcd服务</span></span><br><span class="line">nohup ./etcd --name docker-node2 --initial-advertise-peer-urls http://192.168.186.130:2380 \</span><br><span class="line">--listen-peer-urls http://192.168.186.130:2380 \</span><br><span class="line">--listen-client-urls http://192.168.186.130:2379,http://127.0.0.1:2379 \</span><br><span class="line">--advertise-client-urls http://192.168.186.130:2379 \</span><br><span class="line">--initial-cluster-token etcd-cluster \</span><br><span class="line">--initial-cluster docker-node1=http://192.168.186.129:2380,docker-node2=http://192.168.186.130:2380 \</span><br><span class="line">--initial-cluster-state new&amp;</span><br></pre></td></tr></table></figure>
+<h3 id="查看cluster是否建立"><a href="#查看cluster是否建立" class="headerlink" title="查看cluster是否建立"></a>查看cluster是否建立</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./etcdctl cluster-health</span><br></pre></td></tr></table></figure>
+<h3 id="重启docker"><a href="#重启docker" class="headerlink" title="重启docker"></a>重启docker</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#node1</span></span><br><span class="line">service docker stop</span><br><span class="line">sudo /usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --cluster-store=etcd://192.168.186.129:2379 --cluster-advertise=192.168.186.129:2375&amp;</span><br><span class="line"><span class="comment">#node2</span></span><br><span class="line">service docker stop</span><br><span class="line">sudo /usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --cluster-store=etcd://192.168.186.130:2379 --cluster-advertise=192.168.186.130:2375&amp;</span><br></pre></td></tr></table></figure>
+<h3 id="创建overlay"><a href="#创建overlay" class="headerlink" title="创建overlay"></a>创建overlay</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#在node1上创建overlay</span></span><br><span class="line">docker network create -d overlay demo</span><br><span class="line"><span class="comment">#查看node1上的network</span></span><br><span class="line">docker network ls</span><br><span class="line"><span class="comment">#再查看node2主机上的network，会发现存在名叫demo的overlay</span></span><br><span class="line">docker network ls</span><br></pre></td></tr></table></figure>
+<h3 id="创建容器"><a href="#创建容器" class="headerlink" title="创建容器"></a>创建容器</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#在node1主机上创建busybox容器</span></span><br><span class="line">docker run -d --name test1 --net demo busybox sh -c <span class="string">&quot;while true; do sleep 3600; done&quot;</span></span><br><span class="line"><span class="comment">#在node2上再次创建，会发现报错，提示test1已经存在</span></span><br><span class="line">docker run -d --name test1 --net demo busybox sh -c <span class="string">&quot;while true; do sleep 3600; done&quot;</span></span><br><span class="line"><span class="comment">#创建test2</span></span><br><span class="line">docker run -d --name test2 --net demo busybox sh -c <span class="string">&quot;while true; do sleep 3600; done&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="查看2个容器的ip，是不一致的"><a href="#查看2个容器的ip，是不一致的" class="headerlink" title="查看2个容器的ip，是不一致的"></a>查看2个容器的ip，是不一致的</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it test1 ip a</span><br><span class="line">docker <span class="built_in">exec</span> -it test2 ip a</span><br></pre></td></tr></table></figure>
+
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Docker/">Docker</a></div><div class="post_share"><div class="social-share" data-image="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1597249323913&amp;di=bd98155560fc85017f57d751c6626871&amp;imgtype=0&amp;src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/09/21/Docker%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8%EF%BC%88%E4%B8%89%EF%BC%89/"><img class="prev-cover" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1597249323913&amp;di=bd98155560fc85017f57d751c6626871&amp;imgtype=0&amp;src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Docker的持久化存储（三）</div></div></a></div><div class="next-post pull-right"><a href="/2019/08/31/Docker%E7%9A%84%E9%95%9C%E5%83%8F%E4%B8%8E%E5%AE%B9%E5%99%A8%EF%BC%88%E4%B8%80%EF%BC%89/"><img class="next-cover" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1597249323913&amp;di=bd98155560fc85017f57d751c6626871&amp;imgtype=0&amp;src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Docker的镜像与容器（一）</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2019/10/05/Docker-Compose（四）/" title="Docker Compose（四）"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-10-05</div><div class="relatedPosts_title">Docker Compose（四）</div></div></a></div><div class="relatedPosts_item"><a href="/2020/12/30/Docker登录harbor出现getsockopt-connection-refused/" title="Docker登录harbor出现getsockopt connection refused"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-30</div><div class="relatedPosts_title">Docker登录harbor出现getsockopt connection refused</div></div></a></div><div class="relatedPosts_item"><a href="/2019/08/18/Docker搭建MySQL高可用方案PXC集群/" title="Docker搭建MySQL高可用方案PXC集群"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-08-18</div><div class="relatedPosts_title">Docker搭建MySQL高可用方案PXC集群</div></div></a></div><div class="relatedPosts_item"><a href="/2019/09/21/Docker的持久化存储（三）/" title="Docker的持久化存储（三）"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-21</div><div class="relatedPosts_title">Docker的持久化存储（三）</div></div></a></div><div class="relatedPosts_item"><a href="/2019/08/31/Docker的镜像与容器（一）/" title="Docker的镜像与容器（一）"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-08-31</div><div class="relatedPosts_title">Docker的镜像与容器（一）</div></div></a></div><div class="relatedPosts_item"><a href="/2019/08/24/Docker部署RedisCluster集群/" title="Docker部署RedisCluster集群"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-08-24</div><div class="relatedPosts_title">Docker部署RedisCluster集群</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '72304fb6466bb981714fe672d5b2fd91',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

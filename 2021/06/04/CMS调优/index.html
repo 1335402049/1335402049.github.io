@@ -1,0 +1,205 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CMS调优 | Silence</title><meta name="description" content="CMS基础这个垃圾收集器官方名称是”Mostly Concurrent Mark and Sweep Garbage Collector“。它在年轻代使用”复制”算法，并行进行垃圾回收，在老年代使用并发的“标记清除”算法。 CMS收集器目标是避免在老年代长时间停顿，它通过两种方式实现。首先，它不压缩老年代空间，而是通过空闲列表来管理回收空间。其次，它与应用程序线程同时完成标记和清理阶段的大部分工作"><meta name="keywords" content="Java"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/06/04/CMS%E8%B0%83%E4%BC%98/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="CMS调优"><meta property="og:url" content="http://yoursite.com/2021/06/04/CMS%E8%B0%83%E4%BC%98/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="CMS基础这个垃圾收集器官方名称是”Mostly Concurrent Mark and Sweep Garbage Collector“。它在年轻代使用”复制”算法，并行进行垃圾回收，在老年代使用并发的“标记清除”算法。 CMS收集器目标是避免在老年代长时间停顿，它通过两种方式实现。首先，它不压缩老年代空间，而是通过空闲列表来管理回收空间。其次，它与应用程序线程同时完成标记和清理阶段的大部分工作"><meta property="og:image" content="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg"><meta property="article:published_time" content="2021-06-04T12:17:58.000Z"><meta property="article:modified_time" content="2021-06-04T12:18:28.286Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-06-04 20:18:28'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CMS%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">CMS基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CMS%E6%94%B6%E9%9B%86%E9%98%B6%E6%AE%B5"><span class="toc-number">2.</span> <span class="toc-text">CMS收集阶段</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%88%9D%E5%A7%8B%E6%A0%87%E8%AE%B0"><span class="toc-number">2.1.</span> <span class="toc-text">第一阶段：初始标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E6%A0%87%E8%AE%B0"><span class="toc-number">2.2.</span> <span class="toc-text">第二阶段：并发标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E9%A2%84%E6%B8%85%E7%90%86"><span class="toc-number">2.3.</span> <span class="toc-text">第三阶段：并发预清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E5%8F%AF%E4%B8%AD%E6%96%AD%E9%A2%84%E6%B8%85%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">第四阶段：并发可中断预清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%9C%80%E7%BB%88%E6%A0%87%E8%AE%B0"><span class="toc-number">2.5.</span> <span class="toc-text">第五阶段：最终标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E6%B8%85%E7%90%86"><span class="toc-number">2.6.</span> <span class="toc-text">第六阶段：并发清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E9%87%8D%E7%BD%AE"><span class="toc-number">2.7.</span> <span class="toc-text">第七阶段：并发重置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CMS%E4%BC%98%E5%8C%96"><span class="toc-number">3.</span> <span class="toc-text">CMS优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-UseConcMarkSweepGC"><span class="toc-number">3.1.</span> <span class="toc-text">-XX:+UseConcMarkSweepGC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-UseParNewGC"><span class="toc-number">3.2.</span> <span class="toc-text">-XX:+UseParNewGC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-CMSConcurrentMTEnabled"><span class="toc-number">3.3.</span> <span class="toc-text">-XX:+CMSConcurrentMTEnabled</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-ConcGCThreads"><span class="toc-number">3.4.</span> <span class="toc-text">-XX:ConcGCThreads</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-CMSInitiatingOccupancyFraction"><span class="toc-number">3.5.</span> <span class="toc-text">-XX:CMSInitiatingOccupancyFraction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-CMSInitiatingOccupancyOnly"><span class="toc-number">3.6.</span> <span class="toc-text">-XX:+CMSInitiatingOccupancyOnly</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-CMSClassUnloadingEnabled"><span class="toc-number">3.7.</span> <span class="toc-text">-XX:+CMSClassUnloadingEnabled</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-CMSInitiatingPermOccupancyFraction"><span class="toc-number">3.8.</span> <span class="toc-text">-XX:CMSInitiatingPermOccupancyFraction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-CMSScavengeBeforeRemark"><span class="toc-number">3.9.</span> <span class="toc-text">-XX:+CMSScavengeBeforeRemark</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-CMSIncrementalMode"><span class="toc-number">3.10.</span> <span class="toc-text">-XX:+CMSIncrementalMode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-ExplicitGCInvokesConcurrent"><span class="toc-number">3.11.</span> <span class="toc-text">-XX:+ExplicitGCInvokesConcurrent</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-ExplicitGCInvokesConcurrentAndUnloadsClasses"><span class="toc-number">3.12.</span> <span class="toc-text">-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XX-DisableExplicitGC"><span class="toc-number">3.13.</span> <span class="toc-text">-XX:+DisableExplicitGC</span></a></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">CMS调优</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-06-04T12:17:58.000Z" title="发表于 2021-06-04 20:17:58">2021-06-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-06-04T12:18:28.286Z" title="更新于 2021-06-04 20:18:28">2021-06-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="CMS基础"><a href="#CMS基础" class="headerlink" title="CMS基础"></a>CMS基础</h2><p>这个垃圾收集器官方名称是”Mostly Concurrent Mark and Sweep Garbage Collector“。它在年轻代使用”复制”算法，并行进行垃圾回收，在老年代使用并发的“标记清除”算法。</p>
+<p>CMS收集器目标是避免在老年代长时间停顿，它通过两种方式实现。首先，它不压缩老年代空间，而是通过空闲列表来管理回收空间。其次，它与应用程序线程同时完成标记和清理阶段的大部分工作。这意味着垃圾收集器不会显式停止应用程序线程来执行这些阶段，然后这也会导致垃圾回收线程和应用程序线程会竞争CPU时间。</p>
+<h2 id="CMS收集阶段"><a href="#CMS收集阶段" class="headerlink" title="CMS收集阶段"></a>CMS收集阶段</h2><h3 id="第一阶段：初始标记"><a href="#第一阶段：初始标记" class="headerlink" title="第一阶段：初始标记"></a>第一阶段：初始标记</h3><p>该阶段会触发stop-the-world暂停。这个阶段的目标是标记老年代中的所有对象，这些对象要么是直接的GC根，要么是从年轻代中某个活动对象引用的。后者很重要，因为老年代是单独收集的。</p>
+<h3 id="第二阶段：并发标记"><a href="#第二阶段：并发标记" class="headerlink" title="第二阶段：并发标记"></a>第二阶段：并发标记</h3><p>在这个阶段，垃圾收集器会遍历老年代并标记所有活着的对象，从“初始标记”阶段找到的GC根开始。“并发标记”阶段，顾名思义，就是与应用程序线程并发运行，不会停止应用程序线程。请注意，此阶段并不是所有的老年代存活对象都可以被标记，因为应用程序在标记期间会改变引用。</p>
+<h3 id="第三阶段：并发预清理"><a href="#第三阶段：并发预清理" class="headerlink" title="第三阶段：并发预清理"></a>第三阶段：并发预清理</h3><p>这又是一个并发阶段，与应用程序线程并行运行，而不是停止它们。由于前一阶段与应用程序线程同时运行，一些引用已被更改。每当发生这种情况时，JVM会将这些突变对象的区域标记为Dirty Card。</p>
+<p>在预清理阶段，那些能够从Dirty Card区域可达的对象也被标记为存活，当标记完这些对象后，该Dirty Card区域就会消失。</p>
+<h3 id="第四阶段：并发可中断预清理"><a href="#第四阶段：并发可中断预清理" class="headerlink" title="第四阶段：并发可中断预清理"></a>第四阶段：并发可中断预清理</h3><p>与并发预处理清理类似，CMS有两个参数：CMSScheduleRemarkEdenSizeThreshold、CMSScheduleRemarkEdenPenetration，默认值分别是2M、50%。这两个参数组合起来的意思是预清理后，Eden空间使用超过2M时启动可中断的并发预处理，直到Eden空间使用率达到50%时中断，进入重新标记阶段。</p>
+<h3 id="第五阶段：最终标记"><a href="#第五阶段：最终标记" class="headerlink" title="第五阶段：最终标记"></a>第五阶段：最终标记</h3><p>这是CMS垃圾收集的第二个也是最后一个stop-the-world暂停。这个阶段目标是完成老年代所有活动对象的标记。由于之前的预清理阶段是并发的，它无法跟上应用程序线程的变化速度，需要stop-the-world暂停才能完成。</p>
+<p>通常CMS会在Young Generation尽可能发生后尝试运行“最终标记”阶段，以消除多个stop-the-world暂停。</p>
+<h3 id="第六阶段：并发清理"><a href="#第六阶段：并发清理" class="headerlink" title="第六阶段：并发清理"></a>第六阶段：并发清理</h3><p>无需stop-the-world暂停，与应用程序线程同时运行。该阶段目标是清理未使用的对象并回收它们的空间。</p>
+<h3 id="第七阶段：并发重置"><a href="#第七阶段：并发重置" class="headerlink" title="第七阶段：并发重置"></a>第七阶段：并发重置</h3><p>清理并恢复在CMS GC过程中的各种状态，重新初始化CMS相关数据结构，为下一个垃圾收集做准备。</p>
+<p>总而言之，CMS垃圾收集器通过将大量工作分成不同阶段，在大部分阶段不需要stop-the-world暂停，从而减少延迟。然而，CMS也存在很多缺点，其中最明显的就是由于CMS使用“标记清除”算法清理老年代，所以会产生内存碎片；其次CMS并发清理阶段是和应用程序线程同时进行的，会产生浮动垃圾，CMS无法在当次的收集中处理掉它，只好等到下一次GC去处理；还有CMS并发清理失败后，会使用Serial Old收集器进行Full GC，由于Serial收集器是单线程、存在stop-the-world暂停，会出现长时间的暂停。</p>
+<h2 id="CMS优化"><a href="#CMS优化" class="headerlink" title="CMS优化"></a>CMS优化</h2><h3 id="XX-UseConcMarkSweepGC"><a href="#XX-UseConcMarkSweepGC" class="headerlink" title="-XX:+UseConcMarkSweepGC"></a>-XX:+UseConcMarkSweepGC</h3><p>启用CMS垃圾收集器。默认情况下，Java任何版本都没有将CMS做为默认的垃圾收集器。</p>
+<h3 id="XX-UseParNewGC"><a href="#XX-UseParNewGC" class="headerlink" title="-XX:+UseParNewGC"></a>-XX:+UseParNewGC</h3><p>一般与CMS配合使用，ParNew是年轻代的多线程垃圾收集器，使用“复制”算法收集垃圾。</p>
+<h3 id="XX-CMSConcurrentMTEnabled"><a href="#XX-CMSConcurrentMTEnabled" class="headerlink" title="-XX:+CMSConcurrentMTEnabled"></a>-XX:+CMSConcurrentMTEnabled</h3><p>激活此选项后，允许CMS在并发阶段使用多个线程运行。默认情况下，该选项已激活。</p>
+<h3 id="XX-ConcGCThreads"><a href="#XX-ConcGCThreads" class="headerlink" title="-XX:ConcGCThreads"></a>-XX:ConcGCThreads</h3><p>设置CMS并发阶段的运行线程数。该值取决于ParallelGCThreads，ParallelGCThreads一般默认情况是系统内核数，ConcGCThreads=(ParallelGCThreads+3)/4。</p>
+<h3 id="XX-CMSInitiatingOccupancyFraction"><a href="#XX-CMSInitiatingOccupancyFraction" class="headerlink" title="-XX:CMSInitiatingOccupancyFraction"></a>-XX:CMSInitiatingOccupancyFraction</h3><p>CMS仅在堆已满时才启动GC，即当没有足够的可用空间来存储新分配的对象或提升对象。对于CMS来说，不建议等待这么长时间，CMS收集器需要更早地启动GC。通过设置CMSInitiatingOccupancyFraction阈值提示CMS进行GC。默认值为68%。</p>
+<h3 id="XX-CMSInitiatingOccupancyOnly"><a href="#XX-CMSInitiatingOccupancyOnly" class="headerlink" title="-XX:+CMSInitiatingOccupancyOnly"></a>-XX:+CMSInitiatingOccupancyOnly</h3><p>后台线程ConcurrentMarkSweepThread循环判断（默认2s）是否触发GC，这种现象称为周期性Old GC。如果没有设置CMSInitiatingOccupancyOnly，虚拟机会根据收集的数据决定是否触发GC（建议生产环境带上这个参数）。启用改选项，JVM会为每一个CMS GC使用CMSInitiatingOccupancyFraction做为GC启动的阈值。</p>
+<h3 id="XX-CMSClassUnloadingEnabled"><a href="#XX-CMSClassUnloadingEnabled" class="headerlink" title="-XX:+CMSClassUnloadingEnabled"></a>-XX:+CMSClassUnloadingEnabled</h3><p>CMS是对老年代进行垃圾收集活动的，默认情况下不会对永久代执行GC。激活该选项，CMS会对永久代进行垃圾收集。</p>
+<h3 id="XX-CMSInitiatingPermOccupancyFraction"><a href="#XX-CMSInitiatingPermOccupancyFraction" class="headerlink" title="-XX:CMSInitiatingPermOccupancyFraction"></a>-XX:CMSInitiatingPermOccupancyFraction</h3><p>设置该选项表示当永久代占比达到阈值，就触发CMS GC回收永久代对象，前提是开启CMSClassUnloadingEnabled选项。</p>
+<h3 id="XX-CMSScavengeBeforeRemark"><a href="#XX-CMSScavengeBeforeRemark" class="headerlink" title="-XX:+CMSScavengeBeforeRemark"></a>-XX:+CMSScavengeBeforeRemark</h3><p>激活该选项表示在CMS GC前启动一次Young GC，主要减少Old区对Young区的引用，降低CMS最终标记阶段的开销，减少STW时间。</p>
+<h3 id="XX-CMSIncrementalMode"><a href="#XX-CMSIncrementalMode" class="headerlink" title="-XX:+CMSIncrementalMode"></a>-XX:+CMSIncrementalMode</h3><p>激活该选项表示启用CMS收集器的增量模式。增量模式会定期暂停CMS并发阶段，完全让步给应用程序线程，所以CMS收集器需要更长的时间来完成整个GC。因此只有当CMS GC对应用程序线程影响过多的情况下，启用该选项这更有意义。</p>
+<h3 id="XX-ExplicitGCInvokesConcurrent"><a href="#XX-ExplicitGCInvokesConcurrent" class="headerlink" title="-XX:+ExplicitGCInvokesConcurrent"></a>-XX:+ExplicitGCInvokesConcurrent</h3><p>激活该选项表示避免当应用程序调用System.gc()来显式调用GC。当应用程序调用System.gc()时，会触发Full GC，激活该选项指示JVM运行CMS GC而不是完整的Full GC，从而减少STW暂停时间。</p>
+<h3 id="XX-ExplicitGCInvokesConcurrentAndUnloadsClasses"><a href="#XX-ExplicitGCInvokesConcurrentAndUnloadsClasses" class="headerlink" title="-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses"></a>-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses</h3><p>激活该选项表示在调用系统GC时，确保CMS GC将永久代包含进去。</p>
+<h3 id="XX-DisableExplicitGC"><a href="#XX-DisableExplicitGC" class="headerlink" title="-XX:+DisableExplicitGC"></a>-XX:+DisableExplicitGC</h3><p>激活该选项表示忽略系统GC。</p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/06/04/G1%E8%B0%83%E4%BC%98/"><img class="prev-cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">G1调优</div></div></a></div><div class="next-post pull-right"><a href="/2021/06/03/Garbage-Collection/"><img class="next-cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Garbage Collection</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/06/04/G1调优/" title="G1调优"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-04</div><div class="relatedPosts_title">G1调优</div></div></a></div><div class="relatedPosts_item"><a href="/2021/06/28/阿里巴巴Arthas-在线诊断工具/" title="阿里巴巴Arthas-在线诊断工具"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-28</div><div class="relatedPosts_title">阿里巴巴Arthas-在线诊断工具</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/05/记一次生产内存泄漏问题/" title="记一次生产内存泄漏问题"><img class="relatedPosts_cover" data-lazy-src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1530665328,2361502470&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="relatedPosts_title">记一次生产内存泄漏问题</div></div></a></div><div class="relatedPosts_item"><a href="/2021/06/03/Garbage-Collection/" title="Garbage Collection"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-03</div><div class="relatedPosts_title">Garbage Collection</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '7e24e59f5e226e350bf424bb8c18278e',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

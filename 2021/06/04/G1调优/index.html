@@ -1,0 +1,308 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>G1调优 | Silence</title><meta name="description" content="在某些情况下，CMS GC的性能比G1更高，因此一些人推荐在Java8坚持使用CMS，而由于CMS在Java9被启用，切换到另一个GC迫在眉睫，因此转向G1是目前最好的解决方案。 G1基础G1关键设计的目标之一是使垃圾收集导致的stop-the-world暂停持续时间变得可预测和可配置。实际上，G1是一个软实时的垃圾收集器，简单说就是您可以为stop-the-world配置一个毫秒长的时间，G1"><meta name="keywords" content="Java"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/06/04/G1%E8%B0%83%E4%BC%98/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="G1调优"><meta property="og:url" content="http://yoursite.com/2021/06/04/G1%E8%B0%83%E4%BC%98/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="在某些情况下，CMS GC的性能比G1更高，因此一些人推荐在Java8坚持使用CMS，而由于CMS在Java9被启用，切换到另一个GC迫在眉睫，因此转向G1是目前最好的解决方案。 G1基础G1关键设计的目标之一是使垃圾收集导致的stop-the-world暂停持续时间变得可预测和可配置。实际上，G1是一个软实时的垃圾收集器，简单说就是您可以为stop-the-world配置一个毫秒长的时间，G1"><meta property="og:image" content="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg"><meta property="article:published_time" content="2021-06-04T12:18:50.000Z"><meta property="article:modified_time" content="2021-06-04T12:19:16.779Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-06-04 20:19:16'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#G1%E5%9F%BA%E7%A1%80"><span class="toc-number">1.</span> <span class="toc-text">G1基础</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#stop-the-world"><span class="toc-number">2.</span> <span class="toc-text">stop-the-world</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#G1-GC"><span class="toc-number">3.</span> <span class="toc-text">G1 GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Young-GC"><span class="toc-number">4.</span> <span class="toc-text">Young GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mixed-GC"><span class="toc-number">5.</span> <span class="toc-text">Mixed GC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%88%9D%E5%A7%8B%E6%A0%87%E8%AE%B0"><span class="toc-number">5.1.</span> <span class="toc-text">第一阶段：初始标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%A0%B9%E5%8C%BA%E5%9F%9F%E6%89%AB%E6%8F%8F"><span class="toc-number">5.2.</span> <span class="toc-text">第二阶段：根区域扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E6%A0%87%E8%AE%B0"><span class="toc-number">5.3.</span> <span class="toc-text">第三阶段：并发标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%9C%80%E7%BB%88%E6%A0%87%E8%AE%B0"><span class="toc-number">5.4.</span> <span class="toc-text">第四阶段：最终标记</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E7%AD%9B%E9%80%89%E5%9B%9E%E6%94%B6"><span class="toc-number">5.5.</span> <span class="toc-text">第五阶段：筛选回收</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Full-GC"><span class="toc-number">6.</span> <span class="toc-text">Full GC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#G1-GC%E8%B0%83%E4%BC%98"><span class="toc-number">7.</span> <span class="toc-text">G1 GC调优</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%ACJVM%E9%80%89%E9%A1%B9"><span class="toc-number">7.1.</span> <span class="toc-text">基本JVM选项</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8G1%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="toc-number">7.1.1.</span> <span class="toc-text">使用G1垃圾收集器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A0%86%E5%A4%A7%E5%B0%8F"><span class="toc-number">7.1.2.</span> <span class="toc-text">堆大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9A%82%E5%81%9C%E7%9B%AE%E6%A0%87%E5%92%8C%E5%B9%B4%E8%BD%BB%E4%BB%A3%E5%A4%A7%E5%B0%8F"><span class="toc-number">7.1.3.</span> <span class="toc-text">暂停目标和年轻代大小</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E8%AE%B0%E5%BD%95"><span class="toc-number">7.1.4.</span> <span class="toc-text">垃圾收集记录</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E4%BB%96JVM%E9%80%89%E9%A1%B9"><span class="toc-number">7.2.</span> <span class="toc-text">其他JVM选项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E8%B0%83%E6%95%B4"><span class="toc-number">7.3.</span> <span class="toc-text">进一步调整</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#XX-ParallelGCThreads"><span class="toc-number">7.3.1.</span> <span class="toc-text">-XX:ParallelGCThreads</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#XX-ConcGCThreads"><span class="toc-number">7.3.2.</span> <span class="toc-text">-XX:ConcGCThreads</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#XX-InitiatingHeapOccupancyPercent"><span class="toc-number">7.3.3.</span> <span class="toc-text">-XX:InitiatingHeapOccupancyPercent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#XX-G1MixedGCLiveThresholdPercent"><span class="toc-number">7.3.4.</span> <span class="toc-text">-XX:G1MixedGCLiveThresholdPercent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#XX-G1HeapWastePercent"><span class="toc-number">7.3.5.</span> <span class="toc-text">-XX:G1HeapWastePercent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#XX-G1HeapRegionSize"><span class="toc-number">7.3.6.</span> <span class="toc-text">-XX:G1HeapRegionSize</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#XX-G1NewSizePercent%E5%92%8C-XX-G1MaxNewSizePercent"><span class="toc-number">7.3.7.</span> <span class="toc-text">-XX:G1NewSizePercent和-XX:G1MaxNewSizePercent</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Xmn%E6%88%96-XX-NewSize%E5%92%8C-XX-MaxNewSize"><span class="toc-number">7.3.8.</span> <span class="toc-text">-Xmn或-XX:NewSize和-XX:MaxNewSize</span></a></li></ol></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">G1调优</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-06-04T12:18:50.000Z" title="发表于 2021-06-04 20:18:50">2021-06-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-06-04T12:19:16.779Z" title="更新于 2021-06-04 20:19:16">2021-06-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>在某些情况下，CMS GC的性能比G1更高，因此一些人推荐在Java8坚持使用CMS，而由于CMS在Java9被启用，切换到另一个GC迫在眉睫，因此转向G1是目前最好的解决方案。</p>
+<h2 id="G1基础"><a href="#G1基础" class="headerlink" title="G1基础"></a>G1基础</h2><p>G1关键设计的目标之一是使垃圾收集导致的stop-the-world暂停持续时间变得可预测和可配置。实际上，G1是一个软实时的垃圾收集器，简单说就是您可以为stop-the-world配置一个毫秒长的时间，G1 GC将尽最大可能实现这个目标。</p>
+<p>为实现stop-the-world的时间可预测，G1将堆分成多个（通常大约2048个）可以容纳对象、大小相等的独立区域（Region），可以通过 -XX:G1HeapRegionSize 配置每个Region大小，每个Region大小可以从1MB到32MB不等，并且必须是 2 的幂。</p>
+<p>每个Region可能是Eden，也可能是Survivor，也可能是Old，所有的Eden和Survivor区逻辑上组成年轻代，所有Old区逻辑上组成老年代。另外Region还有一类特殊的Humongous区域，专门用来存储大对象。G1认为只要大小超过了一个Region容量一半的对象都被认定为大对象，对于那些超过了整个Region容量的超级大对象，将被存放在多个连续的Humongous Region中。G1进行垃圾回收时，会将Humongous当成老年代回收。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/04/G1%E8%B0%83%E4%BC%98/a1.png"></p>
+<h2 id="stop-the-world"><a href="#stop-the-world" class="headerlink" title="stop-the-world"></a>stop-the-world</h2><p>在垃圾收集期间，有许多事件使整个应用程序暂停，这个被称为stop-the-world事件。在stop-the-world期间，对JVM的任何请求都被暂停。因此，GC调优目标之一就是尽量减少stop-the-world持续时间。Full GC通常stop-the-world暂停时间最长，因为要遍历整个堆，而其他stw暂停可能更短或者在可接受的范围之内。在GC调优过程中，GC日志分析有助于了解暂停的时间以及原因，从而采取纠正措施。</p>
+<h2 id="G1-GC"><a href="#G1-GC" class="headerlink" title="G1 GC"></a>G1 GC</h2><p>G1 GC有3个主要集合：</p>
+<ul>
+<li>Young GC：只清理年轻代，即活动对象从Eden移到Survivor，从一个Survivor移到另一个Survivor，以及达到MaxTenuringThreshold年龄的对象移到Old区。</li>
+<li>Mixed GC：年轻代和老年代中包含垃圾最多的一些区域（可配置）也被清除，这也是Garbage First的名字，即垃圾优先。</li>
+<li>Full GC：当Mixed GC失败，堆中没有足够的空间给复制对象使用，触发单线程的stop-the-world暂停使用“标记整理”算法进行垃圾收集。</li>
+</ul>
+<h2 id="Young-GC"><a href="#Young-GC" class="headerlink" title="Young GC"></a>Young GC</h2><p>当JVM分配对象到Eden区域失败时，便会触发stop-the-world暂停多线程并行来进行年轻代的垃圾收集，YGC 将 Eden Region 中存活的对象拷贝到Survivor,或者直接晋升到Old Region中；将Survivor Regin中存活的对象拷贝到新的Survivor或者晋升Old Region。</p>
+<h2 id="Mixed-GC"><a href="#Mixed-GC" class="headerlink" title="Mixed GC"></a>Mixed GC</h2><p>G1收集器很多理念是建立在CMS概念之上。G1并发标记使用Snapshot-At-The-Beginning（SATB或原始快照）方法标记周期开始时处于活动状态的对象，而CMS则采用增量更新。</p>
+<p>当堆的整体占用足够大时，并发标记开始，默认情况下是45%，也可以通过设置 -XX:InitiatingHeapOccupancyPercent 参数进行修改，跟CMS类似，G1的并发标记由许多阶段组成，其中一些是与应用程序线程完全并发的，而另一些则需要停止应用程序线程。</p>
+<h3 id="第一阶段：初始标记"><a href="#第一阶段：初始标记" class="headerlink" title="第一阶段：初始标记"></a>第一阶段：初始标记</h3><p>此阶段标记所有可从GC根直接访问的对象。它需要stop-the-world暂停。可以从日志 Evacuation Pause的“initial-mark”来查看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.631: [GC pause (G1 Evacuation Pause) (young) (initial-mark), 0.0062656 secs]</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二阶段：根区域扫描"><a href="#第二阶段：根区域扫描" class="headerlink" title="第二阶段：根区域扫描"></a>第二阶段：根区域扫描</h3><p>这个阶段标记所有可从根区域访问的活动对象，即那些不为空的对象。此阶段与应用程序线程同时运行。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.362: [GC concurrent-root-region-scan-start]</span><br><span class="line">1.364: [GC concurrent-root-region-scan-end, 0.0028513 secs]</span><br></pre></td></tr></table></figure>
+
+<h3 id="第三阶段：并发标记"><a href="#第三阶段：并发标记" class="headerlink" title="第三阶段：并发标记"></a>第三阶段：并发标记</h3><p>这个阶段和CMS并发标记非常相似：遍历整个堆里的对象图，找到要回收的对象，此阶段与应用程序线程同时运行，并发标记时会产生漏标、错标问题，G1使用SATB算法来解决。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.364: [GC concurrent-mark-start]</span><br><span class="line">1.645: [GC concurrent-mark-end, 0.2803470 secs]</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四阶段：最终标记"><a href="#第四阶段：最终标记" class="headerlink" title="第四阶段：最终标记"></a>第四阶段：最终标记</h3><p>此阶段会stop-the-world暂停，与CMS一样，完成最终的标记。对用户程序线程做短暂的暂停，用于处理并发标记阶段遗留下的SATB记录。</p>
+<h3 id="第五阶段：筛选回收"><a href="#第五阶段：筛选回收" class="headerlink" title="第五阶段：筛选回收"></a>第五阶段：筛选回收</h3><p>此阶段会计算堆中所有的活动对象，根据GC效率对这些区域排序，并按照-XX:MaxGCPauseMillis参数设定的毫秒数对价值最高的区域进行回收。这个阶段某部分是需要stop-the-world暂停的，例如标记初始标记以来所有对象的卡位图（TASM之上的所有对象）、为任何具有一个活动对象的区域标记区域位图、清理没有活动对象的区域RSet集等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.872: [GC cleanup 1357M-&gt;173M(1996M), 0.0015664 secs]</span><br><span class="line">[Times: user&#x3D;0.01 sys&#x3D;0.00, real&#x3D;0.01 secs]</span><br></pre></td></tr></table></figure>
+
+<p>某部分是并发的，例如空区域回收和大部分活跃对象计算等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.874: [GC concurrent-cleanup-start]</span><br><span class="line">1.876: [GC concurrent-cleanup-end, 0.0014846 secs]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Full-GC"><a href="#Full-GC" class="headerlink" title="Full GC"></a>Full GC</h2><p>如果Mixed GC在进行GC回收拷贝对象时，没有足够的空Region能够承载拷贝对象就会触发Full GC。Full GC是单线程的stop-the-world暂停，使用“标记整理”算法进行垃圾收集，这个过程是非常耗时的。</p>
+<h2 id="G1-GC调优"><a href="#G1-GC调优" class="headerlink" title="G1 GC调优"></a>G1 GC调优</h2><p>G1 GC的可用JVM选项比CMS少得多，为G1 GC调整jVM的基本策略是设置堆大小和暂停时间，然后让JVM动态修改所需的设置以尝试满足暂停时间目标。</p>
+<h3 id="基本JVM选项"><a href="#基本JVM选项" class="headerlink" title="基本JVM选项"></a>基本JVM选项</h3><h4 id="使用G1垃圾收集器"><a href="#使用G1垃圾收集器" class="headerlink" title="使用G1垃圾收集器"></a>使用G1垃圾收集器</h4><p>在Java8上，默认GC是Parallel GC，而在Java11上默认是G1 GC。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:+UseG1GC</span><br></pre></td></tr></table></figure>
+
+<h4 id="堆大小"><a href="#堆大小" class="headerlink" title="堆大小"></a>堆大小</h4><p>建议将最小和最大堆设置相同值，从而避免在应用程序生命周期中堆的动态收缩和增长。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:InitialHeapSize (最小堆大小)  -XX:MaxHeapSize (最大堆大小)</span><br></pre></td></tr></table></figure>
+
+<p>-Xms和-Xmx选项是上述选项的快捷方式，因此选用任一搭配都可以。</p>
+<h4 id="暂停目标和年轻代大小"><a href="#暂停目标和年轻代大小" class="headerlink" title="暂停目标和年轻代大小"></a>暂停目标和年轻代大小</h4><p>G1 GC有一个试图满足的暂停时间目标，即软目标。</p>
+<p>在年轻代收集期间，G1 GC会调整年轻代的大小以满足这个目标。出于这个原因，建议设置暂停时间，让GC根据需要自己更改年轻代大小。</p>
+<blockquote>
+<p>特别注意：除非需要，否则不要设置年轻代大小</p>
+</blockquote>
+<p>为了设置暂停时间目标，请设置以下JVM选项：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:MaxGCPauseMillis</span><br></pre></td></tr></table></figure>
+
+<p>例如，您可以首先将此值设置在200-500之间（单位毫秒）并测试是否满足您的性能要求，默认200ms</p>
+<h4 id="垃圾收集记录"><a href="#垃圾收集记录" class="headerlink" title="垃圾收集记录"></a>垃圾收集记录</h4><p>调优是基于收集前后数据进行对比的迭代过程，因此开启GC日志记录尤为重要，即使在生产环境也是如此。显然需要一个日志记录策略来处理系统上消耗资源的日志。默认日志级别为info。</p>
+<p>建议设置以下JVM选项：</p>
+<ul>
+<li>-Xlog - 这将使用指定选项进行设置</li>
+<li>gc* - 打印所有GC事件</li>
+<li>safepoint - 打印先前使用Java8设置的值</li>
+<li>age* - 在调试级别打印详细信息</li>
+<li>ergo* - 对大多数信息使用调式级别</li>
+<li>time - ISO-8601格式的当前时间和日期</li>
+<li>level - 与日志消息相关的级别</li>
+<li>tags - 与日志消息关联的标签集</li>
+<li>uptime - 自JVM启动以来的时间</li>
+<li>file=filename - 文件名，可选择包含%p或/或%t已包含JVM的PID和启动时间戳</li>
+<li>filesize=size - 设置文件大小</li>
+</ul>
+<p>上面例子：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-Xlog:gc*,safepoint,age*,ergo*:file&#x3D;&#x2F;opt&#x2F;gclogs&#x2F;gc-%p-%t.log:tags,uptime,time,level:filecount&#x3D;10,filesize&#x3D;50m</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他JVM选项"><a href="#其他JVM选项" class="headerlink" title="其他JVM选项"></a>其他JVM选项</h3><table>
+<thead>
+<tr>
+<th>JVM选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-XX:DisableExplicitGC</td>
+<td>建议设置此值以禁用对System.gc()方法调用</td>
+</tr>
+<tr>
+<td>-XX:+UseStringDeduplication</td>
+<td>字符串重复数据删除减少Java堆上String对象的内存占用。默认情况下禁用此功能</td>
+</tr>
+<tr>
+<td>-XX:MaxMetaspaceSize=<size></size></td>
+<td>设置元数据分配的本机最大内存。建议将此值设置为256MB</td>
+</tr>
+<tr>
+<td>-XX:MaxTenuringThreshold=<threshold></threshold></td>
+<td>设置最大对象在年轻代存活年龄阈值。默认为15，对于大部分应用服务器，保持默认即可。</td>
+</tr>
+<tr>
+<td>-XX:+ParallelRefProcEnabled</td>
+<td>建议设置此值以启用并行引用处理。默认情况下，此项处于禁用状态。</td>
+</tr>
+</tbody></table>
+<h3 id="进一步调整"><a href="#进一步调整" class="headerlink" title="进一步调整"></a>进一步调整</h3><p>以下选项没有具体的推荐值，需要基于您的应用程序自行分析设置。</p>
+<h4 id="XX-ParallelGCThreads"><a href="#XX-ParallelGCThreads" class="headerlink" title="-XX:ParallelGCThreads"></a>-XX:ParallelGCThreads</h4><p>指定并行GC线程数，也就是STW期间工作的GC线程数，遵循以下原则：</p>
+<ul>
+<li><p>如果用户指定该值，使用用户指定的值</p>
+</li>
+<li><p>用户未指定时，如果CPU逻辑核数小于8，则ParallelGCThreads为CPU逻辑核数</p>
+</li>
+<li><p>用户未指定，如果CPU逻辑核数大于8，则计算方式为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ParallelGCThreads&#x3D;8 + (N - 8) * 5&#x2F;8</span><br><span class="line">或</span><br><span class="line">ParallelGCThreads&#x3D;8 + (N - 8) * 5&#x2F;16</span><br></pre></td></tr></table></figure>
+
+<p> JVM会根据实际情况决定到底是乘以5/8还是5/16。</p>
+</li>
+</ul>
+<h4 id="XX-ConcGCThreads"><a href="#XX-ConcGCThreads" class="headerlink" title="-XX:ConcGCThreads"></a>-XX:ConcGCThreads</h4><p>设置并行标记线程的数量。默认情况下设置为并行垃圾收集线程数（ParallelGCThreads）的1/4。例如，具有16个逻辑处理器的系统将默认ParallelGCThreads为16，因此ConcGCThreads为4。您可以增加ConcGCThreads以增加并行标记线程的数量并减少标记期间的暂停时间。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:ConcGCThreads&#x3D;n</span><br></pre></td></tr></table></figure>
+
+<h4 id="XX-InitiatingHeapOccupancyPercent"><a href="#XX-InitiatingHeapOccupancyPercent" class="headerlink" title="-XX:InitiatingHeapOccupancyPercent"></a>-XX:InitiatingHeapOccupancyPercent</h4><p>该值决定初始标记何时开始，默认为45%。但G1 GC尝试为IHOP寻找最佳值，并且仅在以下情况使用该值：没有足够的信息进行优化或自适应IHOP被覆盖。</p>
+<p>例如，如果由于分配失败而获得Full GC，或者在GC日志中看到Evacuation Pause/Evacuation Failure，这通常意味着无法分配对象，因为没有足够的内存或无法足够快地回收对象，这时您可以通过降低IHOP值提前进行初始标记。为了覆盖自适应行为，您可以设置该 -XX:G1UseAdaptiveIHOP 选项。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:InitiatingHeapOccupancyPercent</span><br></pre></td></tr></table></figure>
+
+<h4 id="XX-G1MixedGCLiveThresholdPercent"><a href="#XX-G1MixedGCLiveThresholdPercent" class="headerlink" title="-XX:G1MixedGCLiveThresholdPercent"></a>-XX:G1MixedGCLiveThresholdPercent</h4><p>通过设置该值指定被纳入CSet Region地存活空间占比阈值。不同版本默认值不同，有65%和85%。在全局地并发标记阶段，如果一个Region地存活对象空间占比超过该值，那么就会被纳入CSet。该值会直接影响到Mixed GC选择回收地区域。当GC时间较长时，表示GC回收的空间较大，那么可以尝试调低该值，但设置不合理也可能导致垃圾回收不彻底，最终导致Full GC。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:G1MixedGCLiveThresholdPercent&#x3D;85</span><br></pre></td></tr></table></figure>
+
+<h4 id="XX-G1HeapWastePercent"><a href="#XX-G1HeapWastePercent" class="headerlink" title="-XX:G1HeapWastePercent"></a>-XX:G1HeapWastePercent</h4><p>通过设置该值指定触发Mixed GC的堆垃圾占比，默认值为5%。在全局标记结束后统计出所有CSet内可被回收的垃圾占整个堆的占比，如果超过5%，那么就会触发之后的Mixed GC，如果不超过，那么在之后的某次Young GC中重新执行全局并发标记。可以适当调高此阈值，能够适当降低Mixed GC的频率。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:G1HeapWastePercent&#x3D;5</span><br></pre></td></tr></table></figure>
+
+<h4 id="XX-G1HeapRegionSize"><a href="#XX-G1HeapRegionSize" class="headerlink" title="-XX:G1HeapRegionSize"></a>-XX:G1HeapRegionSize</h4><p>设置Region大小。默认G1将整个堆分成大约2048个Region，每块大小需要为2的幂次方。Region的大小主要关系到Humongous的判断，当一个对象超过Region大小的一半时，则为巨大对象，那么其会至少独占一个Region，如果一个放不下，会占用连续的多个Region。如果一个Humongous Region放入了巨大对象，可能还有其他空间，但是剩余空间不能用于存放其他对象，就造成了空间浪费。如果你的java应用里有很多大小差不多的巨大对象，可以适当调大Region的大小。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:G1HeapRegionSize&#x3D;2M</span><br></pre></td></tr></table></figure>
+
+<h4 id="XX-G1NewSizePercent和-XX-G1MaxNewSizePercent"><a href="#XX-G1NewSizePercent和-XX-G1MaxNewSizePercent" class="headerlink" title="-XX:G1NewSizePercent和-XX:G1MaxNewSizePercent"></a>-XX:G1NewSizePercent和-XX:G1MaxNewSizePercent</h4><p>年轻代比例有两个数值指定。-XX:G1NewSizePercent指定年轻代占整个堆的下限占比，默认为5%，-XX:G1MaxNewSizePercent指定年轻代占整个堆的上限占比，默认为60%。G1会根据实际GC情况（STW时间）来动态调整年轻代的大小。需要平衡年轻代和老年代的空间。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-XX:G1NewSizePercent&#x3D;5</span><br><span class="line">-XX:G1MaxNewSizePercent&#x3D;60</span><br></pre></td></tr></table></figure>
+
+<h4 id="Xmn或-XX-NewSize和-XX-MaxNewSize"><a href="#Xmn或-XX-NewSize和-XX-MaxNewSize" class="headerlink" title="-Xmn或-XX:NewSize和-XX:MaxNewSize"></a>-Xmn或-XX:NewSize和-XX:MaxNewSize</h4><p>G1会根据应用程序的行为动态的调整年轻代。设置这些选项会导致错误的年轻代优化，应该尽量避免设置这些。</p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/06/28/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4Arthas-%E5%9C%A8%E7%BA%BF%E8%AF%8A%E6%96%AD%E5%B7%A5%E5%85%B7/"><img class="prev-cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">阿里巴巴Arthas-在线诊断工具</div></div></a></div><div class="next-post pull-right"><a href="/2021/06/04/CMS%E8%B0%83%E4%BC%98/"><img class="next-cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">CMS调优</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/06/04/CMS调优/" title="CMS调优"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-04</div><div class="relatedPosts_title">CMS调优</div></div></a></div><div class="relatedPosts_item"><a href="/2021/06/28/阿里巴巴Arthas-在线诊断工具/" title="阿里巴巴Arthas-在线诊断工具"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-28</div><div class="relatedPosts_title">阿里巴巴Arthas-在线诊断工具</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/05/记一次生产内存泄漏问题/" title="记一次生产内存泄漏问题"><img class="relatedPosts_cover" data-lazy-src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1530665328,2361502470&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="relatedPosts_title">记一次生产内存泄漏问题</div></div></a></div><div class="relatedPosts_item"><a href="/2021/06/03/Garbage-Collection/" title="Garbage Collection"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-03</div><div class="relatedPosts_title">Garbage Collection</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '0a1c6d5918f1f7140ea3ea88dd22a7c3',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Garbage Collection | Silence</title><meta name="description" content="什么是垃圾收集从字面意思来说，顾名思义垃圾收集就是处理垃圾。实际上，它的做法恰恰相反，垃圾收集正在追踪所有仍在使用的对象，将其余的对象标记为垃圾。下面我们深入探究 Java 虚拟机实现“垃圾收集”的自动内存回收过程。 内存管理内存管理主要分为手动内存管理和自动内存管理。 手动内存管理在C语言中通过malloc申请内存，通过free释放内存；C++通过new申请对象使用的内存，通过delete释放内"><meta name="keywords" content="Java"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/06/03/Garbage-Collection/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Garbage Collection"><meta property="og:url" content="http://yoursite.com/2021/06/03/Garbage-Collection/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="什么是垃圾收集从字面意思来说，顾名思义垃圾收集就是处理垃圾。实际上，它的做法恰恰相反，垃圾收集正在追踪所有仍在使用的对象，将其余的对象标记为垃圾。下面我们深入探究 Java 虚拟机实现“垃圾收集”的自动内存回收过程。 内存管理内存管理主要分为手动内存管理和自动内存管理。 手动内存管理在C语言中通过malloc申请内存，通过free释放内存；C++通过new申请对象使用的内存，通过delete释放内"><meta property="og:image" content="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg"><meta property="article:published_time" content="2021-06-03T10:54:19.000Z"><meta property="article:modified_time" content="2021-06-04T12:20:34.138Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-06-04 20:20:34'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">什么是垃圾收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">内存管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%8B%E5%8A%A8%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">手动内存管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">自动内存管理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0"><span class="toc-number">2.2.1.</span> <span class="toc-text">引用计数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B9%E5%8F%AF%E8%BE%BE%E7%AE%97%E6%B3%95"><span class="toc-number">2.2.2.</span> <span class="toc-text">根可达算法</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%AE%97%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">常见的垃圾回收算法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4"><span class="toc-number">3.1.</span> <span class="toc-text">标记清除</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">3.1.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-number">3.1.2.</span> <span class="toc-text">缺点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6"><span class="toc-number">3.2.</span> <span class="toc-text">复制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E7%82%B9-1"><span class="toc-number">3.2.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9-1"><span class="toc-number">3.2.2.</span> <span class="toc-text">缺点</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86"><span class="toc-number">3.3.</span> <span class="toc-text">标记整理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BC%98%E7%82%B9-2"><span class="toc-number">3.3.1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9-2"><span class="toc-number">3.3.2.</span> <span class="toc-text">缺点</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B1%A0"><span class="toc-number">4.</span> <span class="toc-text">内存池</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Eden"><span class="toc-number">4.1.</span> <span class="toc-text">Eden</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Survivor-Spaces"><span class="toc-number">4.2.</span> <span class="toc-text">Survivor Spaces</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Old-Generation"><span class="toc-number">4.3.</span> <span class="toc-text">Old Generation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PermGen"><span class="toc-number">4.4.</span> <span class="toc-text">PermGen</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Metaspace"><span class="toc-number">4.5.</span> <span class="toc-text">Metaspace</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Minor-GC-vs-Major-GC-vs-Full-GC"><span class="toc-number">5.</span> <span class="toc-text">Minor GC vs Major GC vs Full GC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Minor-GC"><span class="toc-number">5.1.</span> <span class="toc-text">Minor GC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Major-GC-%E4%B8%8E-Full-GC"><span class="toc-number">5.2.</span> <span class="toc-text">Major GC 与 Full GC</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8"><span class="toc-number">6.</span> <span class="toc-text">常见的垃圾回收器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Serial-GC"><span class="toc-number">6.1.</span> <span class="toc-text">Serial GC</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Minor-GC-1"><span class="toc-number">6.1.1.</span> <span class="toc-text">Minor GC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Full-GC"><span class="toc-number">6.1.2.</span> <span class="toc-text">Full GC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Parallel-GC"><span class="toc-number">6.2.</span> <span class="toc-text">Parallel GC</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Minor-GC-2"><span class="toc-number">6.2.1.</span> <span class="toc-text">Minor GC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Full-GC-1"><span class="toc-number">6.2.2.</span> <span class="toc-text">Full GC</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Concurrent-Mark-and-Sweep"><span class="toc-number">6.3.</span> <span class="toc-text">Concurrent Mark and Sweep</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Minor-GC-3"><span class="toc-number">6.3.1.</span> <span class="toc-text">Minor GC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Full-GC-2"><span class="toc-number">6.3.2.</span> <span class="toc-text">Full GC</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%88%9D%E5%A7%8B%E6%A0%87%E8%AE%B0"><span class="toc-number">6.3.2.1.</span> <span class="toc-text">第一阶段：初始标记</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E6%A0%87%E8%AE%B0"><span class="toc-number">6.3.2.2.</span> <span class="toc-text">第二阶段：并发标记</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E9%A2%84%E6%B8%85%E7%90%86"><span class="toc-number">6.3.2.3.</span> <span class="toc-text">第三阶段：并发预清理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E5%8F%AF%E4%B8%AD%E6%96%AD%E9%A2%84%E6%B8%85%E7%90%86"><span class="toc-number">6.3.2.4.</span> <span class="toc-text">第四阶段：并发可中断预清理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%9C%80%E7%BB%88%E6%A0%87%E8%AE%B0"><span class="toc-number">6.3.2.5.</span> <span class="toc-text">第五阶段：最终标记</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E6%B8%85%E7%90%86"><span class="toc-number">6.3.2.6.</span> <span class="toc-text">第六阶段：并发清理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E9%87%8D%E7%BD%AE"><span class="toc-number">6.3.2.7.</span> <span class="toc-text">第七阶段：并发重置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#G1-Garbage-First"><span class="toc-number">6.4.</span> <span class="toc-text">G1 - Garbage First</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A0%86%E5%86%85%E5%AD%98%E5%88%92%E5%88%86"><span class="toc-number">6.4.1.</span> <span class="toc-text">堆内存划分</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Young-GC"><span class="toc-number">6.4.2.</span> <span class="toc-text">Young GC</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Mixed-GC"><span class="toc-number">6.4.3.</span> <span class="toc-text">Mixed GC</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%88%9D%E5%A7%8B%E6%A0%87%E8%AE%B0-1"><span class="toc-number">6.4.3.1.</span> <span class="toc-text">第一阶段：初始标记</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%A0%B9%E5%8C%BA%E5%9F%9F%E6%89%AB%E6%8F%8F"><span class="toc-number">6.4.3.2.</span> <span class="toc-text">第二阶段：根区域扫描</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%98%B6%E6%AE%B5%EF%BC%9A%E5%B9%B6%E5%8F%91%E6%A0%87%E8%AE%B0"><span class="toc-number">6.4.3.3.</span> <span class="toc-text">第三阶段：并发标记</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%98%B6%E6%AE%B5%EF%BC%9A%E6%9C%80%E7%BB%88%E6%A0%87%E8%AE%B0"><span class="toc-number">6.4.3.4.</span> <span class="toc-text">第四阶段：最终标记</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%98%B6%E6%AE%B5%EF%BC%9A%E7%AD%9B%E9%80%89%E5%9B%9E%E6%94%B6"><span class="toc-number">6.4.3.5.</span> <span class="toc-text">第五阶段：筛选回收</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Full-GC-3"><span class="toc-number">6.4.4.</span> <span class="toc-text">Full GC</span></a></li></ol></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Garbage Collection</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-06-03T10:54:19.000Z" title="发表于 2021-06-03 18:54:19">2021-06-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-06-04T12:20:34.138Z" title="更新于 2021-06-04 20:20:34">2021-06-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Java/">Java</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">9.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>35分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="什么是垃圾收集"><a href="#什么是垃圾收集" class="headerlink" title="什么是垃圾收集"></a>什么是垃圾收集</h2><p>从字面意思来说，顾名思义垃圾收集就是处理垃圾。实际上，它的做法恰恰相反，垃圾收集正在追踪所有仍在使用的对象，将其余的对象标记为垃圾。下面我们深入探究 Java 虚拟机实现“垃圾收集”的自动内存回收过程。</p>
+<h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><p>内存管理主要分为手动内存管理和自动内存管理。</p>
+<h3 id="手动内存管理"><a href="#手动内存管理" class="headerlink" title="手动内存管理"></a>手动内存管理</h3><p>在C语言中通过malloc申请内存，通过free释放内存；C++通过new申请对象使用的内存，通过delete释放内存。对于C和C++这种手动管理内存的方式，很容易忘记释放内存，从而造成内存泄漏。因此，更好的方法是自动回收未使用的内存，这种自动化称为垃圾收集（即GC）。</p>
+<h3 id="自动内存管理"><a href="#自动内存管理" class="headerlink" title="自动内存管理"></a>自动内存管理</h3><p>自动内存管理让开发者不再需要考虑自己清理内存，极大地提高了开发效率。但是这种自动内存管理，也就是说自动释放内存，它该如何定位到垃圾呢？</p>
+<h4 id="引用计数"><a href="#引用计数" class="headerlink" title="引用计数"></a>引用计数</h4><p>Reference Count称为引用计数，为了标记存活对象，引用计数会在每个对象的头上引入一个叫“计数器”的东西，用来记录有多少对象引用了它。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">A a &#x3D; new A();</span><br><span class="line">B b &#x3D; new B();</span><br><span class="line">a.ref &#x3D; b;</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a1.png"></p>
+<p>对象A的实例在堆中就是一块内存，而a引用了它，所以它的引用就是1，对象B的实例在堆中也是一块内存，首先b引用了它，然后a又引用它一次，所以引用计数就是2。所以通过引用计数就能定位垃圾。但是引用计数有个非常致命的缺点，就是它不能找到循环引用的垃圾，这种情况，这些循环引用的对象是不能被回收的，其实它们是一团垃圾。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a2.png"></p>
+<h4 id="根可达算法"><a href="#根可达算法" class="headerlink" title="根可达算法"></a>根可达算法</h4><p>Root Searching称为根可达算法，java垃圾收集使用的就是根可达算法，即从GC根开始，遍历所有可到达的对象，所有找不到的对象都视为垃圾。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a3.png"></p>
+<p>不太好的事情就是应用程序线程需要停止才能进行，因为如果引用一直发生变化，就无法真正计算引用，当应用程序线程真正停止，垃圾收集线程开始进行GC活动，这种情况称为Stop the World。</p>
+<h2 id="常见的垃圾回收算法"><a href="#常见的垃圾回收算法" class="headerlink" title="常见的垃圾回收算法"></a>常见的垃圾回收算法</h2><h3 id="标记清除"><a href="#标记清除" class="headerlink" title="标记清除"></a>标记清除</h3><p>在使用上最简单的垃圾回收算法，分为两个阶段，一个是标记阶段，为每个对象更新标记位，检查对象是否死亡；第二个阶段是清除阶段，对死亡的对象进行清除。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a4.png"></p>
+<h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>实现简单</li>
+<li>不需要移动对象</li>
+</ul>
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>产生内存碎片，清理后的内存可能不连续，容易出现内存很多，但是分配大对象时找不到合适的位置</li>
+<li>效率低，每次都需要遍历整个堆</li>
+</ul>
+<h3 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h3><p>将内存一分为二，每次只使用一半，将标记存活的对象复制到另一片内存，然后一下子清空当前内存。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a5.png"></p>
+<h4 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>效率高，主要是标记阶段和复制是可以同时发生的</li>
+<li>不会产生内存碎片</li>
+</ul>
+<h4 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>内存利用率低</li>
+</ul>
+<h3 id="标记整理"><a href="#标记整理" class="headerlink" title="标记整理"></a>标记整理</h3><p>将所有标记存活的对象移动到内存区域的一端，然后再对其他内存进行清理。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a6.png"></p>
+<h4 id="优点-2"><a href="#优点-2" class="headerlink" title="优点"></a>优点</h4><ul>
+<li>不会产生内存碎片</li>
+</ul>
+<h4 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h4><ul>
+<li>效率低，需要重新更新存活对象的引用地址</li>
+</ul>
+<h2 id="内存池"><a href="#内存池" class="headerlink" title="内存池"></a>内存池</h2><p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a7.png"></p>
+<h3 id="Eden"><a href="#Eden" class="headerlink" title="Eden"></a>Eden</h3><p>当对象在创建时会被分配到该区域，由于通常有多个线程创建大量对象，因此Eden被进一步划分为驻留在Eden空间中的一个或多个 Thread Local Allocation Buffer（TLAB），即线程本地分配缓冲区。由于线程之间会存在争抢同一块内存区域，会进行昂贵的线程同步开销，因此JVM允许在相应的TLAB中分配一个线程内的大多数对象。</p>
+<p>由于每个线程分配的TLAB空间有限，当对象无法分配在里面时，JVM会将该对象分配在Eden的其他空间。如果那里也没有足够的空间，就会触发Young Generation来进行垃圾回收以释放更多空间，如果垃圾回收也没有在Eden中产生更多的空间，那么对象会被分配到老年代。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a8.png"></p>
+<p>收集Eden区时，GC会从根遍历所有可到达的对象并将它们标记为活动对象，标记阶段完成后，将Eden中所有活动对象（以及Survivor空间之一未满足年龄的存活对象）复制到Survivor1或者Survivor2。这时清空Eden区和Survivor空间之一，可以重用以分配更多的对象，这种方法称为“复制“算法，简单来说就是标记存活对象，然后复制（而不是移动）到Survivor Spaces。</p>
+<h3 id="Survivor-Spaces"><a href="#Survivor-Spaces" class="headerlink" title="Survivor Spaces"></a>Survivor Spaces</h3><p>Eden区旁边驻留着2个Survivor区称为S1和S2，有的地方也叫from和to，注意的是，两个Survivor空间中的一个必定为空。</p>
+<p>年轻代被收集时，空的Survivor区将开始出现存活对象，因为整个年轻代（Eden区和非空的Survivor区）的所有存活对象都被复制到空的Survivor区。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a9.png"></p>
+<p>当两个Survivor空间之间复制对象的过程重复多次，直到某些对象达到足够的”年龄“，这些对象不在被复制到空的Survivor区，而是进入年老代，在年老代，他们将驻留直到无法访问为止。</p>
+<p>GC会跟踪特定对象存活下来的集合数量，在每一代对象GC结束后，那些仍然存活的对象的年龄会增加，当年龄超过任期阈值时，对象就会被提升到老年代。实际的任期阈值由JVM动态调整，但也可以通过指定 -XX:+MaxTenuringThreshold 为其设置上限，当设置 -XX:+MaxTenuringThreshold=0 时，会导致对象立即进入老年代，不会在Survivor之间进行复制。默认情况下，JVM设置此阈值为15个GC周期，这也是HotSpot中的最大值。</p>
+<p>如果Survivor空间大小不足以容纳年轻代中所有活动对象，那么对象提升年老代也可能会过早发生。</p>
+<h3 id="Old-Generation"><a href="#Old-Generation" class="headerlink" title="Old Generation"></a>Old Generation</h3><p>相比于年轻代，老年代通常空间要大得多，并且老年代GC发生频率低于年轻代。此外，由于大多数对象都存活在老年代，因此不会使用”复制“算法，相反对象会四处移动以最大程度地减少碎片，原则上，老年代垃圾回收步骤如下：</p>
+<ul>
+<li>通过GC根访问所有对象旁边地标记位来标记可达的对象</li>
+<li>清除所有无法访问的对象</li>
+<li>通过将活动对象复制到老年代的边界来整理空间</li>
+</ul>
+<p>从上面描述可以看出，老年代中的GC必须使用”标记整理“算法以避免过度的内存碎片化。</p>
+<h3 id="PermGen"><a href="#PermGen" class="headerlink" title="PermGen"></a>PermGen</h3><p>在 Java8 之前，存在一个称为”永久代“的特殊空间（方法区的一种实现），主要用来存储class相关信息，包括class对象的Method、Field等。永久代使用的是JVM内存，实际上它给java开发人员带来很多麻烦，因为很难预测这些需要多少空间，所以方法区也会出现OOM（java.lang.OutOfMemoryError: Permgen space），对于这种情况只能简单的增加Permgen大小。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -XX:MaxPermSize&#x3D;256m com.mycompany.MyApplication</span><br></pre></td></tr></table></figure>
+
+<h3 id="Metaspace"><a href="#Metaspace" class="headerlink" title="Metaspace"></a>Metaspace</h3><p>由于预测对元数据空间是一件非常困难的，因此 Java8 中删除了永久代，取而代之的是元空间（方法区的一种实现），两者最大的区别是元空间使用本地内存，而永久代使用的是JVM内存，这样的话默认的类的元数据分配只受本地内存大小的限制，也就是说本地内存剩余多少，理论上Metaspace就可以有多大，这就解决了java.lang.OutOfMemoryError: Permgen space的问题，不过也不可能任其无限大，JVM默认在运行时会根据需要动态的设置其大小。</p>
+<p>如果仍然希望限制Metaspace大小，可以设置：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -XX：MaxMetaspaceSize&#x3D;256m com.mycompany.MyApplication</span><br></pre></td></tr></table></figure>
+
+<h2 id="Minor-GC-vs-Major-GC-vs-Full-GC"><a href="#Minor-GC-vs-Major-GC-vs-Full-GC" class="headerlink" title="Minor GC vs Major GC vs Full GC"></a>Minor GC vs Major GC vs Full GC</h2><p>清理堆内存的垃圾回收事件通常称为Minor、Major和Full GC。</p>
+<h3 id="Minor-GC"><a href="#Minor-GC" class="headerlink" title="Minor GC"></a>Minor GC</h3><p>从Young区收集垃圾的事件称为Minor GC，但是在处理Minor GC事件时，应该注意以下几点：</p>
+<ul>
+<li>Minor GC总是发生在JVM无法为新对象分配空间时触发，例如Eden区没有足够空间，所以正常来说分配新对象频率越高，Minor GC频率也越高。</li>
+<li>在Minor GC事件期间，老年代会被忽略，从老年代到年轻代的引用会被认为是GC根，在标记阶段，从年轻代到老年代的引用会被简单地忽略。</li>
+<li>Minor GC事件期间，会触发 stop-the-world 暂停，即暂停应用程序线程。对于大多数应用程序，如果Eden中大多数对象都被视为垃圾并且永远不会复制到Surivor/Old空间，那么暂停在延迟方面可以忽略不计。如果情况相反，大多数新生对象都会被复制地话，那么Minor GC暂停会花费更多时间。</li>
+</ul>
+<h3 id="Major-GC-与-Full-GC"><a href="#Major-GC-与-Full-GC" class="headerlink" title="Major GC 与 Full GC"></a>Major GC 与 Full GC</h3><p>应该注意的是，Major GC 和 Full GC还是存在区别的：</p>
+<ul>
+<li>Major GC清理Old空间</li>
+<li>Full GC清理整个Heap，包括Young和Old空间</li>
+</ul>
+<p>但是许多Major GC是由Minor GC触发的，因此许多情况下不能将Major GC和Full GC分开。另一方面，对于像G1这种现代垃圾收集器，回收垃圾只是执行部分垃圾的清理，因此”清理“两字也并不严谨。</p>
+<h2 id="常见的垃圾回收器"><a href="#常见的垃圾回收器" class="headerlink" title="常见的垃圾回收器"></a>常见的垃圾回收器</h2><p>在上面已经介绍了GC算法的核心概念，那么来看看在JVM中的具体实现。首先先认识到一个重要方面是，对于分代模型，需要两种不同的GC算法：一种适用于清理年轻代，另一种适用于清理年老代。以下适用于Java8，对于较久的Java版本，可用的组合略有不同：</p>
+<table>
+<thead>
+<tr>
+<th>年轻代</th>
+<th>老年代</th>
+<th>JVM选项</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Serial</td>
+<td>Serial Old</td>
+<td>-XX:+UseSerialGC</td>
+</tr>
+<tr>
+<td>Serial</td>
+<td>CMS</td>
+<td>-XX:-UseParNewGC -XX:UseConcMarkSweepGC</td>
+</tr>
+<tr>
+<td>Parallel Scavenge</td>
+<td>Parallel Old</td>
+<td>-XX:+UseParallelGC -XX:+UseParallelOldGC</td>
+</tr>
+<tr>
+<td>Parallel Scavenge</td>
+<td>Serial Old</td>
+<td>-XX:+UseParallelGC -XX:-UseParallelOldGC</td>
+</tr>
+<tr>
+<td>Parallel New</td>
+<td>CMS</td>
+<td>-XX:+UseParNewGC -XX:+UseConcMarkSweepGC</td>
+</tr>
+<tr>
+<td>Parallel New</td>
+<td>Serial Old</td>
+<td>-XX:+UseParNewGC -XX:-UseParallelOldGC</td>
+</tr>
+<tr>
+<td>G1</td>
+<td></td>
+<td>-XX:+UseG1GC</td>
+</tr>
+</tbody></table>
+<p>实际上在真正的使用上，并没有这么多组合，最常用的组合：</p>
+<ul>
+<li>串行：Serial + Serial Old</li>
+<li>并行：Parallel Scavenge + Parallel Old</li>
+<li>年轻代并行新 Parallel New + 老年代并发标记和清除 CMS</li>
+<li>G1 包含Young和Old集合</li>
+</ul>
+<h3 id="Serial-GC"><a href="#Serial-GC" class="headerlink" title="Serial GC"></a>Serial GC</h3><p>Serial收集器是最基本、最悠久的垃圾收集器，JDK1.3之前新生代唯一的选择。</p>
+<p>这个垃圾收集器对年轻代使用”复制“算法，对老年代使用“标记整理”算法。顾名思义，这个垃圾收集器是单线程收集器，无法并行处理任务，并且在GC时，还会触发stop-the-world暂停，即停止所有应用程序线程。</p>
+<p>因此，这个垃圾收集器无法适用于多核CPU。</p>
+<p>为年轻代和老年代启动该垃圾收集器，可以通过下面参数指定：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -XX:+UseSerialGC com.mypackages.MyExecutableClass</span><br></pre></td></tr></table></figure>
+
+<p>Serial GC仅推荐用于200MB大小的内存，以及具有单个CPU的环境。</p>
+<p>下面来看下Serial GC的日志：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2015-05-26T14:45:37.987-0200: 151.126: [GC (Allocation Failure) 151.126: [DefNew: 629119K-&gt;69888K(629120K), 0.0584157 secs] 1619346K-&gt;1273247K(2027264K), 0.0585007 secs] [Times: user&#x3D;0.06 sys&#x3D;0.00, real&#x3D;0.06 secs]</span><br><span class="line"></span><br><span class="line">2015-05-26T14:45:59.690-0200: 172.829: [GC (Allocation Failure) 172.829: [DefNew: 629120K-&gt;629120K(629120K), 0.0000372 secs]172.829: [Tenured: 1203359K-&gt;755802K(1398144K), 0.1855567 secs] 1832479K-&gt;755802K(2027264K), [Metaspace: 6741K-&gt;6741K(1056768K)], 0.1856954 secs] [Times: user&#x3D;0.18 sys&#x3D;0.00, real&#x3D;0.18 secs]</span><br></pre></td></tr></table></figure>
+
+<p>上面日志中发生了两个垃圾回收事件，一个是清理年轻代，另一个是处理整个堆。</p>
+<h4 id="Minor-GC-1"><a href="#Minor-GC-1" class="headerlink" title="Minor GC"></a>Minor GC</h4><blockquote>
+<p>2015-05-26T14:45:37.987-0200 <sup>1</sup>: 151.126 <sup>2</sup>: [GC <sup>3</sup> (Allocation Failure <sup>4</sup>) 151.126: [DefNew <sup>5</sup>: 629119K-&gt;69888K <sup>6</sup>(629120K) <sup>7</sup>, 0.0584157 secs] 1619346K-&gt;1273247K <sup>8</sup>(2027264K) <sup>9</sup>, 0.0585007 secs <sup>10</sup>] [Times: user=0.06 sys=0.00, real=0.06 secs] <sup>11</sup></p>
+</blockquote>
+<ol>
+<li><p>2015-05-26T14:45:37.987-0200 - GC事件开始的时间</p>
+</li>
+<li><p>151.126 - GC事件开始时间，相对于JVM启动时间，以秒为单位</p>
+</li>
+<li><p>GC - 用于区分Minor和Full GC的标志，这是一个Minor GC</p>
+</li>
+<li><p>Allocation Failure - GC发生的原因</p>
+</li>
+<li><p>DefNew - 使用的垃圾收集器名称，这个表示用于清理年轻代的单线程标记复制、stop-the-world 收集器</p>
+</li>
+<li><p>629119K-&gt;69888K - 在收集前后年轻代使用大小</p>
+</li>
+<li><p>(629120K) - 年轻代的总大小</p>
+</li>
+<li><p>1619346K-&gt;1273247K - 收集前后整个堆的使用大小</p>
+</li>
+<li><p>(2027264K) - 整个堆的大小</p>
+</li>
+<li><p>0.0585007 secs - GC事件的持续事件（单位为秒）</p>
+</li>
+<li><p>Times: user=0.06 sys=0.00, real=0.06 secs - GC持续时间，按不同类别衡量：</p>
+<p>user - 垃圾收集器线程在此收集期间消耗的总CPU时间</p>
+<p>sys - 花费在OS调用或等待系统事件上的事件</p>
+<p>real - 应用程序停止的时间，由于串行垃圾收集器总是使用一个线程，因此real时间等于用户时间和系统时间之和</p>
+</li>
+</ol>
+<h4 id="Full-GC"><a href="#Full-GC" class="headerlink" title="Full GC"></a>Full GC</h4><blockquote>
+<p>2015-05-26T14:45:59.690-0200 <sup>1</sup>: 172.829 <sup>2</sup>: [GC (Allocation Failure) 172.829: [DefNew: 629120K-&gt;629120K(629120K), 0.0000372 secs <sup>3</sup>]172.829: [Tenured <sup>4</sup>: 1203359K-&gt;755802K <sup>5</sup>(1398144K) <sup>6</sup>, 0.1855567 secs <sup>7</sup>] 1832479K-&gt;755802K <sup>8</sup>(2027264K) <sup>9</sup>, [Metaspace: 6741K-&gt;6741K(1056768K) <sup>10</sup>], 0.1856954 secs] [Times: user=0.18 sys=0.00, real=0.18 secs] <sup>11</sup></p>
+</blockquote>
+<ol>
+<li><p>2015-05-26T14:45:59.690-0200 - GC事件开始的时间</p>
+</li>
+<li><p>172.829 - GC事件开始时间，相对于JVM启动时间，以秒为单位</p>
+</li>
+<li><p>DefNew: 629120K-&gt;629120K(629120K), 0.0000372 secs - 与前面类似，由于分配失败，在此期间发生了年轻代的GC，年轻代总大小629120K，此次GC回收了0K，耗时0.0000372秒</p>
+</li>
+<li><p>Tenured - 用于清理老年代的垃圾收集器名称，名称Tenured表示使用单线程、stop-the-world 收集器</p>
+</li>
+<li><p>1203359K-&gt;755802K - GC前后老年代使用量</p>
+</li>
+<li><p>1398144K - 老年代的总大小</p>
+</li>
+<li><p>0.1855567 secs - 清理老年代所花费的时间</p>
+</li>
+<li><p>1832479K-&gt;755802K - 在年轻代和老年代收集前后整个堆的使用量</p>
+</li>
+<li><p>2027264K - JVM总堆的大小</p>
+</li>
+<li><p>Metaspace: 6741K-&gt;6741K(1056768K - 元空间集合的信息，这次事件没有在Metaspace中收集垃圾</p>
+</li>
+<li><p>Times: user=0.18 sys=0.00, real=0.18 secs - GC持续时间，按不同类别衡量：</p>
+<p>user - 垃圾收集器线程在此收集期间消耗的总CPU时间</p>
+<p>sys - 花费在OS调用或等待系统事件上的事件</p>
+<p>real - 应用程序停止的时间，由于串行垃圾收集器总是使用一个线程，因此real时间等于用户时间和系统时间之和</p>
+</li>
+</ol>
+<h3 id="Parallel-GC"><a href="#Parallel-GC" class="headerlink" title="Parallel GC"></a>Parallel GC</h3><p>Parallel收集器在年轻代采用”复制“算法，在老年代使用”标记整理“算法。同样，Young和Old收集都会触发stop-the-world暂停，停止所有的应用程序线程，Parallel收集器会在GC时使用多个线程进行复制/标记整理，这大大减少了收集时间和stop-the-world时间。</p>
+<p>该收集器使用的线程数可通过命令行参数 -XX:ParallelGCThreads 进行配置，默认值是机器的内核数。</p>
+<p>Parallel GC通过下面任意一个进行开启：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -XX:+UseParallelGC com.mypackages.MyExecutableClass</span><br><span class="line">java -XX:+UseParallelOldGC com.mypackages.MyExecutableClass</span><br><span class="line">java -XX:+UseParallelGC -XX:+UseParallelOldGC com.mypackages.MyExecutable</span><br></pre></td></tr></table></figure>
+
+<p>相对于Serial单线程收集，Parallel收集器可以提高吞吐量，适用于多核机器。在收集期间，所有内核都在并行进行清理垃圾，从而缩短应用程序线程暂停的时间；但是还是会有长时间暂停的影响，如果延迟是您的主要目标，可以考虑下面的垃圾收集器。</p>
+<p>下面来看下Parallel GC的日志：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2015-05-26T14:27:40.915-0200: 116.115: [GC (Allocation Failure) [PSYoungGen: 2694440K-&gt;1305132K(2796544K)] 9556775K-&gt;8438926K(11185152K), 0.2406675 secs] [Times: user&#x3D;1.77 sys&#x3D;0.01, real&#x3D;0.24 secs]</span><br><span class="line"></span><br><span class="line">2015-05-26T14:27:41.155-0200: 116.356: [Full GC (Ergonomics) [PSYoungGen: 1305132K-&gt;0K(2796544K)] [ParOldGen: 7133794K-&gt;6597672K(8388608K)] 8438926K-&gt;6597672K(11185152K), [Metaspace: 6745K-&gt;6745K(1056768K)], 0.9158801 secs] [Times: user&#x3D;4.49 sys&#x3D;0.64, real&#x3D;0.92 secs]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Minor-GC-2"><a href="#Minor-GC-2" class="headerlink" title="Minor GC"></a>Minor GC</h4><blockquote>
+<p>2015-05-26T14:27:40.915-0200 <sup>1</sup>: 116.115 <sup>2</sup>: [GC <sup>3</sup> (Allocation Failure <sup>4</sup>) [PSYoungGen <sup>5</sup>: 2694440K-&gt;1305132K <sup>6</sup>(2796544K) <sup>7</sup>] 9556775K-&gt;8438926K <sup>8</sup>(11185152K) <sup>9</sup>, 0.2406675 secs <sup>10</sup>] [Times: user=1.77 sys=0.01, real=0.24 secs] <sup>11</sup></p>
+</blockquote>
+<ol>
+<li><p>2015-05-26T14:27:40.915-0200 - GC事件开始时间</p>
+</li>
+<li><p>116.115 - GC事件开始时间，相对于JVM启动，以秒为单位</p>
+</li>
+<li><p>GC - 用于区分Minor和Full GC，这是一个Minor GC</p>
+</li>
+<li><p>Allocation Failure - GC事件发生的原因</p>
+</li>
+<li><p>PSYoungGen - 使用的垃圾收集器名称，表示清理年轻代的并行标记复制、stop-the-world 收集器</p>
+</li>
+<li><p>2694440K-&gt;1305132K - GC前后年轻代的使用量</p>
+</li>
+<li><p>2796544K - 年轻代总大小</p>
+</li>
+<li><p>9556775K-&gt;8438926K - GC前后总堆的大小</p>
+</li>
+<li><p>11185152K - 总堆的大小</p>
+</li>
+<li><p>0.2406675 secs - GC事件持续事件（以秒为单位）</p>
+</li>
+<li><p>Times: user=1.77 sys=0.01, real=0.24 secs - GC事件持续事件，按不同类别衡量：</p>
+<p>user - 垃圾收集器线程在此收集期间消耗的总CPU时间</p>
+<p>sys - 花费在OS调用或等待系统事件上的事件</p>
+<p>real - 应用程序停止的时间，对于Parallel GC，这个数字应该接近(user+sys)/垃圾收集器线程数</p>
+</li>
+</ol>
+<h4 id="Full-GC-1"><a href="#Full-GC-1" class="headerlink" title="Full GC"></a>Full GC</h4><blockquote>
+<p>2015-05-26T14:27:41.155-0200 <sup>1</sup>: 116.356 <sup>2</sup>: [Full GC <sup>3</sup> (Ergonomics <sup>4</sup>) [PSYoungGen: 1305132K-&gt;0K(2796544K) <sup>5</sup>] [ParOldGen <sup>6</sup>: 7133794K-&gt;6597672K <sup>7</sup>(8388608K) <sup>8</sup>] 8438926K-&gt;6597672K <sup>9</sup>(11185152K) <sup>10</sup>, [Metaspace: 6745K-&gt;6745K(1056768K) <sup>11</sup>], 0.9158801 secs <sup>12</sup>] [Times: user=4.49 sys=0.64, real=0.92 secs] <sup>13</sup></p>
+</blockquote>
+<ol>
+<li><p>2015-05-26T14:27:41.155-0200 - GC事件开始时间</p>
+</li>
+<li><p>116.356 - GC事件开始时间，相对于JVM启动，以秒为单位</p>
+</li>
+<li><p>Full GC - 用于区分Minor和Full GC，这是一个Full GC</p>
+</li>
+<li><p>Ergonomics - GC事件发生的原因，是由于开启了UseAdaptiveSizePolicy，jvm本身进行自适应调整引起的Full GC</p>
+</li>
+<li><p>PSYoungGen: 1305132K-&gt;0K(2796544K) - 使用的垃圾收集器名称，表示清理年轻代的并行标记复制、stop-the-world 收集器，年轻代总大小2796544K，GC清理后从1305132K缩减到0K</p>
+</li>
+<li><p>ParOldGen - 用于清理老年代的收集器，表示使用清理老年代的并行标记整理、stop-the-world 收集器</p>
+</li>
+<li><p>7133794K-&gt;6597672K - GC前后老年代的使用量</p>
+</li>
+<li><p>8388608K - 老年代总大小</p>
+</li>
+<li><p>8438926K-&gt;6597672K - GC前后总堆的大小</p>
+</li>
+<li><p>11185152K - 总堆的大小</p>
+</li>
+<li><p>Metaspace: 6745K-&gt;6745K(1056768K) - 元空间集合的信息，这次事件没有在Metaspace中收集垃圾</p>
+</li>
+<li><p>0.9158801 secs - GC事件持续事件（以秒为单位）</p>
+</li>
+<li><p>Times: user=4.49 sys=0.64, real=0.92 secs - GC事件持续事件，按不同类别衡量：</p>
+<p>user - 垃圾收集器线程在此收集期间消耗的总CPU时间</p>
+<p>sys - 花费在OS调用或等待系统事件上的事件</p>
+<p>real - 应用程序停止的时间，对于Parallel GC，这个数字应该接近(user+sys)/垃圾收集器线程数</p>
+</li>
+</ol>
+<h3 id="Concurrent-Mark-and-Sweep"><a href="#Concurrent-Mark-and-Sweep" class="headerlink" title="Concurrent Mark and Sweep"></a>Concurrent Mark and Sweep</h3><p>这个垃圾收集器官方名称是”Mostly Concurrent Mark and Sweep Garbage Collector“。它在年轻代使用”复制”算法，并行进行垃圾回收，在老年代使用并发的“标记清除”算法。</p>
+<p>CMS收集器目标是避免在老年代长时间停顿，它通过两种方式实现。首先，它不压缩老年代空间，而是通过空闲列表来管理回收空间。其次，它与应用程序线程同时完成标记和清理阶段的大部分工作。这意味着垃圾收集器不会显式停止应用程序线程来执行这些阶段，然后这也会导致垃圾回收线程和应用程序线程会竞争CPU时间。默认情况下，该收集器的线程数等于机器物理内核数的1/4。</p>
+<p>可以通过在命令行指定以下参数启动此垃圾收集器：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -XX:+UseConcMarkSweepGC com.mypackages.MyExecutableClass</span><br></pre></td></tr></table></figure>
+
+<p>如果您的目标是延迟，那么ParNew + CMS 这种垃圾收集器组合是个不错的选择。</p>
+<p>下面来看看该组合垃圾收集器的日志：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2015-05-26T16:23:07.219-0200: 64.322: [GC (Allocation Failure) 64.322: [ParNew: 613404K-&gt;68068K(613440K), 0.1020465 secs] 10885349K-&gt;10880154K(12514816K), 0.1021309 secs] [Times: user&#x3D;0.78 sys&#x3D;0.01, real&#x3D;0.11 secs]</span><br><span class="line"></span><br><span class="line">2015-05-26T16:23:07.321-0200: 64.425: [GC (CMS Initial Mark) [1 CMS-initial-mark: 10812086K(11901376K)] 10887844K(12514816K), 0.0001997 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs]</span><br><span class="line">2015-05-26T16:23:07.321-0200: 64.425: [CMS-concurrent-mark-start]</span><br><span class="line">2015-05-26T16:23:07.357-0200: 64.460: [CMS-concurrent-mark: 0.035&#x2F;0.035 secs] [Times: user&#x3D;0.07 sys&#x3D;0.00, real&#x3D;0.03 secs]</span><br><span class="line">2015-05-26T16:23:07.357-0200: 64.460: [CMS-concurrent-preclean-start]</span><br><span class="line">2015-05-26T16:23:07.373-0200: 64.476: [CMS-concurrent-preclean: 0.016&#x2F;0.016 secs] [Times: user&#x3D;0.02 sys&#x3D;0.00, real&#x3D;0.02 secs]</span><br><span class="line">2015-05-26T16:23:07.373-0200: 64.476: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line">2015-05-26T16:23:08.446-0200: 65.550: [CMS-concurrent-abortable-preclean: 0.167&#x2F;1.074 secs] [Times: user&#x3D;0.20 sys&#x3D;0.00, real&#x3D;1.07 secs]</span><br><span class="line">2015-05-26T16:23:08.447-0200: 65.550: [GC (CMS Final Remark) [YG occupancy: 387920 K (613440 K)]65.550: [Rescan (parallel) , 0.0085125 secs]65.559: [weak refs processing, 0.0000243 secs]65.559: [class unloading, 0.0013120 secs]65.560: [scrub symbol table, 0.0008345 secs]65.561: [scrub string table, 0.0001759 secs][1 CMS-remark: 10812086K(11901376K)] 11200006K(12514816K), 0.0110730 secs] [Times: user&#x3D;0.06 sys&#x3D;0.00, real&#x3D;0.01 secs]</span><br><span class="line">2015-05-26T16:23:08.458-0200: 65.561: [CMS-concurrent-sweep-start]</span><br><span class="line">2015-05-26T16:23:08.485-0200: 65.588: [CMS-concurrent-sweep: 0.027&#x2F;0.027 secs] [Times: user&#x3D;0.03 sys&#x3D;0.00, real&#x3D;0.03 secs]</span><br><span class="line">2015-05-26T16:23:08.485-0200: 65.589: [CMS-concurrent-reset-start]</span><br><span class="line">2015-05-26T16:23:08.497-0200: 65.601: [CMS-concurrent-reset: 0.012&#x2F;0.012 secs] [Times: user&#x3D;0.01 sys&#x3D;0.00, real&#x3D;0.01 secs]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Minor-GC-3"><a href="#Minor-GC-3" class="headerlink" title="Minor GC"></a>Minor GC</h4><blockquote>
+<p>2015-05-26T16:23:07.219-0200 <sup>1</sup>: 64.322 <sup>2</sup>: [GC <sup>3</sup> (Allocation Failure <sup>4</sup>) 64.322: [ParNew <sup>5</sup>: 613404K-&gt;68068K <sup>6</sup>(613440K) <sup>7</sup>, 0.1020465 secs <sup>8</sup>] 10885349K-&gt;10880154K <sup>9</sup>(12514816K) <sup>10</sup>, 0.1021309 secs <sup>11</sup>] [Times: user=0.78 sys=0.01, real=0.11 secs] <sup>12</sup></p>
+</blockquote>
+<ol>
+<li><p>2015-05-26T16:23:07.219-0200 - GC事件开始时间</p>
+</li>
+<li><p>64.322 - GC事件开始时间，相对于JVM启动，以秒为单位</p>
+</li>
+<li><p>GC - 用于区分Minor和Full GC，这是一个Minor GC</p>
+</li>
+<li><p>Allocation Failure - GC事件发生的原因</p>
+</li>
+<li><p>ParNew - 使用的垃圾收集器名称，表示清理年轻代的并行标记复制、stop-the-world 收集器</p>
+</li>
+<li><p>613404K-&gt;68068K - GC前后年轻代的使用量</p>
+</li>
+<li><p>613440K - 年轻代总大小</p>
+</li>
+<li><p>0.1020465 secs - 不带最终清理的持续时间</p>
+</li>
+<li><p>10885349K-&gt;10880154K - GC前后总堆的大小</p>
+</li>
+<li><p>12514816K - 总堆的大小</p>
+</li>
+<li><p>0.1021309 secs - GC事件持续事件（以秒为单位）。这包括和CMS收集器的通信开销、对老年代足够老的对象的提升以及在垃圾收集周期结束的一些最终清理</p>
+</li>
+<li><p>Times: user=0.78 sys=0.01, real=0.11 secs - GC事件持续事件，按不同类别衡量：</p>
+<p>user - 垃圾收集器线程在此收集期间消耗的总CPU时间</p>
+<p>sys - 花费在OS调用或等待系统事件上的事件</p>
+<p>real - 应用程序停止的时间，对于Parallel GC，这个数字应该接近(user+sys)/垃圾收集器线程数</p>
+</li>
+</ol>
+<h4 id="Full-GC-2"><a href="#Full-GC-2" class="headerlink" title="Full GC"></a>Full GC</h4><p>CMS在老年代的垃圾收集分为不同阶段首先看这个Full GC日志：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">2015-05-26T16:23:07.321-0200: 64.425: [GC (CMS Initial Mark) [1 CMS-initial-mark: 10812086K(11901376K)] 10887844K(12514816K), 0.0001997 secs] [Times: user&#x3D;0.00 sys&#x3D;0.00, real&#x3D;0.00 secs]</span><br><span class="line">2015-05-26T16:23:07.321-0200: 64.425: [CMS-concurrent-mark-start]</span><br><span class="line">2015-05-26T16:23:07.357-0200: 64.460: [CMS-concurrent-mark: 0.035&#x2F;0.035 secs] [Times: user&#x3D;0.07 sys&#x3D;0.00, real&#x3D;0.03 secs]</span><br><span class="line">2015-05-26T16:23:07.357-0200: 64.460: [CMS-concurrent-preclean-start]</span><br><span class="line">2015-05-26T16:23:07.373-0200: 64.476: [CMS-concurrent-preclean: 0.016&#x2F;0.016 secs] [Times: user&#x3D;0.02 sys&#x3D;0.00, real&#x3D;0.02 secs]</span><br><span class="line">2015-05-26T16:23:07.373-0200: 64.476: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line">2015-05-26T16:23:08.446-0200: 65.550: [CMS-concurrent-abortable-preclean: 0.167&#x2F;1.074 secs] [Times: user&#x3D;0.20 sys&#x3D;0.00, real&#x3D;1.07 secs]</span><br><span class="line">2015-05-26T16:23:08.447-0200: 65.550: [GC (CMS Final Remark) [YG occupancy: 387920 K (613440 K)]65.550: [Rescan (parallel) , 0.0085125 secs]65.559: [weak refs processing, 0.0000243 secs]65.559: [class unloading, 0.0013120 secs]65.560: [scrub symbol table, 0.0008345 secs]65.561: [scrub string table, 0.0001759 secs][1 CMS-remark: 10812086K(11901376K)] 11200006K(12514816K), 0.0110730 secs] [Times: user&#x3D;0.06 sys&#x3D;0.00, real&#x3D;0.01 secs]</span><br><span class="line">2015-05-26T16:23:08.458-0200: 65.561: [CMS-concurrent-sweep-start]</span><br><span class="line">2015-05-26T16:23:08.485-0200: 65.588: [CMS-concurrent-sweep: 0.027&#x2F;0.027 secs] [Times: user&#x3D;0.03 sys&#x3D;0.00, real&#x3D;0.03 secs]</span><br><span class="line">2015-05-26T16:23:08.485-0200: 65.589: [CMS-concurrent-reset-start]</span><br><span class="line">2015-05-26T16:23:08.497-0200: 65.601: [CMS-concurrent-reset: 0.012&#x2F;0.012 secs] [Times: user&#x3D;0.01 sys&#x3D;0.00, real&#x3D;0.01 secs]</span><br></pre></td></tr></table></figure>
+
+<h5 id="第一阶段：初始标记"><a href="#第一阶段：初始标记" class="headerlink" title="第一阶段：初始标记"></a>第一阶段：初始标记</h5><p>该阶段会触发stop-the-world暂停。这个阶段的目标是标记老年代中的所有对象，这些对象要么是直接的GC根，要么是从年轻代中某个活动对象引用的。后者很重要，因为老年代是单独收集的。</p>
+<blockquote>
+<p>2015-05-26T16:23:07.321-0200: 64.425 <sup>1</sup>: [GC (CMS Initial Mark <sup>2</sup>) [1 CMS-initial-mark: 10812086K <sup>3</sup>(11901376K) <sup>4</sup>] 10887844K <sup>5</sup>(12514816K) <sup>6</sup>, 0.0001997 secs] [Times: user=0.00 sys=0.00, real=0.00 secs]<sup>7</sup></p>
+</blockquote>
+<ol>
+<li>2015-05-26T16:23:07.321-0200: 64.425 - GC事件开始时间，包括时钟时间和相对于JVM启动时间</li>
+<li>CMS Initial Mark - CMS初始标记阶段，即收集所有的GC根</li>
+<li>10812086K - 当前老年代的使用大小</li>
+<li>11901376K - 老年代总大小</li>
+<li>10887844K - 当前堆使用大小</li>
+<li>12514816K - 堆总大小</li>
+<li>Times: user=0.00 sys=0.00, real=0.00 secs - 该阶段持续事件，按不同类别衡量</li>
+</ol>
+<h5 id="第二阶段：并发标记"><a href="#第二阶段：并发标记" class="headerlink" title="第二阶段：并发标记"></a>第二阶段：并发标记</h5><p>在这个阶段，垃圾收集器会遍历老年代并标记所有活着的对象，从“初始标记”阶段找到的GC根开始。“并发标记”阶段，顾名思义，就是与应用程序线程并发运行，不会停止应用程序线程。请注意，此阶段并不是所有的老年代存活对象都可以被标记，因为应用程序在标记期间会改变引用。</p>
+<blockquote>
+<p>2015-05-26T16:23:07.321-0200: 64.425: [CMS-concurrent-mark-start]<br>2015-05-26T16:23:07.357-0200: 64.460: [CMS-concurrent-mark <sup>1</sup>: 0.035/0.035 secs <sup>2</sup>] [Times: user=0.07 sys=0.00, real=0.03 secs] <sup>3</sup></p>
+</blockquote>
+<ol>
+<li>CMS-concurrent-mark - CMS并发标记，遍历老年代并标记所有活着的对象</li>
+<li>0.035/0.035 secs - 阶段持续时间</li>
+<li>Times: user=0.07 sys=0.00, real=0.03 secs - 该阶段时间没有意义，因为是从并发标记开始测量的，不仅仅包括为并发标记所做的工作</li>
+</ol>
+<h5 id="第三阶段：并发预清理"><a href="#第三阶段：并发预清理" class="headerlink" title="第三阶段：并发预清理"></a>第三阶段：并发预清理</h5><p>这又是一个并发阶段，与应用程序线程并行运行，而不是停止它们。由于前一阶段与应用程序线程同时运行，一些引用已被更改。每当发生这种情况时，JVM会将这些突变对象的区域标记为Dirty Card。</p>
+<p>在预清理阶段，那些能够从Dirty Card区域可达的对象也被标记为存活，当标记完这些对象后，该Dirty Card区域就会消失。</p>
+<blockquote>
+<p>2015-05-26T16:23:07.357-0200: 64.460: [CMS-concurrent-preclean-start]<br>2015-05-26T16:23:07.373-0200: 64.476: [CMS-concurrent-preclean <sup>1</sup>: 0.016/0.016 secs <sup>2</sup>] [Times: user=0.02 sys=0.00, real=0.02 secs] <sup>3</sup></p>
+</blockquote>
+<ol>
+<li>CMS-concurrent-preclean - 并发预清理阶段，考虑到在前一阶段更改的引用</li>
+<li>0.016/0.016 secs - 阶段持续时间</li>
+<li>Times: user=0.07 sys=0.00, real=0.03 secs - 该阶段时间没有意义，因为是从并发标记开始测量的</li>
+</ol>
+<h5 id="第四阶段：并发可中断预清理"><a href="#第四阶段：并发可中断预清理" class="headerlink" title="第四阶段：并发可中断预清理"></a>第四阶段：并发可中断预清理</h5><p>与并发预处理清理类似，CMS有两个参数：CMSScheduleRemarkEdenSizeThreshold、CMSScheduleRemarkEdenPenetration，默认值分别是2M、50%。这两个参数组合起来的意思是预清理后，Eden空间使用超过2M时启动可中断的并发预处理，直到Eden空间使用率达到50%时中断，进入重新标记阶段。</p>
+<blockquote>
+<p>2015-05-26T16:23:07.373-0200: 64.476: [CMS-concurrent-abortable-preclean-start]<br>2015-05-26T16:23:08.446-0200: 65.550: [CMS-concurrent-abortable-preclean <sup>1</sup>: 0.167/1.074 secs <sup>2</sup>] [Times: user=0.20 sys=0.00, real=1.07 secs] <sup>3</sup></p>
+</blockquote>
+<ol>
+<li>CMS-concurrent-abortable-preclean - 并发可中断预清理阶段</li>
+<li>0.167/1.074 secs - 阶段持续时间</li>
+<li>Times: user=0.20 sys=0.00, real=1.07 secs - 该阶段时间没有意义，因为是从并发标记开始测量的</li>
+</ol>
+<h5 id="第五阶段：最终标记"><a href="#第五阶段：最终标记" class="headerlink" title="第五阶段：最终标记"></a>第五阶段：最终标记</h5><p>这是CMS垃圾收集的第二个也是最后一个stop-the-world暂停。这个阶段目标是完成老年代所有活动对象的标记。由于之前的预清理阶段是并发的，它无法跟上应用程序线程的变化速度，需要stop-the-world暂停才能完成。</p>
+<p>通常CMS会在Young Generation尽可能发生后尝试运行“最终标记”阶段，以消除多个stop-the-world暂停。</p>
+<blockquote>
+<p>2015-05-26T16:23:08.447-0200: 65.550<sup>1</sup>: [GC (CMS Final Remark<sup>2</sup>) [YG occupancy: 387920 K (613440 K)<sup>3</sup>]65.550: [Rescan (parallel) , 0.0085125 secs<sup>4</sup>]65.559: [weak refs processing, 0.0000243 secs<sup>5</sup>]65.559: [class unloading, 0.0013120 secs<sup>6</sup>]65.560: [scrub symbol table, 0.0008345 secs]65.561:  [scrub string table, 0.0001759 secs <sup>7</sup>] [1 CMS-remark: 10812086K(11901376K)<sup>8</sup>] 11200006K(12514816K) <sup>9</sup>, 0.0110730 secs<sup>10</sup>] [Times: user=0.06 sys=0.00, real=0.01 secs]<sup>11</sup></p>
+</blockquote>
+<ol>
+<li>2015-05-26T16:23:08.447-0200: 65.550 - GC事件开始时间，包括时钟时间和相对于JVM启动时间</li>
+<li>CMS Final Remark - CMS最终标记阶段，标记老年代所有活动对象，stop-the-world暂停</li>
+<li>YG occupancy: 387920 K (613440 K) - 年轻代使用量和总大小</li>
+<li>Rescan (parallel) , 0.0085125 secs - 重新扫描在应用程序线程停止时完成对活动对象的标记，在这种情况下，重新扫描是并行完成的，耗时0.0085125秒</li>
+<li>weak refs processing, 0.0000243 secs - 处理弱引用持续时间</li>
+<li>class unloading, 0.0013120 secs - 类卸载持续时间</li>
+<li>scrub string table, 0.0001759 secs - 清理类元数据和内部字符串表时间</li>
+<li>CMS-remark: 10812086K(11901376K) - 最终标记阶段后的老年代使用量和总量</li>
+<li>11200006K(12514816K)  - 最终标记阶段后堆的使用量和总量</li>
+<li>0.0110730 secs - 最终标记阶段的持续时间</li>
+<li>Times: user=0.06 sys=0.00, real=0.01 secs - 暂停的持续时间，按不同类别衡量</li>
+</ol>
+<h5 id="第六阶段：并发清理"><a href="#第六阶段：并发清理" class="headerlink" title="第六阶段：并发清理"></a>第六阶段：并发清理</h5><p>无需stop-the-world暂停，与应用程序线程同时运行。该阶段目标是清理未使用的对象并回收它们的空间。</p>
+<blockquote>
+<p>2015-05-26T16:23:08.458-0200: 65.561: [CMS-concurrent-sweep-start]<br>2015-05-26T16:23:08.485-0200: 65.588: [CMS-concurrent-sweep<sup>1</sup>: 0.027/0.027 secs<sup>2</sup>] [Times: user=0.03 sys=0.00, real=0.03 secs]<sup>3</sup></p>
+</blockquote>
+<ol>
+<li>CMS-concurrent-sweep - 并发清理</li>
+<li>0.027/0.027 secs - 阶段的持续时间</li>
+<li>Times: user=0.03 sys=0.00, real=0.03 - 该阶段时间没有意义，因为是从并发标记开始测量的</li>
+</ol>
+<h5 id="第七阶段：并发重置"><a href="#第七阶段：并发重置" class="headerlink" title="第七阶段：并发重置"></a>第七阶段：并发重置</h5><p>清理并恢复在CMS GC过程中的各种状态，重新初始化CMS相关数据结构，为下一个垃圾收集做准备。</p>
+<blockquote>
+<p>2015-05-26T16:23:08.485-0200: 65.589: [CMS-concurrent-reset-start]<br>2015-05-26T16:23:08.497-0200: 65.601: [CMS-concurrent-reset<sup>1</sup>: 0.012/0.012 secs<sup>2</sup>] [Times: user=0.01 sys=0.00, real=0.01 secs]<sup>3</sup></p>
+</blockquote>
+<ol>
+<li>CMS-concurrent-reset - 并发重置</li>
+<li>0.012/0.012 secs - 阶段的持续时间</li>
+<li>Times: user=0.01 sys=0.00, real=0.01 secs - 该阶段时间没有意义，因为是从并发标记开始测量的</li>
+</ol>
+<p>总而言之，CMS垃圾收集器通过将大量工作分成不同阶段，在大部分阶段不需要stop-the-world暂停，从而减少延迟。然而，CMS也存在很多缺点，其中最明显的就是由于CMS使用“标记清除”算法清理老年代，所以会产生内存碎片；其次CMS并发清理阶段是和应用程序线程同时进行的，会产生浮动垃圾，CMS无法在当次的收集中处理掉它，只好等到下一次GC去处理；还有CMS并发清理失败后，会使用Serial Old收集器进行Full GC，由于Serial收集器是单线程、存在stop-the-world暂停，会出现长时间的暂停。</p>
+<h3 id="G1-Garbage-First"><a href="#G1-Garbage-First" class="headerlink" title="G1 - Garbage First"></a>G1 - Garbage First</h3><p>G1关键设计的目标之一是使垃圾收集导致的stop-the-world暂停持续时间变得可预测和可配置。实际上，G1是一个软实时的垃圾收集器，简单说就是您可以为stop-the-world配置一个毫秒长的时间，G1 GC将尽最大可能实现这个目标。</p>
+<h4 id="堆内存划分"><a href="#堆内存划分" class="headerlink" title="堆内存划分"></a>堆内存划分</h4><p>为实现stop-the-world的时间可预测，G1将堆分成多个（通常大约2048个）可以容纳对象、大小相等的独立区域（Region），可以通过 -XX:G1HeapRegionSize 配置每个Region大小，每个Region大小可以从1MB到32MB不等，并且必须是 2 的幂。</p>
+<p>每个Region可能是Eden，也可能是Survivor，也可能是Old，所有的Eden和Survivor区逻辑上组成年轻代，所有Old区逻辑上组成老年代。另外Region还有一类特殊的Humongous区域，专门用来存储大对象。G1认为只要大小超过了一个Region容量一半的对象都被认定为大对象，对于那些超过了整个Region容量的超级大对象，将被存放在多个连续的Humongous Region中。G1进行垃圾回收时，会将Humongous当成老年代回收。</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/06/03/Garbage-Collection/a10.png"></p>
+<p>可以通过在命令行指定以下参数启动此垃圾收集器：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java -XX:+UseG1GC com.mypackages.MyExecutableClass</span><br></pre></td></tr></table></figure>
+
+<h4 id="Young-GC"><a href="#Young-GC" class="headerlink" title="Young GC"></a>Young GC</h4><p>当JVM分配对象到Eden区域失败时，便会触发stop-the-world暂停多线程并行来进行年轻代的垃圾收集，YGC 将 Eden Region 中存活的对象拷贝到Survivor,或者直接晋升到Old Region中；将Survivor Regin中存活的对象拷贝到新的Survivor或者晋升Old Region。</p>
+<h4 id="Mixed-GC"><a href="#Mixed-GC" class="headerlink" title="Mixed GC"></a>Mixed GC</h4><p>G1收集器很多理念是建立在CMS概念之上。G1并发标记使用Snapshot-At-The-Beginning（SATB或原始快照）方法标记周期开始时处于活动状态的对象，而CMS则采用增量更新。</p>
+<p>当堆的整体占用足够大时，并发标记开始，默认情况下是45%，也可以通过设置 -XX:InitiatingHeapOccupancyPercent 参数进行修改，跟CMS类似，G1的并发标记由许多阶段组成，其中一些是与应用程序线程完全并发的，而另一些则需要停止应用程序线程。</p>
+<h5 id="第一阶段：初始标记-1"><a href="#第一阶段：初始标记-1" class="headerlink" title="第一阶段：初始标记"></a>第一阶段：初始标记</h5><p>此阶段标记所有可从GC根直接访问的对象。它需要stop-the-world暂停。可以从日志 Evacuation Pause的“initial-mark”来查看：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.631: [GC pause (G1 Evacuation Pause) (young) (initial-mark), 0.0062656 secs]</span><br></pre></td></tr></table></figure>
+
+<h5 id="第二阶段：根区域扫描"><a href="#第二阶段：根区域扫描" class="headerlink" title="第二阶段：根区域扫描"></a>第二阶段：根区域扫描</h5><p>这个阶段标记所有可从根区域访问的活动对象，即那些不为空的对象。此阶段与应用程序线程同时运行。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.362: [GC concurrent-root-region-scan-start]</span><br><span class="line">1.364: [GC concurrent-root-region-scan-end, 0.0028513 secs]</span><br></pre></td></tr></table></figure>
+
+<h5 id="第三阶段：并发标记"><a href="#第三阶段：并发标记" class="headerlink" title="第三阶段：并发标记"></a>第三阶段：并发标记</h5><p>这个阶段和CMS并发标记非常相似：遍历整个堆里的对象图，找到要回收的对象，此阶段与应用程序线程同时运行，并发标记时会产生漏标、错标问题，G1使用SATB算法来解决。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.364: [GC concurrent-mark-start]</span><br><span class="line">1.645: [GC concurrent-mark-end, 0.2803470 secs]</span><br></pre></td></tr></table></figure>
+
+<h5 id="第四阶段：最终标记"><a href="#第四阶段：最终标记" class="headerlink" title="第四阶段：最终标记"></a>第四阶段：最终标记</h5><p>此阶段会stop-the-world暂停，与CMS一样，完成最终的标记。对用户程序线程做短暂的暂停，用于处理并发标记阶段遗留下的SATB记录。</p>
+<h5 id="第五阶段：筛选回收"><a href="#第五阶段：筛选回收" class="headerlink" title="第五阶段：筛选回收"></a>第五阶段：筛选回收</h5><p>此阶段会计算堆中所有的活动对象，根据GC效率对这些区域排序，并按照-XX:MaxGCPauseMillis参数设定的毫秒数对价值最高的区域进行回收。这个阶段某部分是需要stop-the-world暂停的，例如标记初始标记以来所有对象的卡位图（TASM之上的所有对象）、为任何具有一个活动对象的区域标记区域位图、清理没有活动对象的区域RSet集等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.872: [GC cleanup 1357M-&gt;173M(1996M), 0.0015664 secs]</span><br><span class="line">[Times: user&#x3D;0.01 sys&#x3D;0.00, real&#x3D;0.01 secs]</span><br></pre></td></tr></table></figure>
+
+<p>某部分是并发的，例如空区域回收和大部分活跃对象计算等。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">1.874: [GC concurrent-cleanup-start]</span><br><span class="line">1.876: [GC concurrent-cleanup-end, 0.0014846 secs]</span><br></pre></td></tr></table></figure>
+
+<h4 id="Full-GC-3"><a href="#Full-GC-3" class="headerlink" title="Full GC"></a>Full GC</h4><p>如果Mixed GC在进行GC回收拷贝对象时，没有足够的空Region能够承载拷贝对象就会触发Full GC。Full GC是单线程的stop-the-world暂停，使用“标记整理”算法进行垃圾收集，这个过程是非常耗时的。</p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/06/04/CMS%E8%B0%83%E4%BC%98/"><img class="prev-cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">CMS调优</div></div></a></div><div class="next-post pull-right"><a href="/2021/05/27/Kubernetes%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8D%87%E7%BA%A7/"><img class="next-cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Kubernetes二进制升级</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/06/04/CMS调优/" title="CMS调优"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-04</div><div class="relatedPosts_title">CMS调优</div></div></a></div><div class="relatedPosts_item"><a href="/2021/06/04/G1调优/" title="G1调优"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-04</div><div class="relatedPosts_title">G1调优</div></div></a></div><div class="relatedPosts_item"><a href="/2021/06/28/阿里巴巴Arthas-在线诊断工具/" title="阿里巴巴Arthas-在线诊断工具"><img class="relatedPosts_cover" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&fm=26&fmt=auto&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-06-28</div><div class="relatedPosts_title">阿里巴巴Arthas-在线诊断工具</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/05/记一次生产内存泄漏问题/" title="记一次生产内存泄漏问题"><img class="relatedPosts_cover" data-lazy-src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1530665328,2361502470&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="relatedPosts_title">记一次生产内存泄漏问题</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: 'fef19cd409b677203ede2a3b8be8e9b6',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

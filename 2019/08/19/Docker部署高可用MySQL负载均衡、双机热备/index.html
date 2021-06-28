@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Docker部署高可用MySQL负载均衡、双机热备 | Silence</title><meta name="description" content="在之前的文章我们已经搭建好了PXC集群，所有的PXC集群节点都是可读可写的，在程序发送请求给数据库时，我们不能把所有的请求全发送给一个PXC节点，对于这种情况，就形成了一个节点负载特别高、性能差，其他节点就显得很空闲，这种情况是我们不希望的。我们希望所有的PXC节点都参与到请求的处理，所以我们就要用到数据库负载均衡技术。  这里我们使用Haproxy来做负载均衡，Haproxy是作为一个请求的转发"><meta name="keywords" content="Docker"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Docker部署高可用MySQL负载均衡、双机热备"><meta property="og:url" content="http://yoursite.com/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="在之前的文章我们已经搭建好了PXC集群，所有的PXC集群节点都是可读可写的，在程序发送请求给数据库时，我们不能把所有的请求全发送给一个PXC节点，对于这种情况，就形成了一个节点负载特别高、性能差，其他节点就显得很空闲，这种情况是我们不希望的。我们希望所有的PXC节点都参与到请求的处理，所以我们就要用到数据库负载均衡技术。  这里我们使用Haproxy来做负载均衡，Haproxy是作为一个请求的转发"><meta property="og:image" content="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg"><meta property="article:published_time" content="2019-08-19T12:53:42.000Z"><meta property="article:modified_time" content="2020-09-16T11:55:19.693Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-16 19:55:19'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F"><span class="toc-number">1.</span> <span class="toc-text">下载镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E9%95%9C%E5%83%8F"><span class="toc-number">2.</span> <span class="toc-text">查看镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAHaproxy%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">创建Haproxy配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Haproxy%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">Haproxy配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAHaproxy%E5%AE%B9%E5%99%A8"><span class="toc-number">5.</span> <span class="toc-text">创建Haproxy容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5%E5%90%8E%E5%8F%B0%E8%BF%90%E8%A1%8C%E7%9A%84Haproxy%E5%AE%B9%E5%99%A8"><span class="toc-number">6.</span> <span class="toc-text">进入后台运行的Haproxy容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E6%98%8E%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84"><span class="toc-number">7.</span> <span class="toc-text">指明配置文件路径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAhaproxy%E6%95%B0%E6%8D%AE%E5%BA%93%E8%B4%A6%E5%8F%B7"><span class="toc-number">8.</span> <span class="toc-text">创建haproxy数据库账号</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5haproxy%E7%9B%91%E6%8E%A7%E9%A1%B5%E9%9D%A2"><span class="toc-number">9.</span> <span class="toc-text">进入haproxy监控页面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81haproxy%E6%98%AF%E5%90%A6%E8%BD%AC%E5%8F%91%E8%AF%B7%E6%B1%82"><span class="toc-number">10.</span> <span class="toc-text">验证haproxy是否转发请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5haproxy%E5%AE%B9%E5%99%A8%EF%BC%8C%E6%9B%B4%E6%96%B0apt-get"><span class="toc-number">11.</span> <span class="toc-text">进入haproxy容器，更新apt-get</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85keepalived"><span class="toc-number">12.</span> <span class="toc-text">安装keepalived</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85vim%E7%BC%96%E8%AF%91%E5%99%A8"><span class="toc-number">13.</span> <span class="toc-text">安装vim编译器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAkeepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">14.</span> <span class="toc-text">创建keepalived配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#keepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">15.</span> <span class="toc-text">keepalived配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8keepalived"><span class="toc-number">16.</span> <span class="toc-text">启动keepalived</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%AC%AC%E4%BA%8C%E4%B8%AAHaproxy%E5%AE%B9%E5%99%A8"><span class="toc-number">17.</span> <span class="toc-text">创建第二个Haproxy容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8%EF%BC%8C%E5%B9%B6%E6%8C%87%E5%AE%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">18.</span> <span class="toc-text">进入容器，并指定配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0apt-get"><span class="toc-number">19.</span> <span class="toc-text">更新apt-get</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85keepalived-1"><span class="toc-number">20.</span> <span class="toc-text">安装keepalived</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85vim%E7%BC%96%E8%AF%91%E5%99%A8-1"><span class="toc-number">21.</span> <span class="toc-text">安装vim编译器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAkeepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-1"><span class="toc-number">22.</span> <span class="toc-text">创建keepalived配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#keepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6-1"><span class="toc-number">23.</span> <span class="toc-text">keepalived配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8keepalived-1"><span class="toc-number">24.</span> <span class="toc-text">启动keepalived</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Docker部署高可用MySQL负载均衡、双机热备</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-08-19T12:53:42.000Z" title="发表于 2019-08-19 20:53:42">2019-08-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-16T11:55:19.693Z" title="更新于 2020-09-16 19:55:19">2020-09-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Docker/">Docker</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>在之前的文章我们已经搭建好了PXC集群，所有的PXC集群节点都是可读可写的，在程序发送请求给数据库时，我们不能把所有的请求全发送给一个PXC节点，对于这种情况，就形成了一个节点负载特别高、性能差，其他节点就显得很空闲，这种情况是我们不希望的。我们希望所有的PXC节点都参与到请求的处理，所以我们就要用到数据库负载均衡技术。</p>
+<a id="more"></a>
+<p>这里我们使用Haproxy来做负载均衡，Haproxy是作为一个请求的转发器，将各个请求均匀分给不同的节点，这样就保证了单个节点负载低、性能好。</p>
+<p>然而单点的Haproxy又不具备高可用，一旦Haproxy出现故障，整个程序就无法正常工作了，所以我们必须要做多个Haproxy节点，一个节点挂掉，必须要有其他Haproxy来顶替。因此这里我们使用Keepalived来实现双机热备。</p>
+<h2 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># docker pull haproxy</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a1.png"></p>
+<h2 id="查看镜像"><a href="#查看镜像" class="headerlink" title="查看镜像"></a>查看镜像</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># docker images</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a2.png"></p>
+<h2 id="创建Haproxy配置文件"><a href="#创建Haproxy配置文件" class="headerlink" title="创建Haproxy配置文件"></a>创建Haproxy配置文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># touch /home/soft/haproxy/haproxy.cfg</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Haproxy配置"><a href="#Haproxy配置" class="headerlink" title="Haproxy配置"></a>Haproxy配置</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">global</span><br><span class="line">    <span class="comment">#工作目录</span></span><br><span class="line">    chroot /usr/<span class="built_in">local</span>/etc/haproxy</span><br><span class="line">    <span class="comment">#日志文件，使用rsyslog服务中local5日志设备（/var/log/local5），等级info</span></span><br><span class="line">    <span class="built_in">log</span> 127.0.0.1 local5 info</span><br><span class="line">    <span class="comment">#守护进程运行</span></span><br><span class="line">    daemon</span><br><span class="line"></span><br><span class="line">defaults</span><br><span class="line">    <span class="built_in">log</span>    global</span><br><span class="line">    mode    http</span><br><span class="line">    <span class="comment">#日志格式</span></span><br><span class="line">    option    httplog</span><br><span class="line">    <span class="comment">#日志中不记录负载均衡的心跳检测记录</span></span><br><span class="line">    option    dontlognull</span><br><span class="line">    <span class="comment">#连接超时（毫秒）</span></span><br><span class="line">    timeout connect 5000</span><br><span class="line">    <span class="comment">#客户端超时（毫秒）</span></span><br><span class="line">    timeout client  50000</span><br><span class="line">    <span class="comment">#服务器超时（毫秒）</span></span><br><span class="line">    timeout server  50000</span><br><span class="line"></span><br><span class="line"><span class="comment">#监控界面</span></span><br><span class="line">listen  admin_stats</span><br><span class="line">    <span class="comment">#监控界面的访问的IP和端口</span></span><br><span class="line">    <span class="built_in">bind</span>  0.0.0.0:8888</span><br><span class="line">    <span class="comment">#访问协议</span></span><br><span class="line">    mode        http</span><br><span class="line">    <span class="comment">#URI相对地址</span></span><br><span class="line">    stats uri   /dbs</span><br><span class="line">    <span class="comment">#统计报告格式</span></span><br><span class="line">    stats realm     Global\ statistics</span><br><span class="line">    <span class="comment">#登陆帐户信息</span></span><br><span class="line">    stats auth  admin:tang1611</span><br><span class="line"><span class="comment">#数据库负载均衡</span></span><br><span class="line">listen  proxy-mysql</span><br><span class="line">    <span class="comment">#访问的IP和端口</span></span><br><span class="line">    <span class="built_in">bind</span>  0.0.0.0:3306</span><br><span class="line">    <span class="comment">#网络协议</span></span><br><span class="line">    mode  tcp</span><br><span class="line">    <span class="comment">#负载均衡算法（轮询算法）</span></span><br><span class="line">    <span class="comment">#轮询算法：roundrobin</span></span><br><span class="line">    <span class="comment">#权重算法：static-rr</span></span><br><span class="line">    <span class="comment">#最少连接算法：leastconn</span></span><br><span class="line">    <span class="comment">#请求源IP算法：source</span></span><br><span class="line">    balance  roundrobin</span><br><span class="line">    <span class="comment">#日志格式</span></span><br><span class="line">    option  tcplog</span><br><span class="line">    <span class="comment">#在MySQL中创建一个没有权限的haproxy用户，密码为空。Haproxy使用这个账户对MySQL数据库心跳检测</span></span><br><span class="line">    option  mysql-check user haproxy</span><br><span class="line">    server  MySQL_1 172.18.0.2:3306 check weight 1 maxconn 2000</span><br><span class="line">    server  MySQL_2 172.18.0.3:3306 check weight 1 maxconn 2000</span><br><span class="line">    server  MySQL_3 172.18.0.4:3306 check weight 1 maxconn 2000</span><br><span class="line">    server  MySQL_4 172.18.0.5:3306 check weight 1 maxconn 2000</span><br><span class="line">    server  MySQL_5 172.18.0.6:3306 check weight 1 maxconn 2000</span><br><span class="line">    <span class="comment">#使用keepalive检测死链</span></span><br><span class="line">    option  tcpka</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建Haproxy容器"><a href="#创建Haproxy容器" class="headerlink" title="创建Haproxy容器"></a>创建Haproxy容器</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># docker run -it -d -p 4001:8888 -p 4002:3306 -v /home/soft/haproxy:/usr/local/etc/haproxy --name h1 --privileged --net=net1 haproxy</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a3.png"></p>
+<h2 id="进入后台运行的Haproxy容器"><a href="#进入后台运行的Haproxy容器" class="headerlink" title="进入后台运行的Haproxy容器"></a>进入后台运行的Haproxy容器</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># docker exec -it h1 bash</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a4.png"></p>
+<h2 id="指明配置文件路径"><a href="#指明配置文件路径" class="headerlink" title="指明配置文件路径"></a>指明配置文件路径</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># haproxy -f /usr/local/etc/haproxy/haproxy.cfg</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a5.png"></p>
+<h2 id="创建haproxy数据库账号"><a href="#创建haproxy数据库账号" class="headerlink" title="创建haproxy数据库账号"></a>创建haproxy数据库账号</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># CREATE USER &#x27;haproxy&#x27;@&#x27;%&#x27; IDENTIFIED BY &#x27;&#x27;;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="进入haproxy监控页面"><a href="#进入haproxy监控页面" class="headerlink" title="进入haproxy监控页面"></a>进入haproxy监控页面</h2><p>浏览器访问 服务器ip:4001/dbs<br>其中4001是我们启动容器映射的宿主机的端口,dbs是配置文件里面配置的URL相对地址<br>例如我的访问地址是<a target="_blank" rel="noopener" href="http://192.168.186.129:4001/dbs">http://192.168.186.129:4001/dbs</a><br>进入后输入用户名和密码，也是在配置文件内配置的，我这里用户名是admin，密码也是tang1611<br><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a6.png"></p>
+<h2 id="验证haproxy是否转发请求"><a href="#验证haproxy是否转发请求" class="headerlink" title="验证haproxy是否转发请求"></a>验证haproxy是否转发请求</h2><p>（1）创建连接<br><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a7.png"><br>（2）更新数据<br>在刚刚创建的连接的表中增加一行数据，haproxy不处理任何数据，它会将这个请求发送给其他1个PXC节点，而PXC具备强一致性，就会将数据同步到其他节点<br><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a8.png"></p>
+<h2 id="进入haproxy容器，更新apt-get"><a href="#进入haproxy容器，更新apt-get" class="headerlink" title="进入haproxy容器，更新apt-get"></a>进入haproxy容器，更新apt-get</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># apt-get update</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a9.png"></p>
+<h2 id="安装keepalived"><a href="#安装keepalived" class="headerlink" title="安装keepalived"></a>安装keepalived</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># apt-get install keepalived</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a10.png"></p>
+<h2 id="安装vim编译器"><a href="#安装vim编译器" class="headerlink" title="安装vim编译器"></a>安装vim编译器</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># apt-get install vim</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="创建keepalived配置文件"><a href="#创建keepalived配置文件" class="headerlink" title="创建keepalived配置文件"></a>创建keepalived配置文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># vim /etc/keepalived/keepalived.conf</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="keepalived配置文件"><a href="#keepalived配置文件" class="headerlink" title="keepalived配置文件"></a>keepalived配置文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"> vrrp_instance VI_1&#123;</span><br><span class="line">   state MASTER</span><br><span class="line">interface  eth0</span><br><span class="line">virtual_router_id  51</span><br><span class="line">priority  100</span><br><span class="line">advert_int  1</span><br><span class="line">authentication&#123;</span><br><span class="line">  auth_type  PASS</span><br><span class="line">  auth_pass  123456</span><br><span class="line">&#125;</span><br><span class="line">virtual_ipaddress&#123;</span><br><span class="line">  172.18.0.201</span><br><span class="line">&#125;  </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动keepalived"><a href="#启动keepalived" class="headerlink" title="启动keepalived"></a>启动keepalived</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># service keepalived start</span></span><br></pre></td></tr></table></figure>
+<p><img src= "/img/loading.gif" data-lazy-src="/2019/08/19/Docker%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8MySQL%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E3%80%81%E5%8F%8C%E6%9C%BA%E7%83%AD%E5%A4%87/a11.png"></p>
+<h2 id="创建第二个Haproxy容器"><a href="#创建第二个Haproxy容器" class="headerlink" title="创建第二个Haproxy容器"></a>创建第二个Haproxy容器</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># docker run -it -d -p 4003:8888 -p 4004:3306 -v /home/soft/haproxy:/usr/local/etc/haproxy --name h2 --privileged --net=net1 haproxy</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="进入容器，并指定配置文件"><a href="#进入容器，并指定配置文件" class="headerlink" title="进入容器，并指定配置文件"></a>进入容器，并指定配置文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># docker -it h2 bash</span></span><br><span class="line"><span class="comment"># docker -f /usr/local/etc/haproxy/haproxy.cfg</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="更新apt-get"><a href="#更新apt-get" class="headerlink" title="更新apt-get"></a>更新apt-get</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># apt-get update</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="安装keepalived-1"><a href="#安装keepalived-1" class="headerlink" title="安装keepalived"></a>安装keepalived</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># apt-get install keepalived</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="安装vim编译器-1"><a href="#安装vim编译器-1" class="headerlink" title="安装vim编译器"></a>安装vim编译器</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># apt-get install vim</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="创建keepalived配置文件-1"><a href="#创建keepalived配置文件-1" class="headerlink" title="创建keepalived配置文件"></a>创建keepalived配置文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># vim /etc/keepalived/keepalived.conf</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="keepalived配置文件-1"><a href="#keepalived配置文件-1" class="headerlink" title="keepalived配置文件"></a>keepalived配置文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"> vrrp_instance VI_1&#123;</span><br><span class="line">   state MASTER</span><br><span class="line">interface  eth0</span><br><span class="line">virtual_router_id  51</span><br><span class="line">priority  100</span><br><span class="line">advert_int  1</span><br><span class="line">authentication&#123;</span><br><span class="line">  auth_type  PASS</span><br><span class="line">  auth_pass  123456</span><br><span class="line">&#125;</span><br><span class="line">virtual_ipaddress&#123;</span><br><span class="line">  172.18.0.201</span><br><span class="line">&#125;  </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动keepalived-1"><a href="#启动keepalived-1" class="headerlink" title="启动keepalived"></a>启动keepalived</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># service keepalived start</span></span><br></pre></td></tr></table></figure>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Docker/">Docker</a></div><div class="post_share"><div class="social-share" data-image="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/08/24/PXC%E7%83%AD%E5%A4%87%E4%BB%BD%E6%96%B9%E6%A1%88/"><img class="prev-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fa-ssl.duitang.com%2Fuploads%2Fitem%2F201801%2F15%2F20180115151255_dqnds.jpg&amp;refer=http%3A%2F%2Fa-ssl.duitang.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1611921567&amp;t=22beda43f98ee34543141ffc0a096e76" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">PXC热备份方案</div></div></a></div><div class="next-post pull-right"><a href="/2019/08/18/Docker%E6%90%AD%E5%BB%BAMySQL%E9%AB%98%E5%8F%AF%E7%94%A8%E6%96%B9%E6%A1%88PXC%E9%9B%86%E7%BE%A4/"><img class="next-cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Docker搭建MySQL高可用方案PXC集群</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2019/10/05/Docker-Compose（四）/" title="Docker Compose（四）"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-10-05</div><div class="relatedPosts_title">Docker Compose（四）</div></div></a></div><div class="relatedPosts_item"><a href="/2020/12/30/Docker登录harbor出现getsockopt-connection-refused/" title="Docker登录harbor出现getsockopt connection refused"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-30</div><div class="relatedPosts_title">Docker登录harbor出现getsockopt connection refused</div></div></a></div><div class="relatedPosts_item"><a href="/2019/08/18/Docker搭建MySQL高可用方案PXC集群/" title="Docker搭建MySQL高可用方案PXC集群"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-08-18</div><div class="relatedPosts_title">Docker搭建MySQL高可用方案PXC集群</div></div></a></div><div class="relatedPosts_item"><a href="/2019/09/21/Docker的持久化存储（三）/" title="Docker的持久化存储（三）"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-21</div><div class="relatedPosts_title">Docker的持久化存储（三）</div></div></a></div><div class="relatedPosts_item"><a href="/2019/08/31/Docker的镜像与容器（一）/" title="Docker的镜像与容器（一）"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-08-31</div><div class="relatedPosts_title">Docker的镜像与容器（一）</div></div></a></div><div class="relatedPosts_item"><a href="/2019/08/24/Docker部署RedisCluster集群/" title="Docker部署RedisCluster集群"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597249323913&di=bd98155560fc85017f57d751c6626871&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20180731%2F1bf8c52256ba4aaa8cb6413b4ebe31e3.jpeg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2019-08-24</div><div class="relatedPosts_title">Docker部署RedisCluster集群</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '956b7388b46d790e3e746a8ceda16b2e',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

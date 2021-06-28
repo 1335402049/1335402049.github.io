@@ -1,0 +1,354 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ElasticSearch之Search | Silence</title><meta name="description" content="es提供Search API使我们能够对es中存储的数据进行查询分析，endpoint为_search，有以下查询形式：  GET &#x2F;_search GET &#x2F;my_index&#x2F;_search GET &#x2F;my_index1,my_index2&#x2F;_search GET &#x2F;my_*&#x2F;_search  URI Search通过url query参数来实现查询，常用参数如下： q 指定查询的语句，默认语法"><meta name="keywords" content="ELK Stack"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/01/23/ElasticSearch%E4%B9%8BSearch/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="ElasticSearch之Search"><meta property="og:url" content="http://yoursite.com/2021/01/23/ElasticSearch%E4%B9%8BSearch/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="es提供Search API使我们能够对es中存储的数据进行查询分析，endpoint为_search，有以下查询形式：  GET &#x2F;_search GET &#x2F;my_index&#x2F;_search GET &#x2F;my_index1,my_index2&#x2F;_search GET &#x2F;my_*&#x2F;_search  URI Search通过url query参数来实现查询，常用参数如下： q 指定查询的语句，默认语法"><meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea"><meta property="article:published_time" content="2021-01-23T03:46:44.000Z"><meta property="article:modified_time" content="2021-03-21T06:48:45.170Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-03-21 14:48:45'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#URI-Search"><span class="toc-number">1.</span> <span class="toc-text">URI Search</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8C%83%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.1.</span> <span class="toc-text">范查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%87%E5%AE%9A%E5%AD%97%E6%AE%B5%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.2.</span> <span class="toc-text">指定字段查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%83%E5%B0%94%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">1.3.</span> <span class="toc-text">布尔操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8C%83%E5%9B%B4%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.4.</span> <span class="toc-text">范围查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E9%85%8D%E7%AC%A6%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.5.</span> <span class="toc-text">通配符查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">1.6.</span> <span class="toc-text">正则表达式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E7%B3%8A%E5%8C%B9%E9%85%8D"><span class="toc-number">1.7.</span> <span class="toc-text">模糊匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%91%E4%BC%BC%E5%BA%A6%E6%9F%A5%E8%AF%A2"><span class="toc-number">1.8.</span> <span class="toc-text">近似度查询</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Query-DSL"><span class="toc-number">2.</span> <span class="toc-text">Query DSL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%97%E6%AE%B5%E7%B1%BB%E6%9F%A5%E8%AF%A2"><span class="toc-number">2.1.</span> <span class="toc-text">字段类查询</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#match"><span class="toc-number">2.1.1.</span> <span class="toc-text">match</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#match-phrase"><span class="toc-number">2.1.2.</span> <span class="toc-text">match_phrase</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#query-string"><span class="toc-number">2.1.3.</span> <span class="toc-text">query_string</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#simple-query-string"><span class="toc-number">2.1.4.</span> <span class="toc-text">simple_query_string</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#term"><span class="toc-number">2.1.5.</span> <span class="toc-text">term</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#terms"><span class="toc-number">2.1.6.</span> <span class="toc-text">terms</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#range"><span class="toc-number">2.1.7.</span> <span class="toc-text">range</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="toc-number">2.2.</span> <span class="toc-text">复合查询</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#bool-query"><span class="toc-number">2.2.1.</span> <span class="toc-text">bool query</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Count-API"><span class="toc-number">3.</span> <span class="toc-text">Count API</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Source-Filtering"><span class="toc-number">4.</span> <span class="toc-text">Source Filtering</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">ElasticSearch之Search</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-01-23T03:46:44.000Z" title="发表于 2021-01-23 11:46:44">2021-01-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-21T06:48:45.170Z" title="更新于 2021-03-21 14:48:45">2021-03-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ELK-Stack/">ELK Stack</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>es提供Search API使我们能够对es中存储的数据进行查询分析，endpoint为_search，有以下查询形式：</p>
+<ul>
+<li>GET /_search</li>
+<li>GET /my_index/_search</li>
+<li>GET /my_index1,my_index2/_search</li>
+<li>GET /my_*/_search</li>
+</ul>
+<h2 id="URI-Search"><a href="#URI-Search" class="headerlink" title="URI Search"></a>URI Search</h2><p>通过url query参数来实现查询，常用参数如下：</p>
+<p>q 指定查询的语句，默认语法 Query String Syntax</p>
+<p>df q中不指定字段时默认查询的字段，如果不指定，es会查询所有字段</p>
+<p>sort 排序，asc升序 desc降序</p>
+<p>timeout 指定超时时间，默认不超时</p>
+<p>from,size 用于分页</p>
+<h3 id="范查询"><a href="#范查询" class="headerlink" title="范查询"></a>范查询</h3><p>在所有字段中匹配 alfred 的值,返回相关匹配的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 开启profile参数可以对查询效率优化</span><br><span class="line">GET test_search&#x2F;_search?q&#x3D;alfred</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="指定字段查询"><a href="#指定字段查询" class="headerlink" title="指定字段查询"></a>指定字段查询</h3><p>查找username含有alfred的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:alfred</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找username含有alfred或 所有字段中匹配way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># alfred和way之间的空格会被当做“或” 即查找username:alfred 或者 查找所有含有way的文档，way查询会被当成范查询，在所有字段中查找</span><br><span class="line">GET test_search&#x2F;_search?q&#x3D;username:alfred way</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找username含有alfred way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:&quot;alfred way&quot;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找username含有alfred或者username含有way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:(alfred way)</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="布尔操作符"><a href="#布尔操作符" class="headerlink" title="布尔操作符"></a>布尔操作符</h3><ul>
+<li>AND（&amp;&amp;）、OR（||）、NOT（!）</li>
+<li>+-分别对应must和must not</li>
+</ul>
+<blockquote>
+<p>+在url中会被解析成空格，要使用%2B代替</p>
+</blockquote>
+<p>查找username含有alfred 且 所有字段中匹配way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># alfred只会在username中查找，way的查询会使用范查询</span><br><span class="line">GET test_search&#x2F;_search?q&#x3D;username:alfred AND way</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找username含有alfred且username含有way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:(alfred AND way)</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找username含有alfred且username不含有way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:(alfred NOT way)</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找username含有alfred且username含有way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:(alfred %2Bway)</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="范围查询"><a href="#范围查询" class="headerlink" title="范围查询"></a>范围查询</h3><p>支持数字和日期</p>
+<p>（1）区间写法</p>
+<ul>
+<li>age:[1 TO 10] 意为 1&lt;=age&lt;=10</li>
+<li>age:[1 TO 10} 意为 1&lt;=age&lt;10</li>
+<li>age:[1 TO ] 意为 age&gt;=1</li>
+<li>age:[* TO 10] 意为 age&lt;=10</li>
+</ul>
+<p>（2）算数符号写法</p>
+<ul>
+<li>age:&gt;=1</li>
+<li>age:(&gt;=1 &amp;&amp; &lt;=10) 或者 age:(+&gt;1 +&lt;10)</li>
+</ul>
+<p>查找username含有alfred或者age大于20的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:alfred age:&gt;20</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找birth在1980到1990之间的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;birth:(&gt;1980 AND &lt;1990)</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="通配符查询"><a href="#通配符查询" class="headerlink" title="通配符查询"></a>通配符查询</h3><p>通配符匹配执行效率低，且占用较多内存，不建议使用</p>
+<blockquote>
+<p>如无特殊需求，不要将 ?/* 放在最前面</p>
+</blockquote>
+<p>?代表1个字符， *代表0或多个字符</p>
+<ul>
+<li>name:t?m</li>
+<li>name:torn*</li>
+<li>name:t*m</li>
+</ul>
+<p>查找username含有alf开头的所有文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:alf*</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h3><p>与通配符类似，正则表达式也比较持内存</p>
+<h3 id="模糊匹配"><a href="#模糊匹配" class="headerlink" title="模糊匹配"></a>模糊匹配</h3><ul>
+<li>name:roam~1</li>
+<li>匹配与roam差一个词，比如 foam roams等</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:alfed~1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="近似度查询"><a href="#近似度查询" class="headerlink" title="近似度查询"></a>近似度查询</h3><ul>
+<li>“fox quick”~5</li>
+<li>以term为单位进行差异比较，比如”quick fox” “quick brown fox” 都会被匹配，允许有5个单位的差异</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?q&#x3D;username:&quot;alfred&quot;~1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;profile&quot;: true</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Query-DSL"><a href="#Query-DSL" class="headerlink" title="Query DSL"></a>Query DSL</h2><p>基于JSON定义的查询语言，主要分为字段类查询和复合查询</p>
+<h3 id="字段类查询"><a href="#字段类查询" class="headerlink" title="字段类查询"></a>字段类查询</h3><p>主要分为以下2类</p>
+<p>（1）全文匹配</p>
+<p>针对text类型的字段进行全文检索，会对查询语句先进行分词处理，如match、match_path、等query类型</p>
+<p>（2）单词匹配</p>
+<p>不会对查询语句做分词处理，会直接匹配字段的倒排索引，如term、terms、range等query类型</p>
+<h4 id="match"><a href="#match" class="headerlink" title="match"></a>match</h4><p>查找username含有alfred或者username含有way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 会将 alfred way 先进行分词</span><br><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: &quot;alfred way&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找username含有alfred且username含有way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 提供 operator 参数控制查询语法且或关系，operator默认为or</span><br><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: &#123;</span><br><span class="line">        &quot;query&quot;: &quot;alfred way&quot;,</span><br><span class="line">        &quot;operator&quot;: &quot;and&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找 username含有alfred、username含有way、username含有room 至少满足2个条件的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># username中含有alfred、way、room三个单词，只要满足含有其他任意2个，就匹配</span><br><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: &#123;</span><br><span class="line">        &quot;query&quot;: &quot;alfred way room&quot;,</span><br><span class="line">        &quot;minimum_should_match&quot;: &quot;2&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="match-phrase"><a href="#match-phrase" class="headerlink" title="match_phrase"></a>match_phrase</h4><p>以字段作检索，词语查询，顺序检索</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match_phrase&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: &quot;alfred way&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 使用slop参数可以控制查询词语的差异，这里就是最多允许有一个单词的差异</span><br><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match_phrase&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: &#123;</span><br><span class="line">        &quot;query&quot;: &quot;alfred way&quot;,</span><br><span class="line">        &quot;slop&quot;: &quot;1&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="query-string"><a href="#query-string" class="headerlink" title="query_string"></a>query_string</h4><p>完全类似于上面url方式的查询</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;query_string&quot;: &#123;</span><br><span class="line">      &quot;default_field&quot;: &quot;username&quot;,</span><br><span class="line">      &quot;query&quot;: &quot;alfred AND way&quot; </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;query_string&quot;: &#123;</span><br><span class="line">      &quot;fields&quot;: [</span><br><span class="line">          &quot;username&quot;,</span><br><span class="line">          &quot;job&quot;</span><br><span class="line">      ]</span><br><span class="line">      &quot;query&quot;: &quot;alfred OR (way AND room)&quot; </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="simple-query-string"><a href="#simple-query-string" class="headerlink" title="simple_query_string"></a>simple_query_string</h4><p>类似query_string,但是会忽略错误的查询语法，并且仅支持部分查询语法</p>
+<p>不能使用AND、OR、NOT等关键词</p>
+<ul>
+<li>+代指AND</li>
+<li>|代指OR</li>
+<li>-代指NOT</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;query_string&quot;: &#123;</span><br><span class="line">      &quot;fields&quot;: [</span><br><span class="line">          &quot;username&quot;</span><br><span class="line">      ]</span><br><span class="line">      &quot;query&quot;: &quot;alfred | way&quot; </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="term"><a href="#term" class="headerlink" title="term"></a>term</h4><p>将查询语句作为整个单词进行查询，即不对查询的语句进行分词</p>
+<p>查询username含有alfred的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;term&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: &quot;alfred&quot; </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询username含有alfred way的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># alfred way会被作为一整块在倒排索引中查找</span><br><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;term&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: &quot;alfred way&quot; </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="terms"><a href="#terms" class="headerlink" title="terms"></a>terms</h4><p>查询某个字段里含有多个关键词的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;terms&quot;: &#123;</span><br><span class="line">      &quot;username&quot;: [</span><br><span class="line">        &quot;alfred&quot;,</span><br><span class="line">        &quot;way&quot;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="range"><a href="#range" class="headerlink" title="range"></a>range</h4><p>范围查询主要针对数值和日期类型</p>
+<p>查询age大于等于10，小于等于20的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;range&quot;: &#123;</span><br><span class="line">      &quot;age&quot;: &#123;</span><br><span class="line">        &quot;gte&quot;: 10,</span><br><span class="line">        &quot;lte&quot;: 20</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询birth大于等于1990-01-01的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;range&quot;: &#123;</span><br><span class="line">      &quot;birth&quot;: &#123;</span><br><span class="line">        &quot;gte&quot;: &quot;1990-01-01&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询 birth大于等于当前时间-30年的文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;range&quot;: &#123;</span><br><span class="line">      &quot;birth&quot;: &#123;</span><br><span class="line">        &quot;gte&quot;: &quot;now-30y&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="复合查询"><a href="#复合查询" class="headerlink" title="复合查询"></a>复合查询</h3><p>指包含字段类查询或复合查询类型，主要包含：</p>
+<ul>
+<li>constant_soure query</li>
+<li>bool query</li>
+<li>dis_max query</li>
+<li>function_score query</li>
+<li>boosting query</li>
+</ul>
+<h4 id="bool-query"><a href="#bool-query" class="headerlink" title="bool query"></a>bool query</h4><p>它由一个或多个子句组成，每个子句都有特定的类型：</p>
+<p>must：返回的文档必须满足must子句的条件，并且计算相关性得分</p>
+<p>filter：返回的文档必须满足filter子句条件，但是不计算相关性得分</p>
+<p>must_not：返回的文档必须不满足must_not条件</p>
+<p>should：如果查询中指包含should（不包含must），文档至少满足一个条件（但是可以通过minimum_should_match控制满足条件的个数或者百分比）；如果同时存在should和must，文档不必满足should条件，如果满足should条件，可以增加相关性得分</p>
+<h2 id="Count-API"><a href="#Count-API" class="headerlink" title="Count API"></a>Count API</h2><p>获取符合条件的文档数，endpoint为_count</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_count</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;range&quot;: &#123;</span><br><span class="line">      &quot;birth&quot;: &#123;</span><br><span class="line">        &quot;gte&quot;: &quot;now-30y&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Source-Filtering"><a href="#Source-Filtering" class="headerlink" title="Source Filtering"></a>Source Filtering</h2><p>过滤返回结果中_source中的字段，主要有以下几种方式：</p>
+<p>（1）url参数</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search?_source&#x3D;username</span><br></pre></td></tr></table></figure>
+
+<p>（2）不返回_source</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;_source&quot;: false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（3）返回部分字段</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;_source&quot;: [&quot;username&quot;,&quot;age&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET test_search&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;_source&quot;: &#123;</span><br><span class="line">    &quot;includes&quot;: &quot;*i*&quot;,</span><br><span class="line">    &quot;excludes&quot;: &quot;birth&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ELK-Stack/">ELK Stack</a></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/01/26/ElasticSearch%E9%9B%86%E7%BE%A4org-elasticsearch-discovery-MasterNotDiscoveredException%E9%97%AE%E9%A2%98/"><img class="prev-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题</div></div></a></div><div class="next-post pull-right"><a href="/2021/01/23/ElasticSearch%E4%B9%8Bmapping/"><img class="next-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ElasticSearch之mapping</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/01/26/ElasticSearch分布式特性/" title="ElasticSearch分布式特性"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-26</div><div class="relatedPosts_title">ElasticSearch分布式特性</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch之mapping/" title="ElasticSearch之mapping"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch之mapping</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch分词/" title="ElasticSearch分词"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch分词</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch基本知识/" title="ElasticSearch基本知识"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch基本知识</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/26/ElasticSearch集群org-elasticsearch-discovery-MasterNotDiscoveredException问题/" title="ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-26</div><div class="relatedPosts_title">ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题</div></div></a></div><div class="relatedPosts_item"><a href="/2021/04/13/logstash收集java日志/" title="logstash收集java日志"><img class="relatedPosts_cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-04-13</div><div class="relatedPosts_title">logstash收集java日志</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '783d059c4586bd97ad2e982ee5fdf480',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

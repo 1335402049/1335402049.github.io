@@ -1,0 +1,392 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Redis简介 | Silence</title><meta name="description" content="redis概念redis是一个开源的、使用C语言编写的基于内存可持久化的key-value非关系型数据库。   redis优点（1）性能高redis读的速度是110000次&#x2F;s，写的速度81000次&#x2F;s。（2）丰富的数据类型redis支持的数据类型有String、List、Set、Hash、sorted set（3）原子性redis操作具有原子性，要么成功执行，要么失败完全不执行（4）丰富的特性支"><meta name="keywords" content="Redis"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2020/03/22/Redis%E7%AE%80%E4%BB%8B/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Redis简介"><meta property="og:url" content="http://yoursite.com/2020/03/22/Redis%E7%AE%80%E4%BB%8B/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="redis概念redis是一个开源的、使用C语言编写的基于内存可持久化的key-value非关系型数据库。   redis优点（1）性能高redis读的速度是110000次&#x2F;s，写的速度81000次&#x2F;s。（2）丰富的数据类型redis支持的数据类型有String、List、Set、Hash、sorted set（3）原子性redis操作具有原子性，要么成功执行，要么失败完全不执行（4）丰富的特性支"><meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><meta property="article:published_time" content="2020-03-22T02:14:13.000Z"><meta property="article:modified_time" content="2020-09-15T14:00:43.457Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-15 22:00:43'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">redis概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E4%BC%98%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">redis优点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E7%BC%BA%E7%82%B9"><span class="toc-number">3.</span> <span class="toc-text">redis缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E4%B8%8B%E8%BD%BD"><span class="toc-number">4.</span> <span class="toc-text">redis下载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-conf%E9%85%8D%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">redis.conf配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E6%95%B0%E6%8D%AE%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="toc-number">6.</span> <span class="toc-text">redis数据淘汰策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">7.</span> <span class="toc-text">redis持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RDB%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">7.1.</span> <span class="toc-text">RDB持久化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#AOF%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">7.2.</span> <span class="toc-text">AOF持久化</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis-cluster%E9%9B%86%E7%BE%A4"><span class="toc-number">8.</span> <span class="toc-text">redis-cluster集群</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Redis简介</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-03-22T02:14:13.000Z" title="发表于 2020-03-22 10:14:13">2020-03-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-15T14:00:43.457Z" title="更新于 2020-09-15 22:00:43">2020-09-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Redis/">Redis</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="redis概念"><a href="#redis概念" class="headerlink" title="redis概念"></a>redis概念</h2><p>redis是一个开源的、使用C语言编写的基于内存可持久化的key-value非关系型数据库。</p>
+<a id="more"></a>
+
+<h2 id="redis优点"><a href="#redis优点" class="headerlink" title="redis优点"></a>redis优点</h2><p>（1）性能高<br>redis读的速度是110000次/s，写的速度81000次/s。<br>（2）丰富的数据类型<br>redis支持的数据类型有String、List、Set、Hash、sorted set<br>（3）原子性<br>redis操作具有原子性，要么成功执行，要么失败完全不执行<br>（4）丰富的特性<br>支持发布/订阅、数据持久化、key过期等特性</p>
+<h2 id="redis缺点"><a href="#redis缺点" class="headerlink" title="redis缺点"></a>redis缺点</h2><p>（1）持久化<br>redis持久化方案有RDB和AOF。前者redis通过定时快照的方式将数据写入到硬盘上，对于非正常redis关闭的情况下，可能会导致数据丢失，而且这种持久化操作每次都会把所有数据写入硬盘，代价非常高。后者redis只追踪变化的数据，但是追加的log会越来越大，并且所有操作均重新执行一遍，恢复速度慢。<br>（2）耗内存<br>redis是基于内存操作的，对内存的要求较高。</p>
+<h2 id="redis下载"><a href="#redis下载" class="headerlink" title="redis下载"></a>redis下载</h2><p>官方网站：<a target="_blank" rel="noopener" href="http://redis.io/download">http://redis.io/download</a> 可以根据需求下载不同版本</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#redis是C语言开发的，所以需要gcc环境</span></span><br><span class="line">yum install gcc -y</span><br><span class="line"><span class="comment">#我这边下载redis-5.0.3</span></span><br><span class="line">wget http://download.redis.io/releases/redis-5.0.3.tar.gz</span><br><span class="line"><span class="comment">#解压</span></span><br><span class="line">tar zxvf redis-5.0.3.tar.gz</span><br><span class="line"><span class="comment">#移动到redis-5.0.3目录下执行</span></span><br><span class="line">make</span><br><span class="line"><span class="comment">#移动到redis-5.0.3/src目录下执行</span></span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<h2 id="redis-conf配置"><a href="#redis-conf配置" class="headerlink" title="redis.conf配置"></a>redis.conf配置</h2><table>
+<thead>
+<tr>
+<th align="left">配置</th>
+<th align="left">默认</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">daemonize</td>
+<td align="left">no</td>
+<td align="left">是否后台运行</td>
+</tr>
+<tr>
+<td align="left">port</td>
+<td align="left">6379</td>
+<td align="left">端口</td>
+</tr>
+<tr>
+<td align="left">bind</td>
+<td align="left">127.0.0.1</td>
+<td align="left">绑定ip，默认只允许本机访问redis-server</td>
+</tr>
+<tr>
+<td align="left">timeout</td>
+<td align="left">0</td>
+<td align="left">客户端连接超时时间，单位为秒，默认0表示关闭此设置</td>
+</tr>
+<tr>
+<td align="left">loglevel</td>
+<td align="left">notice</td>
+<td align="left">redis支持debug、verbose、notice、warning</td>
+</tr>
+<tr>
+<td align="left">tcp-keepalive</td>
+<td align="left">300</td>
+<td align="left">TCP连接保活策略，默认单位为秒，如果设置60秒，则server端会每60秒向连接空闲的客户端发送一次ACK请求，以检查客户端是否存活，对于无响应的客户端则会关闭其连接</td>
+</tr>
+<tr>
+<td align="left">logfile</td>
+<td align="left"></td>
+<td align="left">redis日志文件，默认为空，如果设置了daemonize yes，redis会把日志输出到/dev/null中</td>
+</tr>
+<tr>
+<td align="left">databases</td>
+<td align="left">16</td>
+<td align="left">redis数据库总数量，数据库索引是0-15</td>
+</tr>
+<tr>
+<td align="left">save <seconds> <changes></changes></seconds></td>
+<td align="left">save 900 1 <br> save 300 10 <br> save 60 10000</td>
+<td align="left">RDB持久化策略，默认是当60秒内有10000个key更改，触发一次RDB快照；当300秒内有10个key更改，触发一次RDB快照；当900秒内有1个key更改，触发一次RDB快照</td>
+</tr>
+<tr>
+<td align="left">stop-writes-on-bgsave-error</td>
+<td align="left">yes</td>
+<td align="left">如果用户开启了RDB持久化，那么当redis持久化到硬盘出现失败，redis会停止接受所有的写请求，当下一次持久化成功后，redis会恢复接受写请求</td>
+</tr>
+<tr>
+<td align="left">rdbcompression</td>
+<td align="left">yes</td>
+<td align="left">对于存储在硬盘的快照，redis支持压缩存储，如果不想消耗cpu，可以关闭此配置，但是存储在硬盘的数据会越来越大</td>
+</tr>
+<tr>
+<td align="left">rdbchecksum</td>
+<td align="left">yes</td>
+<td align="left">在存储快照后，redis支持对数据校验，但是会消耗大约10%的性能，如果希望性能最大化，可以关闭此功能</td>
+</tr>
+<tr>
+<td align="left">dbfilename</td>
+<td align="left">dump.rdb</td>
+<td align="left">设置快照文件的名称</td>
+</tr>
+<tr>
+<td align="left">dir</td>
+<td align="left">./</td>
+<td align="left">配置快照存放路径</td>
+</tr>
+<tr>
+<td align="left">replicaof <masterip> <masterport></masterport></masterip></td>
+<td align="left"></td>
+<td align="left">redis提供主从功能，通过slaveof配置一台服务器作为另一台从服务器</td>
+</tr>
+<tr>
+<td align="left">masterauth <master-password></master-password></td>
+<td align="left"></td>
+<td align="left">如果主服务器设置了requirepass,则从redis配置中要使用masterauth来校验密码</td>
+</tr>
+<tr>
+<td align="left">slave-serve-stale-data</td>
+<td align="left">yes</td>
+<td align="left">当从redis失去与主redis连接，或者主从正在同步时，redis是否处理客户端发来的请求</td>
+</tr>
+<tr>
+<td align="left">replica-read-only</td>
+<td align="left">yes</td>
+<td align="left">控制从redis是否接受写请求</td>
+</tr>
+<tr>
+<td align="left">rep-timeout</td>
+<td align="left">60</td>
+<td align="left">主从同步情况可能会发生超时，用户可以设置超时时限，不过一定要确保比repl-ping-replica-period的值要大</td>
+</tr>
+<tr>
+<td align="left">repl-disable-tcp-nodelay</td>
+<td align="left">no</td>
+<td align="left">控制主从同步是否禁用TCP_NODELAY。如果开启TCP_NODELAY，那么主redis会使用更少的TCP包和更少的带宽来向从redis传输数据，但是会增加一些同步的延迟，大概40ms左右。如果关闭了TCP_NODELAY，那么数据同步延迟会降低，但是会消耗更多的带宽</td>
+</tr>
+<tr>
+<td align="left">repl-backlog-size</td>
+<td align="left">1mb</td>
+<td align="left">设置队列长度，队列长度是redis中的一个缓冲区，如果与从redis断开连接后，主redis会用这个缓冲区缓存发送的数据</td>
+</tr>
+<tr>
+<td align="left">repl-backlog-ttl</td>
+<td align="left">3600</td>
+<td align="left">如果主redis等了一段时间后，还是无法与从redis连接，那么缓冲区数据将被清除；如果设置为0表示永不清除</td>
+</tr>
+<tr>
+<td align="left">min-replicas-to-write</td>
+<td align="left">3</td>
+<td align="left">与min-replicas-max-lag配合使用</td>
+</tr>
+<tr>
+<td align="left">min-replicas-max-lag</td>
+<td align="left">10</td>
+<td align="left">表示当主redis发现超过M个连接延迟大于N秒时，那么主redis就停止接受写请求。从redis每秒都会向主redis发出ping，而主redis会记录每一个从redis发来的ping时间点，所以主redis能够了解从redis的运行情况</td>
+</tr>
+<tr>
+<td align="left">replica-priority</td>
+<td align="left">100</td>
+<td align="left">规定从redis优先级，在主redis持续不正常工作时，优先级高的将成为主redis，而编号越小表示优先级越高，当编号被设置为0时表示这个从redis永远不会被选中，默认是100</td>
+</tr>
+<tr>
+<td align="left">requirepass</td>
+<td align="left">foobared</td>
+<td align="left">设置密码验证，当客户端连接redis-server时，需要进行密码验证</td>
+</tr>
+<tr>
+<td align="left">rename-command CONFIG “”</td>
+<td align="left"></td>
+<td align="left">对redis指令进行更名，避免外部调用。这里对CONFIG重命名</td>
+</tr>
+<tr>
+<td align="left">max-clients</td>
+<td align="left">10000</td>
+<td align="left">设置redis-server允许客户端的最大连接数</td>
+</tr>
+<tr>
+<td align="left">maxmemory <bytes></bytes></td>
+<td align="left"></td>
+<td align="left">设置redis可以使用的内存量，当超过此内存上限，redis将根据maxmemory-policy规则移除内部数据</td>
+</tr>
+<tr>
+<td align="left">maxmemory-policy</td>
+<td align="left">noeviction</td>
+<td align="left">指定redis数据淘汰策略，redis提供了volatile-lru、allkeys-lru、volatile-random、allkeys-random、volatile-ttl、noeviction六种数据淘汰策略</td>
+</tr>
+<tr>
+<td align="left">axmemory-samples</td>
+<td align="left">5</td>
+<td align="left">LRU和最小TTL算法都并非是精确算法，而是估算值，可以设置样本大小，redis默认检查5个key并选择其中LRU那个</td>
+</tr>
+<tr>
+<td align="left">appendonly</td>
+<td align="left">no</td>
+<td align="left">redis支持数据持久化，目前redis持久化方案有RDB、AOF</td>
+</tr>
+<tr>
+<td align="left">appendfilename</td>
+<td align="left">“appendonly.aof”</td>
+<td align="left">设置aof文件名称</td>
+</tr>
+<tr>
+<td align="left">appendfsync</td>
+<td align="left">everysec</td>
+<td align="left">一次fsync()调用，操作系统会将缓存指令写入硬盘。redis支持三种模式，no：不调用，让操作系统自行决定sync的时间，redis性能更快；always：每次写请求后都会调用，这种情况redis会相对较慢，但数据最安全；everysec：每秒钟调用一次</td>
+</tr>
+<tr>
+<td align="left">no-appendfsync-on-rewrite</td>
+<td align="left">no</td>
+<td align="left">bgrewriteaof机制，在一个子进程执行aof重写，不会阻塞主进程处理其余指令。但是当bgrewriteaof和主进程写aof时，两种均操作硬盘，bgrewriteaof会涉及大量硬盘操作，这样导致了主进程aof写入的阻塞，当no-appendfsync-on-rewrite设置为yes时表示这就相当于将appendfsync设置为no，不会有磁盘操作，只是写入缓冲区，不会出现阻塞，但是如果这个时候redis挂掉，会丢失数据。如果此参数设置为no，是最安全的方式，但是要忍受阻塞的情形</td>
+</tr>
+<tr>
+<td align="left">auto-aof-rewrite-percentage</td>
+<td align="left">100</td>
+<td align="left">redis记录前一次aof文件大小作为基准值，当当前aof文件超过这个基准100%（默认100）时，触发bgrewriteaof，也就是用一个子进程重写aof。该配置为0时表示禁用重写</td>
+</tr>
+<tr>
+<td align="left">auto-aof-rewrite-min-size</td>
+<td align="left">64mb</td>
+<td align="left">当aof文件大于64mb时，触发bgrewriteaof</td>
+</tr>
+<tr>
+<td align="left">lua-time-limit</td>
+<td align="left">5000</td>
+<td align="left">lua脚本最大运行时间，默认单位ms</td>
+</tr>
+</tbody></table>
+<h2 id="redis数据淘汰策略"><a href="#redis数据淘汰策略" class="headerlink" title="redis数据淘汰策略"></a>redis数据淘汰策略</h2><p>*volatile-lru:使用LRU算法移除过期集合中的key<br>*allkeys-lru:使用LRU算法移除key<br>*volatile-random:在过期集合中随机移除key<br>*allkeys-random:随机移除key<br>volatile-ttl:移除那些ttl值最小的key，即移除最近要过期的key<br>noeviction:不进行移除</p>
+<h2 id="redis持久化"><a href="#redis持久化" class="headerlink" title="redis持久化"></a>redis持久化</h2><p>redis支持RDB和AOF两种持久化机制，redis持久化就是将内存中的数据写入到硬盘中，避免redis挂掉导致数据丢失。</p>
+<h3 id="RDB持久化"><a href="#RDB持久化" class="headerlink" title="RDB持久化"></a>RDB持久化</h3><p>RDB持久化是把当前数据生成快照存储到硬盘中。触发方式有手动触发（save【阻塞式】、bgsave【推荐】）和自动触发（redis.conf中配置save）<br>RDB文件存储路径，通过redis.conf中的dir配置<br>（1）优点<br>*RDB文件是压缩的二进制文件，代表redis在某个时间点的快照，空间占用小<br>*redis加载RDB从硬盘中恢复数据远远快于AOF方式<br>（2）缺点<br>RDB没有做到实时数据持久化，如果数据更改没有达到RDB持久化触发的条件，redis在这个时候突然挂掉，那么就会导致数据丢失</p>
+<h3 id="AOF持久化"><a href="#AOF持久化" class="headerlink" title="AOF持久化"></a>AOF持久化</h3><p>AOF持久化是以独立日志的方式记录每次的写命令，重启时再次执行AOF文件中的命令达到数据恢复。AOF主要是解决数据持久化的实时性问题<br>（1）AOF开启<br>通过redis.conf中的appendonly yes开启，通过appendfilename配置名称，通过dir配置数据存储路径<br>（2）AOF流程<br>*redis-server启动，如果AOF机制开启，那么初始化AOF状态，并且如果存在AOF文件，读取AOF文件<br>*随着redis不断接受命令，每个写命令都会被添加到AOF文件，AOF文件大小会增加，redis会记录之前aof大小，当目前aof文件大小达到auto-aof-rewrite-percentage、auto-aof-rewrite-min-size设定的值后，就会触发rewrite<br>*fork出一个子进程进行rewrite，重写新的aof文件，而父进程继续接受命令，现在的写命令都会添加aof_rewrite_buf_blocks缓冲区<br>*当子进程rewrite结束后，父进程收到子进程退出信号，把缓冲区的数据添加到rewrite后新的aof文件中，随后rename新的aof文件，覆盖旧的aof文件<br>*至此一个rewrite走完，继续第2步<br>（3）优点<br>*解决了数据持久化实时性的问题<br>*你可以设置不同的fsync策略，比如无fsync，每秒钟一次fsync，或者每次执行写入命令时fsync。AOF的默认策略为每秒钟fsync一次，在这种配置下，redis仍然可以保持良好的性能，并且就算发生故障停机，也最多只会丢失一秒钟的数据（fsync会在后台线程执行，所以主线程可以继续努力地处理命令请求）<br>（4）缺点<br>相对于RDB文件，AOF文件的大小通常大于RDB文件，根据fsync策略，AOF速度要慢于RDB</p>
+<h2 id="redis-cluster集群"><a href="#redis-cluster集群" class="headerlink" title="redis-cluster集群"></a>redis-cluster集群</h2><p>redis cluster集群是一个由主从节点群组成的分布式服务器群，它具有复制、高可用和分片特性。Redis cluster集群不需要sentine哨兵也能完成节点移除和故障转移功能。需要将每个节点设置成集群模式，这种集群没有中心节点，可水平扩展。<br><img src= "/img/loading.gif" data-lazy-src="/2020/03/22/Redis%E7%AE%80%E4%BB%8B/a1.png"><br>（1）无中心化就是客户端直接与节点相连，不需要proxy代理层，客户端只需要连接到集群的任意节点就行<br>（2）集群中所有的redis节点彼此互联<br>（3）cluster集群中内置16384（编号0-16383）个哈希槽，redis根据节点数量均匀的将槽位分到不同节点。当客户端set一个key时，redis对key使用crc16算法算出一个结果，然后把结果对16384取模，这个key都会对应到0-16383之间的槽位。<br>（4）水平扩容-当集群中新增了一个节点，redis会从其他各个节点取出部分槽位分到新加入的节点<br>（5）集群进入fail状态的必要条件<br>*某个主节点和其所有从节点全部挂掉，集群进入fail状态<br>*如果集群超过半数以上master挂掉，无论是否存在slave，集群进入fail状态<br>*如果集群任意master挂掉，且master没有slave，集群进入fail状态<br>（6）redis投票机制-投票是所有master节点参与的，如果半数以上master节点无法与某个master节点通信，则认为此master节点挂掉</p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Redis/">Redis</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/03/26/Redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E6%90%AD%E5%BB%BA/"><img class="prev-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fa-ssl.duitang.com%2Fuploads%2Fitem%2F201801%2F15%2F20180115151255_dqnds.jpg&amp;refer=http%3A%2F%2Fa-ssl.duitang.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1611921567&amp;t=22beda43f98ee34543141ffc0a096e76" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Redis哨兵模式搭建</div></div></a></div><div class="next-post pull-right"><a href="/2020/03/17/Redis-cluster%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/"><img class="next-cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Redis-cluster集群搭建</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2020/03/17/Redis-cluster集群搭建/" title="Redis-cluster集群搭建"><img class="relatedPosts_cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-17</div><div class="relatedPosts_title">Redis-cluster集群搭建</div></div></a></div><div class="relatedPosts_item"><a href="/2020/03/26/Redis哨兵模式搭建/" title="Redis哨兵模式搭建"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fa-ssl.duitang.com%2Fuploads%2Fitem%2F201801%2F15%2F20180115151255_dqnds.jpg&refer=http%3A%2F%2Fa-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1611921567&t=22beda43f98ee34543141ffc0a096e76"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-26</div><div class="relatedPosts_title">Redis哨兵模式搭建</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '1b53a2a41377b0d8a39ba93bd4360cbf',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

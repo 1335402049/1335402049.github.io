@@ -1,0 +1,195 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MySQL备份 | Silence</title><meta name="description" content="准备环境编辑&#x2F;etc&#x2F;my.cnf,再[mysqld]板块添加如下，重启服务  [mysqld]datadir&#x3D;&#x2F;usr&#x2F;local&#x2F;mysql&#x2F;dataport&#x3D;3306sql_mode&#x3D;NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLESsocket&#x3D;&#x2F;tmp&#x2F;mysql.socksymbolic-links&#x3D;0max_connections&#x3D;400innodb"><meta name="keywords" content="MySQL"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2020/03/15/MySQL%E5%A4%87%E4%BB%BD/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="MySQL备份"><meta property="og:url" content="http://yoursite.com/2020/03/15/MySQL%E5%A4%87%E4%BB%BD/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="准备环境编辑&#x2F;etc&#x2F;my.cnf,再[mysqld]板块添加如下，重启服务  [mysqld]datadir&#x3D;&#x2F;usr&#x2F;local&#x2F;mysql&#x2F;dataport&#x3D;3306sql_mode&#x3D;NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLESsocket&#x3D;&#x2F;tmp&#x2F;mysql.socksymbolic-links&#x3D;0max_connections&#x3D;400innodb"><meta property="og:image" content="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg"><meta property="article:published_time" content="2020-03-15T12:03:11.000Z"><meta property="article:modified_time" content="2020-09-15T13:00:54.978Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-09-15 21:00:54'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">准备环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7%E5%B9%B6%E4%B8%94%E6%8E%88%E6%9D%83"><span class="toc-number">2.</span> <span class="toc-text">创建用户并且授权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85innobackupex"><span class="toc-number">3.</span> <span class="toc-text">安装innobackupex</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#innobackupex%E5%85%A8%E5%A4%87%E4%BB%BD"><span class="toc-number">4.</span> <span class="toc-text">innobackupex全备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#innobackupex%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD"><span class="toc-number">5.</span> <span class="toc-text">innobackupex增量备份</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D"><span class="toc-number">6.</span> <span class="toc-text">恢复</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">MySQL备份</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-03-15T12:03:11.000Z" title="发表于 2020-03-15 20:03:11">2020-03-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-09-15T13:00:54.978Z" title="更新于 2020-09-15 21:00:54">2020-09-15</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/MySQL/">MySQL</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">722</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="准备环境"><a href="#准备环境" class="headerlink" title="准备环境"></a>准备环境</h2><p>编辑/etc/my.cnf,再[mysqld]板块添加如下，重启服务</p>
+<a id="more"></a>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">datadir=/usr/<span class="built_in">local</span>/mysql/data</span><br><span class="line">port=3306</span><br><span class="line">sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES</span><br><span class="line">socket=/tmp/mysql.sock</span><br><span class="line">symbolic-links=0</span><br><span class="line">max_connections=400</span><br><span class="line">innodb_file_per_table=1</span><br><span class="line">lower_case_table_names=1</span><br><span class="line"><span class="comment">#开启、并且可以将mysql-bin改为其他的日志名</span></span><br><span class="line"><span class="built_in">log</span>-bin=mysql-bin</span><br><span class="line"><span class="comment">#添加id号，如果做主从，就不能一样</span></span><br><span class="line">server-id=1</span><br><span class="line"><span class="comment">#超过200M将生成新文件，最大和默认值是1GB</span></span><br><span class="line">max_binlog_size=1G</span><br><span class="line"><span class="comment">#表示binlog使用最大内存的数，默认1M</span></span><br><span class="line">max_binlog_cache_size=1M</span><br><span class="line"><span class="comment">#表示binlog日志保留时间，默认单位是天</span></span><br><span class="line">expire_logs_days=7</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建用户并且授权"><a href="#创建用户并且授权" class="headerlink" title="创建用户并且授权"></a>创建用户并且授权</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#创建back用户</span></span><br><span class="line">create user <span class="string">&#x27;back&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> identified by <span class="string">&#x27;tang1611&#x27;</span>;</span><br><span class="line"><span class="comment">#授权</span></span><br><span class="line">grant reload,lock tables,replication client,create tablespace,process,super on *.* to <span class="string">&#x27;back&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> ;</span><br><span class="line">grant create,insert,select on percona_schema.* to <span class="string">&#x27;back&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span>;</span><br><span class="line">use mysql;</span><br><span class="line">update user <span class="built_in">set</span> user.Host=<span class="string">&#x27;%&#x27;</span> <span class="built_in">where</span> user.User=<span class="string">&#x27;back&#x27;</span>;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装innobackupex"><a href="#安装innobackupex" class="headerlink" title="安装innobackupex"></a>安装innobackupex</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#安装依赖库</span></span><br><span class="line">yum -y install perl perl-devel libaio libaio-devel perl-Time-HiRes perl-DBD-MySQL libev-devel</span><br><span class="line"><span class="comment">#安装</span></span><br><span class="line">wget https://www.percona.com/downloads/XtraBackup/Percona-XtraBackup-2.4.12/binary/redhat/7/x86_64/percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br><span class="line">yum -y install percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<h2 id="innobackupex全备份"><a href="#innobackupex全备份" class="headerlink" title="innobackupex全备份"></a>innobackupex全备份</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#创建备份目录</span></span><br><span class="line">mkdir -p /root/bin</span><br><span class="line">mkdir -p /bak/mysql-xback</span><br></pre></td></tr></table></figure>
+<p>编写脚本<br>vim /root/bin/mybak-all.sh</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment">#全备份</span></span><br><span class="line"><span class="comment">#指定备份目录</span></span><br><span class="line">backup_dir=<span class="string">&quot;/bak/mysql-xback&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#检查目录是否存在，不存在则创建</span></span><br><span class="line">[[ -d <span class="variable">$backup_dir</span> ]] || mkdir -p <span class="variable">$backup_dir</span></span><br><span class="line"><span class="keyword">if</span> [[ -d <span class="variable">$backup_dir</span>/all-backup ]];<span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;全备份已经存在&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#开始备份</span></span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=back --password=<span class="string">&#x27;tang1611&#x27;</span> --no-timestamp <span class="variable">$backup_dir</span>/all-backup &amp;&gt; /tmp/mysql-backup.log</span><br><span class="line"></span><br><span class="line"><span class="comment">#查看临时目录</span></span><br><span class="line">tail -n 1 /tmp/mysql-backup.log | grep <span class="string">&#x27;completed OK!&#x27;</span></span><br><span class="line"><span class="keyword">if</span> [[ $? -eq 0 ]];<span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;备份成功&quot;</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;all-backup&quot;</span> &gt; /tmp/mysql-backup.txt</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;备份失败&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="innobackupex增量备份"><a href="#innobackupex增量备份" class="headerlink" title="innobackupex增量备份"></a>innobackupex增量备份</h2><p>编写脚本<br>vim /root/bin/mybak-section.sh</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment">#增量备份</span></span><br><span class="line"><span class="comment">#备份目录</span></span><br><span class="line">backup_dir=<span class="string">&quot;/bak/mysql-xback&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#新旧备份</span></span><br><span class="line">old_dir=`cat /tmp/mysql-backup.txt`</span><br><span class="line">new_dir=`date +%F-%H-%M-%S`</span><br><span class="line"></span><br><span class="line"><span class="comment">#检查目录</span></span><br><span class="line"><span class="keyword">if</span> [[ ! -d <span class="variable">$&#123;backup_dir&#125;</span>/all-backup ]];<span class="keyword">then</span> </span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;还没有全备份，请先进行全备份！&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#执行/usr/bin/innobackupex --user=back --password=&#x27;tang1611&#x27; --no-timestamp --incremental --incremental-basedir=$&#123;backup_dir&#125;/$&#123;old_dir&#125; $&#123;backup_dir&#125;/$&#123;new_dir&#125; &amp;&gt; /tmp/mysql-backup.log</span></span><br><span class="line"></span><br><span class="line">tail -n 1 /tmp/mysql-backup.log | grep <span class="string">&#x27;completed OK!&#x27;</span></span><br><span class="line"><span class="keyword">if</span> [[ $? -eq 0 ]];<span class="keyword">then</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;<span class="variable">$&#123;new_dir&#125;</span>&quot;</span> &gt; /tmp/mysql-backup.txt</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;备份失败&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="恢复"><a href="#恢复" class="headerlink" title="恢复"></a>恢复</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#将已提交的事物重放</span></span><br><span class="line">innobackupex --apply-log --redo-only /usr/<span class="built_in">local</span>/back/mysql/all/2020-03-16_11-38-50</span><br><span class="line"><span class="comment">#整合第一个增量备份数据到全量备份数据里面</span></span><br><span class="line">innobackupex --apply-log --redo-only /usr/<span class="built_in">local</span>/back/mysql/all/2020-03-16_11-38-50 --incremental-dir=//usr/<span class="built_in">local</span>/back/mysql/increment/2020-03-16_11-40-50</span><br><span class="line"><span class="comment">#整合第二个增量备份数据到全量备份数据里面</span></span><br><span class="line">innobackupex --apply-log --redo-only /usr/<span class="built_in">local</span>/back/mysql/all/2020-03-16_11-38-50 --incremental-dir=//usr/<span class="built_in">local</span>/back/mysql/increment/2020-03-16_11-45-30</span><br><span class="line"><span class="comment">#此时数据已经是最后一次增量备份的数据了，执行恢复</span></span><br><span class="line">innobackupex --copy-back /usr/<span class="built_in">local</span>/back/mysql/all/2020-03-16_11-38-50</span><br></pre></td></tr></table></figure></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/MySQL/">MySQL</a></div><div class="post_share"><div class="social-share" data-image="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/03/17/Redis-cluster%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/"><img class="prev-cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Redis-cluster集群搭建</div></div></a></div><div class="next-post pull-right"><a href="/2020/03/15/Linux%E4%B8%8BMySQL%E5%AE%89%E8%A3%85-%E8%BD%AC/"><img class="next-cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Linux下MySQL安装(转)</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2020/03/15/Linux下MySQL安装-转/" title="Linux下MySQL安装(转)"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-15</div><div class="relatedPosts_title">Linux下MySQL安装(转)</div></div></a></div><div class="relatedPosts_item"><a href="/2020/04/05/MySQL主从复制/" title="MySQL主从复制"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-05</div><div class="relatedPosts_title">MySQL主从复制</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/12/MySQL之高可用PXC集群搭建/" title="MySQL之高可用PXC集群搭建"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-12</div><div class="relatedPosts_title">MySQL之高可用PXC集群搭建</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/09/MySQL如何通过binlog日志排查问题/" title="MySQL如何通过binlog日志排查问题"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-09</div><div class="relatedPosts_title">MySQL如何通过binlog日志排查问题</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/13/MySQL通过binlog日志恢复数据/" title="MySQL通过binlog日志恢复数据"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-13</div><div class="relatedPosts_title">MySQL通过binlog日志恢复数据</div></div></a></div><div class="relatedPosts_item"><a href="/2020/04/05/MySQL高可用架构之MHA部署/" title="MySQL高可用架构之MHA部署"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-05</div><div class="relatedPosts_title">MySQL高可用架构之MHA部署</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '3c6888818f6cf9c2e5f4fdd42fadf0b4',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

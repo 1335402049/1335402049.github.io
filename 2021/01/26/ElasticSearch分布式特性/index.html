@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ElasticSearch分布式特性 | Silence</title><meta name="description" content="分布式特性es支持集群模式，是一个分布式系统，主要有以下好处：  增大系统容量，如内存、磁盘，使得es集群可以支持PB级的数据 提高系统可用性，即使部分节点停止服务，整个集群依然可以提供正常服务  es集群由多个es实例组成：  不同集群通过集群名称来区分，可通过cluster.name进行配置 每个es实例本质上是一个JVM进程，通过node.name配置实例名称  Cluster Statee"><meta name="keywords" content="ELK Stack"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/01/26/ElasticSearch%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%B9%E6%80%A7/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="ElasticSearch分布式特性"><meta property="og:url" content="http://yoursite.com/2021/01/26/ElasticSearch%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%B9%E6%80%A7/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="分布式特性es支持集群模式，是一个分布式系统，主要有以下好处：  增大系统容量，如内存、磁盘，使得es集群可以支持PB级的数据 提高系统可用性，即使部分节点停止服务，整个集群依然可以提供正常服务  es集群由多个es实例组成：  不同集群通过集群名称来区分，可通过cluster.name进行配置 每个es实例本质上是一个JVM进程，通过node.name配置实例名称  Cluster Statee"><meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea"><meta property="article:published_time" content="2021-01-26T10:57:02.000Z"><meta property="article:modified_time" content="2021-03-21T06:47:58.996Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-03-21 14:47:58'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%B9%E6%80%A7"><span class="toc-number">1.</span> <span class="toc-text">分布式特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cluster-State"><span class="toc-number">2.</span> <span class="toc-text">Cluster State</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Master-Node"><span class="toc-number">3.</span> <span class="toc-text">Master Node</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Coordinating-Node"><span class="toc-number">4.</span> <span class="toc-text">Coordinating Node</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-Node"><span class="toc-number">5.</span> <span class="toc-text">Data Node</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="toc-number">6.</span> <span class="toc-text">系统可用性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A2%9E%E5%A4%A7%E7%B3%BB%E7%BB%9F%E5%AE%B9%E9%87%8F"><span class="toc-number">7.</span> <span class="toc-text">增大系统容量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Cluster-Health"><span class="toc-number">8.</span> <span class="toc-text">Cluster Health</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="toc-number">9.</span> <span class="toc-text">故障转移</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%98%E5%82%A8"><span class="toc-number">10.</span> <span class="toc-text">文档分布式存储</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E5%AD%98%E5%82%A8"><span class="toc-number">10.1.</span> <span class="toc-text">文档存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E5%88%9B%E5%BB%BA%E4%B8%8E%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B"><span class="toc-number">10.2.</span> <span class="toc-text">文档创建与读取流程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B"><span class="toc-number">10.2.1.</span> <span class="toc-text">文档创建流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B"><span class="toc-number">10.2.2.</span> <span class="toc-text">文档读取流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E6%B5%81%E7%A8%8B"><span class="toc-number">10.2.3.</span> <span class="toc-text">文档批量创建流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E6%89%B9%E9%87%8F%E8%AF%BB%E5%8F%96%E6%B5%81%E7%A8%8B"><span class="toc-number">10.2.4.</span> <span class="toc-text">文档批量读取流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E6%A1%A3%E6%90%9C%E7%B4%A2%E5%AE%9E%E6%97%B6%E6%80%A7"><span class="toc-number">10.3.</span> <span class="toc-text">文档搜索实时性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#refresh"><span class="toc-number">10.3.1.</span> <span class="toc-text">refresh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#translog"><span class="toc-number">10.3.2.</span> <span class="toc-text">translog</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#flush"><span class="toc-number">10.3.3.</span> <span class="toc-text">flush</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E4%B8%8E%E6%9B%B4%E6%96%B0%E6%96%87%E6%A1%A3"><span class="toc-number">10.3.4.</span> <span class="toc-text">删除与更新文档</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Segment-merge"><span class="toc-number">10.3.5.</span> <span class="toc-text">Segment merge</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%84%91%E8%A3%82"><span class="toc-number">11.</span> <span class="toc-text">脑裂</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">ElasticSearch分布式特性</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-01-26T10:57:02.000Z" title="发表于 2021-01-26 18:57:02">2021-01-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-21T06:47:58.996Z" title="更新于 2021-03-21 14:47:58">2021-03-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ELK-Stack/">ELK Stack</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="分布式特性"><a href="#分布式特性" class="headerlink" title="分布式特性"></a>分布式特性</h2><p>es支持集群模式，是一个分布式系统，主要有以下好处：</p>
+<ul>
+<li>增大系统容量，如内存、磁盘，使得es集群可以支持PB级的数据</li>
+<li>提高系统可用性，即使部分节点停止服务，整个集群依然可以提供正常服务</li>
+</ul>
+<p>es集群由多个es实例组成：</p>
+<ul>
+<li>不同集群通过集群名称来区分，可通过cluster.name进行配置</li>
+<li>每个es实例本质上是一个JVM进程，通过node.name配置实例名称</li>
+</ul>
+<h2 id="Cluster-State"><a href="#Cluster-State" class="headerlink" title="Cluster State"></a>Cluster State</h2><p>es集群相关的数据称为cluster state，主要记录如下信息：</p>
+<ul>
+<li>节点信息，比如索引名称、连接地址等</li>
+<li>索引信息：比如索引名称、配置等</li>
+<li>……</li>
+</ul>
+<h2 id="Master-Node"><a href="#Master-Node" class="headerlink" title="Master Node"></a>Master Node</h2><p>一个集群只能有一个Master，只有master可以修改cluster state</p>
+<p>cluster state存储在每个节点上，master维护最新版本并同步给其他节点</p>
+<p>master节点是通过集群中所有节点选举产生的，可以被选举的节点称为master-eligible，可以通过node.master配置哪些节点可以被选举</p>
+<h2 id="Coordinating-Node"><a href="#Coordinating-Node" class="headerlink" title="Coordinating Node"></a>Coordinating Node</h2><p>处理请求的节点称为coordinating节点，该节点为所有节点的默认角色，不能取消</p>
+<ul>
+<li>路由请求到正确的节点处理，比如创建索引的请求到master节点</li>
+</ul>
+<h2 id="Data-Node"><a href="#Data-Node" class="headerlink" title="Data Node"></a>Data Node</h2><p>存储数据的节点称为data节点，默认所有节点都是data节点，可以通过配置node.data配置哪些节点可以存储数据</p>
+<h2 id="系统可用性"><a href="#系统可用性" class="headerlink" title="系统可用性"></a>系统可用性</h2><p>服务可用性：2个节点的情况下，允许其中1个节点停止服务</p>
+<p>数据可用性：（1）引入副本（Replication）解决（2）每个节点上都有完备的数据</p>
+<p>es提供集群使得服务实现可用性，引入副本，例如test_index在es-01实例的节点上，那么test_index有一个数据副本存储在另一台节点之上</p>
+<h2 id="增大系统容量"><a href="#增大系统容量" class="headerlink" title="增大系统容量"></a>增大系统容量</h2><p>es引入分片（Shard）的概念来使数据分布在所有节点上，分片使得es能够支持PB级数据</p>
+<ul>
+<li>分片存储了部分数据，可以分布在任意节点</li>
+<li>分片数在索引创建时指定，并且后续不允许在修改</li>
+<li>分片有主分片和副本分片之分，副本分片也就是上面提到的副本（Replication），实现数据可用性</li>
+</ul>
+<h2 id="Cluster-Health"><a href="#Cluster-Health" class="headerlink" title="Cluster Health"></a>Cluster Health</h2><p>可以通过下面API查看集群健康状态</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -XGET http:&#x2F;&#x2F;localhost:9200&#x2F;_cluster&#x2F;health?pretty</span><br></pre></td></tr></table></figure>
+
+<p>集群的健康状态有3种：</p>
+<ul>
+<li>green：健康状态，所有主副分片都正常分配</li>
+<li>yellow：所有主分片都正常分配，但是有副本分片未正常分配</li>
+<li>red：有主分片未分配</li>
+</ul>
+<h2 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h2><p>集群中的各个节点都会互相的做心跳检测，当es-02和es-03发现es-01无法响应后，会发起master选举</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/26/ElasticSearch%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%B9%E6%80%A7/a1.png"></p>
+<p>假如es-02被选举成为新的master后，由于主分片P0下线，集群状态变为Red</p>
+<p>master（es-02）认为P0未被分配，就将其副本R0提升为P0，此时，所有主分片都被分配，但仍有副本分片未分配，集群状态变为Yello</p>
+<p>master（es-02）会为P0和P2生成新的副本，集群状态变为绿色</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/26/ElasticSearch%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%B9%E6%80%A7/a2.png"></p>
+<h2 id="文档分布式存储"><a href="#文档分布式存储" class="headerlink" title="文档分布式存储"></a>文档分布式存储</h2><h3 id="文档存储"><a href="#文档存储" class="headerlink" title="文档存储"></a>文档存储</h3><p>es通过下面算法计算文档存储在哪个分片上</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">shard &#x3D; hash(routing) % numbers_of_primary_shards</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>hash算法可以保证文档均匀的分散在所有分片上</li>
+<li>routing是一个关键参数，默认是文档id，也可以自行指定</li>
+<li>numbers_of_primary_shards为主分片数</li>
+</ul>
+<h3 id="文档创建与读取流程"><a href="#文档创建与读取流程" class="headerlink" title="文档创建与读取流程"></a>文档创建与读取流程</h3><p><img src= "/img/loading.gif" data-lazy-src="/2021/01/26/ElasticSearch%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%B9%E6%80%A7/a3.png"></p>
+<h4 id="文档创建流程"><a href="#文档创建流程" class="headerlink" title="文档创建流程"></a>文档创建流程</h4><ul>
+<li>client发送创建文档的请求到es-03</li>
+<li>es-03通过routing算法计算该文档应该存储在P2分片，查询cluster state后得知P2分片在es-02上，然后将创建文档的请求发给es-02</li>
+<li>P2接收到请求并且执行创建文档的请求，然后将同样的请求发送给副本R2</li>
+<li>R2接收并执行创建文档请求后，通知P2成功的结果</li>
+<li>P2接收副本分片R2结果后，返回成功给es-02</li>
+<li>es-02返回结果给client</li>
+</ul>
+<h4 id="文档读取流程"><a href="#文档读取流程" class="headerlink" title="文档读取流程"></a>文档读取流程</h4><ul>
+<li>client向es-03发送获取文档的请求</li>
+<li>es-03通过routing算法计算该文档存储在P2，查询cluster state得知主分片P2、副本分片R2列表，然后以轮询的机制获取一个分片，比如这里是R2，就将请求转发到es-01</li>
+<li>R2接收并执行读取文档请求，将结果返回给es-03</li>
+<li>es-03返回结果给client</li>
+</ul>
+<h4 id="文档批量创建流程"><a href="#文档批量创建流程" class="headerlink" title="文档批量创建流程"></a>文档批量创建流程</h4><ul>
+<li>client向es-03发送批量创建文档的请求（bulk）</li>
+<li>es-03通过routing计算所有文档的分片，然后按照主分片分配对应的执行操作，同时发送请求到涉及的主分片</li>
+<li>主分片接收请求并执行，将同样的请求同步到副本分片</li>
+<li>副本分片执行后将结果返回给主分片</li>
+<li>主分片获得副本分片执行结果，返回给es-03</li>
+<li>es-03将结果返回给client</li>
+</ul>
+<h4 id="文档批量读取流程"><a href="#文档批量读取流程" class="headerlink" title="文档批量读取流程"></a>文档批量读取流程</h4><ul>
+<li>client向es-03发送批量读取文档的请求（mget）</li>
+<li>es-03通过routing计算所有文档对应的分片，然后以轮询的机制获取参与的分片，按照分片构建mget请求，同时发送请求到涉及的分片</li>
+<li>涉及处理请求的分片将结果返回给es-03</li>
+<li>es-03返回结果给client</li>
+</ul>
+<h3 id="文档搜索实时性"><a href="#文档搜索实时性" class="headerlink" title="文档搜索实时性"></a>文档搜索实时性</h3><p>es会将文档写入倒排索引，倒排索引一旦生成，不能修改，其好处有：</p>
+<ul>
+<li>不用考虑并发写文件问题，杜绝锁机制带来的性能问题</li>
+<li>由于文件不在更改，可充分利用文件系统缓存</li>
+<li>利于对文件进行压缩存储</li>
+</ul>
+<p>其坏处为需要写入新文档时，必须重新构建倒排索引文件，然后代替老文件，新文件才能被索引，导致文档实时性差。解决方案就是写入的新文档直接生成新的倒排索引文件，查询时同时将请求引导到所有的索引文件，然后做结果汇总计算。</p>
+<p>Lucene采用这种方案，它构建的单个倒排索引称为segment，合在一起称为Index，ES中的一个shard对应Lucene Index，Lucene 会有一个专门的文件来记录所有的 segment 信息，称为 commit point。</p>
+<h4 id="refresh"><a href="#refresh" class="headerlink" title="refresh"></a>refresh</h4><p>segment写入磁盘的过程依然很耗时，可以借助文件系统缓存的特性，将segment在缓存中创建并开放查询来进一步提高文档实时性，该过程在ES里面称为refresh。</p>
+<p>在refresh之前，文档会先存储在一个buffer中，refresh时将buffer中的所有文档清空并生成segment</p>
+<p>es默认每1秒执行一次refresh，refresh发生时机主要有以下几种情况：</p>
+<ul>
+<li>间隔时间到达，通过index.setting.refresh.interval来设定</li>
+<li>index buffer占满时，其大小通过indices.memory.index_buffer.size设置，默认为JVM heap的10%，所有分片共享</li>
+<li>flush发生时也会触发refresh</li>
+</ul>
+<h4 id="translog"><a href="#translog" class="headerlink" title="translog"></a>translog</h4><p>如果在内存中的segment还没有写入磁盘前宕机，那么其中的文档也就无法恢复，es为了解决这个问题，引入translog机制</p>
+<ul>
+<li>写入文档到buffer，同时将该操作写入translog</li>
+<li>translog会及时写入到磁盘（fsync），相关配置 index.translog.*</li>
+<li>es启动时检查translog文件，从中恢复数据</li>
+</ul>
+<h4 id="flush"><a href="#flush" class="headerlink" title="flush"></a>flush</h4><p>flush负责的主要工作如下：</p>
+<ul>
+<li>将translog写入磁盘</li>
+<li>将index buffer清空，其中的文档生成一个新的segment，相当于refresh操作</li>
+<li>更新commit point并写入磁盘</li>
+<li>执行fsync操作，将内存中的segment写入磁盘</li>
+<li>删除旧的translog文件</li>
+</ul>
+<p>flush发生的时机主要如下几种情况：</p>
+<ul>
+<li>间隔时间到达，通过index.translog.flush_threshold_period参数</li>
+<li>translog占满时，其大小可以通过index.translog.flush_threshold_size控制，默认512MB，每个index都有自己的translog</li>
+</ul>
+<h4 id="删除与更新文档"><a href="#删除与更新文档" class="headerlink" title="删除与更新文档"></a>删除与更新文档</h4><p>segment一旦生成就不能修改，Lucene专门维护一个.del文件，记录所有已经删除的文档，.del 文档上记录的是文档在 Lucene 内部记录的 ID；在查询结果返回前会过滤掉 .del 中的所有文档</p>
+<h4 id="Segment-merge"><a href="#Segment-merge" class="headerlink" title="Segment merge"></a>Segment merge</h4><p>随着segment的增多，一次查询segment数量增多，查询变慢，es会定时的进行segment merge操作，减少segment的数量，也可以通过 force_merge API 可以手动强制做 segment merge 的操作。</p>
+<h2 id="脑裂"><a href="#脑裂" class="headerlink" title="脑裂"></a>脑裂</h2><p>脑裂问题是分布式系统的经典问题，例如下图：</p>
+<ul>
+<li>集群的各个es实例都会互相做心跳检测，当es-01的心跳线出现问题时，无法与es-02和es-03进行通信</li>
+<li>es-02和es-03会进行选举master，比如es-02称为新的master，此时会更新cluster state</li>
+<li>es-01也会检测到无法与es-02和es-03通信，然后自己会组件集群，也会更新cluster state</li>
+</ul>
+<p>这样子就会同时存在2个master和数据存在2个差异的cluster state，当心跳线恢复之后，无法正确选出master</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/26/ElasticSearch%E5%88%86%E5%B8%83%E5%BC%8F%E7%89%B9%E6%80%A7/a1.png"></p>
+<p>解决方法：</p>
+<p>在可选举的master-eligible节点大于等于quorum时才可以进行选举</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">quorum &#x3D; master-eligible 节点数 &#x2F; 2 + 1</span><br></pre></td></tr></table></figure>
+
+<p>就如上面所说，心跳线出现问题时，整个集群被一分为二</p>
+<ul>
+<li>左侧是1个节点数，master-eligible=1，quorum=1/2+1，即不满足master-eligible节点大于等于quorum条件，无法进行选举</li>
+<li>右侧2个节点，master-eligible=2，quorum=2/2+1，即满足master-eligible节点大于等于quorum条件，可以进行选举</li>
+</ul>
+<p>es提供 discover.zen.minimum_master.nodes参数，设定其值为quorum即可避免脑裂问题</p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ELK-Stack/">ELK Stack</a></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/02/01/Kubernetes%E9%83%A8%E7%BD%B2Consul%E9%9B%86%E7%BE%A4/"><img class="prev-cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Kubernetes部署Consul集群</div></div></a></div><div class="next-post pull-right"><a href="/2021/01/26/ElasticSearch%E9%9B%86%E7%BE%A4org-elasticsearch-discovery-MasterNotDiscoveredException%E9%97%AE%E9%A2%98/"><img class="next-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch之Search/" title="ElasticSearch之Search"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch之Search</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch之mapping/" title="ElasticSearch之mapping"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch之mapping</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch分词/" title="ElasticSearch分词"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch分词</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch基本知识/" title="ElasticSearch基本知识"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch基本知识</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/26/ElasticSearch集群org-elasticsearch-discovery-MasterNotDiscoveredException问题/" title="ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-26</div><div class="relatedPosts_title">ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题</div></div></a></div><div class="relatedPosts_item"><a href="/2021/04/13/logstash收集java日志/" title="logstash收集java日志"><img class="relatedPosts_cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-04-13</div><div class="relatedPosts_title">logstash收集java日志</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '14b30b656500616125514e2e4c2cc68e',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MySQL之高可用PXC集群搭建 | Silence</title><meta name="description" content="Percona XtraDB Cluster是MySQL高可用的一种方案,PXC集群是以节点组成（建议至少3个节点）,每个节点都是常规的MySQL或者Percona Server,并且所有节点都是可读可写的,集群中的每个节点都保留着完整的数据,相对于主从架构，PXC更加体现出数据的强一致性。  优点（1）服务高可用：所有节点数据是相同的，所有节点可读可写，只要存在一个节点可用，整个服务还能正常运行"><meta name="keywords" content="MySQL"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2020/08/12/MySQL%E4%B9%8B%E9%AB%98%E5%8F%AF%E7%94%A8PXC%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="MySQL之高可用PXC集群搭建"><meta property="og:url" content="http://yoursite.com/2020/08/12/MySQL%E4%B9%8B%E9%AB%98%E5%8F%AF%E7%94%A8PXC%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="Percona XtraDB Cluster是MySQL高可用的一种方案,PXC集群是以节点组成（建议至少3个节点）,每个节点都是常规的MySQL或者Percona Server,并且所有节点都是可读可写的,集群中的每个节点都保留着完整的数据,相对于主从架构，PXC更加体现出数据的强一致性。  优点（1）服务高可用：所有节点数据是相同的，所有节点可读可写，只要存在一个节点可用，整个服务还能正常运行"><meta property="og:image" content="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg"><meta property="article:published_time" content="2020-08-12T12:21:51.000Z"><meta property="article:modified_time" content="2020-08-12T13:11:20.691Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-08-12 21:11:20'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E7%82%B9"><span class="toc-number">1.</span> <span class="toc-text">优点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%BA%E7%82%B9"><span class="toc-number">2.</span> <span class="toc-text">缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">3.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Percona-XtraDB-Cluster-5-7"><span class="toc-number">4.</span> <span class="toc-text">安装Percona XtraDB Cluster 5.7</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">5.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE"><span class="toc-number">6.</span> <span class="toc-text">配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8PXC%E9%9B%86%E7%BE%A4%E7%AC%AC%E4%B8%80%E4%B8%AA%E8%8A%82%E7%82%B9"><span class="toc-number">7.</span> <span class="toc-text">启动PXC集群第一个节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E5%85%B6%E4%BB%96%E8%8A%82%E7%82%B9"><span class="toc-number">8.</span> <span class="toc-text">启动其他节点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E9%9B%86%E7%BE%A4%E7%8A%B6%E6%80%81"><span class="toc-number">9.</span> <span class="toc-text">查看集群状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E9%9B%86%E7%BE%A4%E6%98%AF%E5%90%A6%E6%88%90%E5%8A%9F"><span class="toc-number">10.</span> <span class="toc-text">验证集群是否成功</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">MySQL之高可用PXC集群搭建</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-08-12T12:21:51.000Z" title="发表于 2020-08-12 20:21:51">2020-08-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-08-12T13:11:20.691Z" title="更新于 2020-08-12 21:11:20">2020-08-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/MySQL/">MySQL</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>Percona XtraDB Cluster是MySQL高可用的一种方案,PXC集群是以节点组成（建议至少3个节点）,每个节点都是常规的MySQL或者Percona Server,并且所有节点都是可读可写的,集群中的每个节点都保留着完整的数据,相对于主从架构，PXC更加体现出数据的强一致性。</p>
+<a id="more"></a>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>（1）服务高可用：所有节点数据是相同的，所有节点可读可写，只要存在一个节点可用，整个服务还能正常运行<br>（2）同步复制：当请求过来，只有所有节点成功提交，否则算提交失败<br>（3）多主复制：所有节点可读可写<br>总结来说PXC最大的优势：强一致性、所有节点可读可写、无同步时延</p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>（1）仅支持InnoDB事务控制<br>（2）数据重复，所有节点都保留一份完整的数据<br>（3）PXC具有强一致性，必须所有节点执行成功才算提交成功，写入效率取决于节点最弱的一台<br>（4）新加入节点需要复制一份完整的数据,采用全量数据传输（SST）代价高<br>（5）所有表都要有主键<br>（6）存在较多的锁冲突、死锁问题<br>（7）不支持LOCK TABLE<br>（8）不支持XA</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">node1:192.168.37.142</span><br><span class="line">node2:192.168.37.143</span><br><span class="line">node3:192.168.37.144</span><br><span class="line"></span><br><span class="line"><span class="comment">#关闭防火墙</span></span><br><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld</span><br><span class="line"><span class="comment">#关闭selinux</span></span><br><span class="line">sed -i <span class="string">&#x27;s/SELINUX=enforcing/SELINUX=disabled/&#x27;</span> /etc/sysconfig/selinux</span><br><span class="line"><span class="comment">#设置hostname,三台机器分别对应node1 node2 node3</span></span><br><span class="line">hostnamectl <span class="built_in">set</span>-hostname node1</span><br><span class="line">hostnamectl <span class="built_in">set</span>-hostname node2</span><br><span class="line">hostnamectl <span class="built_in">set</span>-hostname node3</span><br><span class="line"><span class="comment">#重启</span></span><br><span class="line">reboot</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装Percona-XtraDB-Cluster-5-7"><a href="#安装Percona-XtraDB-Cluster-5-7" class="headerlink" title="安装Percona XtraDB Cluster 5.7"></a>安装Percona XtraDB Cluster 5.7</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#所有机器配置yum源 vim /etc/yum.repos.d/pxc.repo</span></span><br><span class="line">[percona]</span><br><span class="line">name=percona_repo</span><br><span class="line">baseurl =https://mirrors.tuna.tsinghua.edu.cn/percona/release/<span class="variable">$releasever</span>/RPMS/<span class="variable">$basearch</span></span><br><span class="line">enabled = 1</span><br><span class="line">gpgcheck = 0</span><br><span class="line"></span><br><span class="line"><span class="comment">#所有机器安装</span></span><br><span class="line">yum -y install Percona-XtraDB-Cluster-57</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wsrep_provider：指定Gelera库的路径</span><br><span class="line">wsrep_cluster_address：Galera集群各节点地址</span><br><span class="line">binlog_format：二进制日志格式，仅支持row格式的二进制日志</span><br><span class="line">default_storage_engine：指定默认存储引擎，仅支持InnoDB</span><br><span class="line">wsrep_slave_threads：用于设置读节点执行写集的线程个数</span><br><span class="line">wsrep_log_conflicts：启用时输出的错误日志将包含产生冲突的表和schema</span><br><span class="line">innodb_autoinc_lock_mode：只能设置为2，设置0或1时无法正确处理死锁问题</span><br><span class="line">wsrep_node_address：本节点IP</span><br><span class="line">wsrep_cluster_name：集群名称</span><br><span class="line">wsrep_node_name：本节点hostname</span><br><span class="line">pxc_strict_mode：是否限制pxc启动正在试用阶段的功能，默认值ENFORCING，表示不启用</span><br><span class="line">wsrep_sst_method：全量传输SST，可用方法有mysqldump、rsync和xtrabackup，前2者在传输时都需要对Donor加全局只读锁，xtrabackup不需要，推荐使用xtrabackup</span><br><span class="line">wsrep_sst_auth：在SST传输时需要用到的认证凭据，格式为：<span class="string">&quot;用户:密码&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>配置文件都放在/etc/percona-xtradb-cluster.conf.d目录里，包括mysqld.cnf，mysqld_safe.cnf，wsrep.cnf 三个文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># cat mysqld.cnf </span></span><br><span class="line"><span class="comment"># Template my.cnf for PXC</span></span><br><span class="line"><span class="comment"># Edit to your requirements.</span></span><br><span class="line">[client]</span><br><span class="line">socket=/var/lib/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="comment">#server-id必须保证不一样</span></span><br><span class="line">server-id=3</span><br><span class="line">datadir=/var/lib/mysql</span><br><span class="line">socket=/var/lib/mysql/mysql.sock</span><br><span class="line"><span class="built_in">log</span>-error=/var/<span class="built_in">log</span>/mysqld.log</span><br><span class="line">pid-file=/var/run/mysqld/mysqld.pid</span><br><span class="line"><span class="built_in">log</span>-bin</span><br><span class="line">log_slave_updates</span><br><span class="line">expire_logs_days=7</span><br><span class="line"></span><br><span class="line"><span class="comment"># Disabling symbolic-links is recommended to prevent assorted security risks</span></span><br><span class="line">symbolic-links=0</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># cat mysqld_safe.cnf </span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># The Percona Server 5.7 configuration file.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># One can use all long options that the program supports.</span></span><br><span class="line"><span class="comment"># Run program with --help to get a list of available options and with</span></span><br><span class="line"><span class="comment"># --print-defaults to see which it would actually understand and use.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># For explanations see</span></span><br><span class="line"><span class="comment"># http://dev.mysql.com/doc/mysql/en/server-system-variables.html</span></span><br><span class="line"><span class="comment">#不需要改变</span></span><br><span class="line">[mysqld_safe]</span><br><span class="line">pid-file = /var/run/mysqld/mysqld.pid</span><br><span class="line">socket   = /var/lib/mysql/mysql.sock</span><br><span class="line">nice     = 0</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line"><span class="comment"># Path to Galera library</span></span><br><span class="line">wsrep_provider=/usr/lib64/galera3/libgalera_smm.so</span><br><span class="line"></span><br><span class="line"><span class="comment"># Cluster connection URL contains IPs of nodes</span></span><br><span class="line"><span class="comment">#If no IP is found, this implies that a new cluster needs to be created,</span></span><br><span class="line"><span class="comment">#in order to do that you need to bootstrap this node</span></span><br><span class="line"><span class="comment">#集群内所有节点IP，保证本地节点IP在最后</span></span><br><span class="line">wsrep_cluster_address=gcomm://192.168.37.142,192.168.37.143,192.168.37.144</span><br><span class="line"></span><br><span class="line"><span class="comment"># In order for Galera to work correctly binlog format should be ROW</span></span><br><span class="line">binlog_format=ROW</span><br><span class="line"></span><br><span class="line"><span class="comment"># MyISAM storage engine has only experimental support</span></span><br><span class="line">default_storage_engine=InnoDB</span><br><span class="line"></span><br><span class="line"><span class="comment"># Slave thread to use</span></span><br><span class="line">wsrep_slave_threads= 8</span><br><span class="line"></span><br><span class="line">wsrep_log_conflicts</span><br><span class="line"></span><br><span class="line"><span class="comment"># This changes how InnoDB autoincrement locks are managed and is a requirement for Galera</span></span><br><span class="line">innodb_autoinc_lock_mode=2</span><br><span class="line"></span><br><span class="line"><span class="comment"># Node IP address</span></span><br><span class="line"><span class="comment">#指定自己节点的IP</span></span><br><span class="line">wsrep_node_address=192.168.37.144</span><br><span class="line"><span class="comment"># Cluster name</span></span><br><span class="line"><span class="comment">#集群名称，三台一样</span></span><br><span class="line">wsrep_cluster_name=pxc-cluster</span><br><span class="line"></span><br><span class="line"><span class="comment">#If wsrep_node_name is not specified,  then system hostname will be used</span></span><br><span class="line"><span class="comment">#每台机器对应的hostname</span></span><br><span class="line">wsrep_node_name=node3</span><br><span class="line"></span><br><span class="line"><span class="comment">#pxc_strict_mode allowed values: DISABLED,PERMISSIVE,ENFORCING,MASTER</span></span><br><span class="line">pxc_strict_mode=ENFORCING</span><br><span class="line"></span><br><span class="line"><span class="comment"># SST method</span></span><br><span class="line"><span class="comment">#推荐使用xtrabackup</span></span><br><span class="line">wsrep_sst_method=xtrabackup-v2</span><br><span class="line"></span><br><span class="line"><span class="comment">#Authentication for SST method</span></span><br><span class="line"><span class="comment">#SST复制所需要使用的mysql用户名和密码</span></span><br><span class="line">wsrep_sst_auth=<span class="string">&quot;admin:admin&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="启动PXC集群第一个节点"><a href="#启动PXC集群第一个节点" class="headerlink" title="启动PXC集群第一个节点"></a>启动PXC集群第一个节点</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#启动</span></span><br><span class="line">systemctl  start  mysql@bootstrap.service</span><br><span class="line"><span class="comment">#获取初始密码</span></span><br><span class="line">grep <span class="string">&quot;temporary password&quot;</span> /var/<span class="built_in">log</span>/mysqld.log</span><br><span class="line"><span class="comment">#登录mysql</span></span><br><span class="line">mysql -uroot -p<span class="string">&#x27;密码&#x27;</span></span><br><span class="line"><span class="comment">#修改密码</span></span><br><span class="line">ALTER user root@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="string">&#x27;123456&#x27;</span>;</span><br><span class="line"><span class="comment">#授予远程登录权限</span></span><br><span class="line">use mysql;</span><br><span class="line">update mysql.user <span class="built_in">set</span> host=<span class="string">&#x27;%&#x27;</span> <span class="built_in">where</span> user=<span class="string">&#x27;root&#x27;</span>;</span><br><span class="line"><span class="comment">#刷新权限</span></span><br><span class="line">FLUSH PRIVILEGES;</span><br><span class="line"></span><br><span class="line"><span class="comment">#创建SST传输需要的用户</span></span><br><span class="line">CREATE user admin@<span class="string">&#x27;%&#x27;</span> IDENTIFIED BY <span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line">GRANT RELOAD, LOCK TABLES, PROCESS, REPLICATION CLIENT ON *.* TO admin@<span class="string">&#x27;%&#x27;</span>;</span><br><span class="line">//刷新权限</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动其他节点"><a href="#启动其他节点" class="headerlink" title="启动其他节点"></a>启动其他节点</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#启动其他PXC节点与第一个节点命令不同</span></span><br><span class="line">service mysql start</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看集群状态"><a href="#查看集群状态" class="headerlink" title="查看集群状态"></a>查看集群状态</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">show status like <span class="string">&#x27;%wsrep%&#x27;</span></span><br><span class="line"></span><br><span class="line">wsrep_cluster_size表示集群节点数量</span><br><span class="line"><span class="comment">#当wsrep_local_state 为4，wsrep_local_state_comment为Synced 时，表示数据同步完成     </span></span><br><span class="line">wsrep_local_state  <span class="comment">#本地状态</span></span><br><span class="line">wsrep_local_state_comment <span class="comment">#本地状态评论</span></span><br><span class="line"><span class="comment">#当wsrep_cluster_status为Primary表示当前节点已经完成连接并准备好</span></span><br><span class="line">wsrep_cluster_status</span><br></pre></td></tr></table></figure>
+
+<h2 id="验证集群是否成功"><a href="#验证集群是否成功" class="headerlink" title="验证集群是否成功"></a>验证集群是否成功</h2><p>使用navicat连接三个节点<br><img src= "/img/loading.gif" data-lazy-src="/2020/08/12/MySQL%E4%B9%8B%E9%AB%98%E5%8F%AF%E7%94%A8PXC%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/a1.png"><br>在其中一个节点创建数据库staff，刷新下其他节点<br><img src= "/img/loading.gif" data-lazy-src="/2020/08/12/MySQL%E4%B9%8B%E9%AB%98%E5%8F%AF%E7%94%A8PXC%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/a2.png"><br>可以发现其他节点也创建了staff数据库，整个集群状态是正常的</p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/MySQL/">MySQL</a></div><div class="post_share"><div class="social-share" data-image="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&amp;fm=26&amp;gp=0.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/08/12/HAProxy%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/"><img class="prev-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fa-ssl.duitang.com%2Fuploads%2Fitem%2F201801%2F15%2F20180115151255_dqnds.jpg&amp;refer=http%3A%2F%2Fa-ssl.duitang.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1611921567&amp;t=22beda43f98ee34543141ffc0a096e76" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">HAProxy配置参数详解</div></div></a></div><div class="next-post pull-right"><a href="/2020/08/11/%E5%88%A9%E7%94%A8GitLab%E7%9A%84webhook%E6%9D%A5%E5%AE%9E%E7%8E%B0%E8%A7%A6%E5%8F%91Jenkins%E8%87%AA%E5%8A%A8%E6%93%8D%E4%BD%9C/"><img class="next-cover" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1597249586541&amp;di=f1fc98982c47aeebece012612030d378&amp;imgtype=0&amp;src=http%3A%2F%2Fwww.cloudfoundry.org%2Fwp-content%2Fuploads%2F2017%2F10%2Ficon_gitlab_cf%402x.png" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">利用GitLab的webhook来实现触发Jenkins自动操作</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2020/03/15/Linux下MySQL安装-转/" title="Linux下MySQL安装(转)"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-15</div><div class="relatedPosts_title">Linux下MySQL安装(转)</div></div></a></div><div class="relatedPosts_item"><a href="/2020/04/05/MySQL主从复制/" title="MySQL主从复制"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-05</div><div class="relatedPosts_title">MySQL主从复制</div></div></a></div><div class="relatedPosts_item"><a href="/2020/03/15/MySQL备份/" title="MySQL备份"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-15</div><div class="relatedPosts_title">MySQL备份</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/09/MySQL如何通过binlog日志排查问题/" title="MySQL如何通过binlog日志排查问题"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-09</div><div class="relatedPosts_title">MySQL如何通过binlog日志排查问题</div></div></a></div><div class="relatedPosts_item"><a href="/2020/08/13/MySQL通过binlog日志恢复数据/" title="MySQL通过binlog日志恢复数据"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-13</div><div class="relatedPosts_title">MySQL通过binlog日志恢复数据</div></div></a></div><div class="relatedPosts_item"><a href="/2020/04/05/MySQL高可用架构之MHA部署/" title="MySQL高可用架构之MHA部署"><img class="relatedPosts_cover" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=865625540,69448143&fm=26&gp=0.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-05</div><div class="relatedPosts_title">MySQL高可用架构之MHA部署</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '9b84a19f1fccb174f1581b4b3ae5ef81',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

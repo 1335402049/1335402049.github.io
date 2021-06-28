@@ -1,0 +1,373 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ElasticSearch之mapping | Silence</title><meta name="description" content="Mapping类似于数据库中的表结构定义，主要作用如下：  定义 Index 下的字段名（Field Name） 定义字段的类型，比如数值型、字符型、布尔型等 定义倒排索引相关的配置，比如是否索引、记录position等  数据类型核心数据类型：  字符串型 text、keyword  数值型：log、integer、short、byte、double、float、half_float、scale"><meta name="keywords" content="ELK Stack"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/01/23/ElasticSearch%E4%B9%8Bmapping/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="ElasticSearch之mapping"><meta property="og:url" content="http://yoursite.com/2021/01/23/ElasticSearch%E4%B9%8Bmapping/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="Mapping类似于数据库中的表结构定义，主要作用如下：  定义 Index 下的字段名（Field Name） 定义字段的类型，比如数值型、字符型、布尔型等 定义倒排索引相关的配置，比如是否索引、记录position等  数据类型核心数据类型：  字符串型 text、keyword  数值型：log、integer、short、byte、double、float、half_float、scale"><meta property="og:image" content="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea"><meta property="article:published_time" content="2021-01-23T03:46:11.000Z"><meta property="article:modified_time" content="2021-03-21T06:48:38.651Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-03-21 14:48:38'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89Mapping"><span class="toc-number">2.</span> <span class="toc-text">自定义Mapping</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dynamic%E5%8F%82%E6%95%B0"><span class="toc-number">3.</span> <span class="toc-text">dynamic参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#copy-to%E5%8F%82%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">copy_to参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#index%E5%8F%82%E6%95%B0"><span class="toc-number">5.</span> <span class="toc-text">index参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#index-options%E5%8F%82%E6%95%B0"><span class="toc-number">6.</span> <span class="toc-text">index_options参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#null-value"><span class="toc-number">7.</span> <span class="toc-text">null_value</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dynamic-mapping"><span class="toc-number">8.</span> <span class="toc-text">dynamic mapping</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E6%9C%9F%E8%AF%86%E5%88%AB"><span class="toc-number">9.</span> <span class="toc-text">日期识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E8%AF%86%E5%88%AB"><span class="toc-number">10.</span> <span class="toc-text">数字识别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#dynamic-templates"><span class="toc-number">11.</span> <span class="toc-text">dynamic templates</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">ElasticSearch之mapping</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-01-23T03:46:11.000Z" title="发表于 2021-01-23 11:46:11">2021-01-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-21T06:48:38.651Z" title="更新于 2021-03-21 14:48:38">2021-03-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ELK-Stack/">ELK Stack</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>Mapping类似于数据库中的表结构定义，主要作用如下：</p>
+<ul>
+<li>定义 Index 下的字段名（Field Name）</li>
+<li>定义字段的类型，比如数值型、字符型、布尔型等</li>
+<li>定义倒排索引相关的配置，比如是否索引、记录position等</li>
+</ul>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>核心数据类型：</p>
+<ul>
+<li><p>字符串型 text、keyword</p>
+</li>
+<li><p>数值型：log、integer、short、byte、double、float、half_float、scaled_float</p>
+</li>
+<li><p>布尔：boolean</p>
+</li>
+<li><p>日期：date</p>
+</li>
+<li><p>二进制：binary</p>
+</li>
+<li><p>范围类型：integer_range、float_range、long_range、double_range、date_range</p>
+</li>
+</ul>
+<p>复杂数据类型：</p>
+<ul>
+<li>数组类型 array</li>
+<li>对象类型 object</li>
+<li>嵌套类型 nested object</li>
+</ul>
+<p>地理位置数据类型：</p>
+<ul>
+<li>geo_point</li>
+<li>geo_shape</li>
+</ul>
+<p>专用类型：</p>
+<ul>
+<li>记录ip地址 ip</li>
+<li>实现自动补全 completion</li>
+<li>记录分词数 token_count</li>
+<li>记录字符串hash值 murmur3</li>
+<li>percolator</li>
+<li>join</li>
+</ul>
+<p>多字段特征 multi-fields：</p>
+<ul>
+<li>允许对同一个字段采用不同的配置，比如对人名可以进行拼音搜索</li>
+</ul>
+<h2 id="自定义Mapping"><a href="#自定义Mapping" class="headerlink" title="自定义Mapping"></a>自定义Mapping</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;title&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;text&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;name&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;age&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;long&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/23/ElasticSearch%E4%B9%8Bmapping/a1.png"></p>
+<h2 id="dynamic参数"><a href="#dynamic参数" class="headerlink" title="dynamic参数"></a>dynamic参数</h2><p>Mapping中的字段类型一旦设定后，就禁止直接修改，主要原因是Lucene为了提高效率，不允许直接修改mapping，一旦修改，会影响倒排索引的方式。但是允许我们新增字段，通过dynamic参数来控制字段的新增：</p>
+<ul>
+<li>true：默认，允许自动新增字段</li>
+<li>false：不允许自动新增字段，但是文档可以正常写入，但无法对该字段进行查询等操作</li>
+<li>strict：文档不能写入，报错</li>
+</ul>
+<p>新增otherField字段</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;otherField&quot;:&quot;someValue&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以查询到otherField字段</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST put_mapping&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;otherField&quot;: &quot;someValue&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改dynamic为false</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/23/ElasticSearch%E4%B9%8Bmapping/a2.png"></p>
+<p>新增anotherField字段</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;anotherField&quot;:&quot;someValue&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询，anotherField没有被查到</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">POST put_mapping&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;anotherField&quot;: &quot;someValue&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改dynamic为strict</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping&#x2F;_mapping</span><br><span class="line">&#123;</span><br><span class="line">  &quot;dynamic&quot;: &quot;strict&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>新增字段会直接报错</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping&#x2F;_doc&#x2F;2</span><br><span class="line">&#123;</span><br><span class="line">  &quot;anotherField1&quot;:&quot;someValue&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="copy-to参数"><a href="#copy-to参数" class="headerlink" title="copy_to参数"></a>copy_to参数</h2><p>将该字段的值复制到目标字段</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;properties&quot;: &#123;</span><br><span class="line">      &quot;first_name&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">        &quot;copy_to&quot;: &quot;full_name&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;last_name&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">        &quot;copy_to&quot;: &quot;full_name&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;full_name&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建一个文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping1&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;first_name&quot;: &quot;John&quot;,</span><br><span class="line">  &quot;last_name&quot;: &quot;Smith&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据full_name查询文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET put_mapping1&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;full_name&quot;: &#123;</span><br><span class="line">        &quot;query&quot;: &quot;John Smith&quot;</span><br><span class="line">        , &quot;operator&quot;: &quot;and&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="index参数"><a href="#index参数" class="headerlink" title="index参数"></a>index参数</h2><p>控制当前字段是否索引，默认为true，即记录索引，false不记录索引，即不可搜索</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping2</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;properties&quot;: &#123;</span><br><span class="line">      &quot;name&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;</span><br><span class="line">        </span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;age&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;long&quot;,</span><br><span class="line">        &quot;index&quot;: false</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建一个文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping2&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;John&quot;,</span><br><span class="line">  &quot;age&quot;: 20</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据age字段搜索</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET put_mapping2&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;age&quot;: 20</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="index-options参数"><a href="#index-options参数" class="headerlink" title="index_options参数"></a>index_options参数</h2><p>用于控制倒排索引记录的内容，有如下4种配置</p>
+<ul>
+<li>docs 只记录doc id</li>
+<li>freqs 记录doc id 和 term frequencies</li>
+<li>positions 记录 doc id、term frequencies、term position</li>
+<li>offsets 记录 doc id、term frequencies、term position、character offsets</li>
+</ul>
+<blockquote>
+<p>text类型默认配置为positions，其他默认为docs，记录越多，占用空间越大</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping3</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;properties&quot;: &#123;</span><br><span class="line">      &quot;name&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;</span><br><span class="line">        , &quot;index_options&quot;: &quot;positions&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;age&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;long&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="null-value"><a href="#null-value" class="headerlink" title="null_value"></a>null_value</h2><p>当字段遇到null值时处理的策略，默认为null，此时es会忽略，可以设置该值，来设定字段的默认值</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping4</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;properties&quot;: &#123;</span><br><span class="line">      &quot;name&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;text&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;age&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;long&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;sex&quot;: &#123;</span><br><span class="line">        &quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">        &quot;null_value&quot;: &quot;男&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="dynamic-mapping"><a href="#dynamic-mapping" class="headerlink" title="dynamic mapping"></a>dynamic mapping</h2><p>es会根据json数据类型自动识别文档的字段类型，从而降低用户使用的成本</p>
+<table>
+<thead>
+<tr>
+<th>JSON类型</th>
+<th>ElasticSearch类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>null</td>
+<td>忽略</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>浮点数</td>
+<td>float</td>
+</tr>
+<tr>
+<td>整数</td>
+<td>long</td>
+</tr>
+<tr>
+<td>object</td>
+<td>object</td>
+</tr>
+<tr>
+<td>array</td>
+<td>由第一个非null类型决定</td>
+</tr>
+<tr>
+<td>string</td>
+<td>匹配为日期设为date（默认开启）；匹配数字的话设为float或long（默认关闭）；设为text类型，附带keyword子字段</td>
+</tr>
+</tbody></table>
+<p>创建一个文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping4&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;John&quot;,</span><br><span class="line">  &quot;age&quot;: 20,</span><br><span class="line">  &quot;birth&quot;: &quot;1996-10-01&quot;,</span><br><span class="line">  &quot;married&quot;: false,</span><br><span class="line">  &quot;year&quot;: &quot;2021&quot;,</span><br><span class="line">  &quot;tags&quot;: [&quot;boy&quot;,&quot;fashion&quot;],</span><br><span class="line">  &quot;money&quot;: 100.01</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看数据类型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">GET put_mapping4&#x2F;_mapping</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/23/ElasticSearch%E4%B9%8Bmapping/a3.png"></p>
+<h2 id="日期识别"><a href="#日期识别" class="headerlink" title="日期识别"></a>日期识别</h2><p>es默认的日志识别格式是：</p>
+<ul>
+<li>strict_date_optional_time ISO datetime格式</li>
+<li>yyyy/MM/dd HH:mm:ss Z</li>
+<li>yyyy/MM/dd Z</li>
+</ul>
+<p>日期的自动识别可以自行配置日期格式，以满足自己特定的需求：</p>
+<ul>
+<li>dynamic_date_formats 可以自定义日期格式</li>
+<li>date_detection 可以关闭日期自动识别机制</li>
+</ul>
+<p>创建一个 MM/dd/yyyy 日期识别机制</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;dynamic_date_formats&quot;: [&quot;MM&#x2F;dd&#x2F;yyyy&quot;], </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建一个文档</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT put_mapping&#x2F;_doc&#x2F;1</span><br><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;John&quot;,</span><br><span class="line">  &quot;age&quot;: 20,</span><br><span class="line">  &quot;birth&quot;: &quot;10&#x2F;01&#x2F;1996&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/23/ElasticSearch%E4%B9%8Bmapping/a4.png"></p>
+<p>设置date_detection为false，关闭日期自动识别</p>
+<p><img src= "/img/loading.gif" data-lazy-src="/2021/01/23/ElasticSearch%E4%B9%8Bmapping/a5.png"></p>
+<h2 id="数字识别"><a href="#数字识别" class="headerlink" title="数字识别"></a>数字识别</h2><p>es默认不会在字符串中自动识别数字，可以通过 numeric_detection 开启字符串中数字的自动识别</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;numeric_detection&quot;: true</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="dynamic-templates"><a href="#dynamic-templates" class="headerlink" title="dynamic templates"></a>dynamic templates</h2><p>允许es自动识别数据类型、字段名来动态设定字段类型，可实现如下效果：</p>
+<ul>
+<li>所有字符串都设定为keyword类型</li>
+<li>所有以message开头的字段都设定为text类型</li>
+<li>所有以log_开头的字段都设定为long类型</li>
+<li>所有自动匹配为double类型的都设为float类型，以节省空间</li>
+</ul>
+<p>匹配规则一般有如下几个参数：</p>
+<ul>
+<li>match_mapping_type 匹配es自动识别的字段类型</li>
+<li>match,unmatch 匹配字段名</li>
+<li>path_match,path_unmatch 匹配路径</li>
+</ul>
+<p>将所有自动匹配string类型的都设定为keyword类型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;dynamic_templates&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;strings_as_keywords&quot;: &#123;</span><br><span class="line">          &quot;match_mapping_type&quot;: &quot;string&quot;,</span><br><span class="line">          &quot;mapping&quot;: &#123;</span><br><span class="line">            &quot;type&quot;: &quot;keywaord&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;  </span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将所有以message开头的都设定为text类型</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PUT &#x2F;put_mapping</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;dynamic_templates&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;message_as_text&quot;: &#123;</span><br><span class="line">          &quot;match_mapping_type&quot;: &quot;string&quot;,</span><br><span class="line">          &quot;match&quot;: &quot;message&quot;,</span><br><span class="line">          &quot;mapping&quot;: &#123;</span><br><span class="line">            &quot;type&quot;: &quot;text&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;  </span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ELK-Stack/">ELK Stack</a></div><div class="post_share"><div class="social-share" data-image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2021/01/23/ElasticSearch%E4%B9%8BSearch/"><img class="prev-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">ElasticSearch之Search</div></div></a></div><div class="next-post pull-right"><a href="/2021/01/23/ElasticSearch%E5%88%86%E8%AF%8D/"><img class="next-cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&amp;refer=http%3A%2F%2Fp0.ssl.qhimg.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1618901201&amp;t=aad3def86c895cfc2e690b1c5654f6ea" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ElasticSearch分词</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch之Search/" title="ElasticSearch之Search"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch之Search</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/26/ElasticSearch分布式特性/" title="ElasticSearch分布式特性"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-26</div><div class="relatedPosts_title">ElasticSearch分布式特性</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch分词/" title="ElasticSearch分词"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch分词</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/23/ElasticSearch基本知识/" title="ElasticSearch基本知识"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-23</div><div class="relatedPosts_title">ElasticSearch基本知识</div></div></a></div><div class="relatedPosts_item"><a href="/2021/01/26/ElasticSearch集群org-elasticsearch-discovery-MasterNotDiscoveredException问题/" title="ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题"><img class="relatedPosts_cover" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp0.ssl.qhimg.com%2Ft01ad86e52196c7491c.jpg&refer=http%3A%2F%2Fp0.ssl.qhimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618901201&t=aad3def86c895cfc2e690b1c5654f6ea"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-26</div><div class="relatedPosts_title">ElasticSearch集群org.elasticsearch.discovery.MasterNotDiscoveredException问题</div></div></a></div><div class="relatedPosts_item"><a href="/2021/04/13/logstash收集java日志/" title="logstash收集java日志"><img class="relatedPosts_cover" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2021-04-13</div><div class="relatedPosts_title">logstash收集java日志</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: 'ac67dc3f4965d454747d6dc5833193db',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

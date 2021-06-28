@@ -1,0 +1,3036 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>那些年,我看過的電影 | Silence</title><meta name="description" content="過去、現在、未來         .hexo-douban-tabs {     margin-bottom: 15px;     margin-top: 15px; }  .hexo-douban-tab {     padding: 5px; }  .hexo-douban-active {     background: #657b83;"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/movies/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="website"><meta property="og:title" content="那些年,我看過的電影"><meta property="og:url" content="http://yoursite.com/movies/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="過去、現在、未來         .hexo-douban-tabs {     margin-bottom: 15px;     margin-top: 15px; }  .hexo-douban-tab {     padding: 5px; }  .hexo-douban-active {     background: #657b83;"><meta property="og:image" content="http://yoursite.com/img/default-avatar.webp"><meta property="article:published_time" content="2021-06-28T12:21:42.588Z"><meta property="article:modified_time" content="2021-06-28T12:21:42.588Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2021-06-28 20:21:42'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><header class="not-index-bg" id="page-header" style="background-image: url(/./movies/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="page_site-info"><h1 id="site_title">那些年,我看過的電影</h1></div></header><main class="layout_page" id="content-inner"><div id="page"><meta name="referrer" content="no-referrer"><div id="article-container"><blockquote>
+    <p>過去、現在、未來</p>
+</blockquote>
+
+<style>
+    
+.hexo-douban-tabs {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.hexo-douban-tab {
+    padding: 5px;
+}
+
+.hexo-douban-active {
+    background: #657b83;
+    color: #fff;
+}
+
+.hexo-douban-item {
+    padding-bottom: 10px;
+    position: relative;
+    clear: both;
+    min-height: 170px;
+    padding: 10px 0;
+    border-bottom: 1px #ddd solid;
+}
+
+@media screen and (max-width: 600px) {
+    .hexo-douban-item {
+        width: 100%;
+    }
+}
+
+.hexo-douban-picture {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 100px;
+}
+
+.hexo-douban-info {
+    padding-left: 120px;
+}
+
+.hexo-douban-meta {
+    font-size: 12px;
+    padding-right: 10px;
+}
+
+.hexo-douban-comments {
+    font-size: 12px;
+}
+
+.hexo-douban-pagination {
+    margin-top: 15px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.hexo-douban-button {
+    padding: 5px;
+}
+
+.hexo-douban-button:hover {
+    background: #657b83;
+    color: #fff;
+}
+
+.hexo-douban-hide {
+    display: none;
+}
+
+.hexo-douban-show {
+    display: block;
+}
+
+
+</style>
+
+<div class="hexo-douban-tabs">
+    <a class="hexo-douban-tab" id="hexo-douban-tab1" href="javascript:;"
+       rel="external">
+        在看
+        (1)</a>
+    <a class="hexo-douban-tab" id="hexo-douban-tab2" href="javascript:;"
+       rel="external">
+        想看
+        (55)</a>
+    <a class="hexo-douban-tab" id="hexo-douban-tab3" href="javascript:;"
+       rel="external">
+        已看
+        (149)</a>
+</div>
+<div>
+    <div id="hexo-douban-item1">
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2634831926.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27605542/">司藤</a>
+        </div>
+        <div class="hexo-douban-meta">2021-03-08(中国大陆) / 景甜 / 张彬彬 / 李沐宸 / 张亦驰 / 吴俊余 / 金泽灏 / 邵峰 / 潘一祎 / 李依晓 / 袁成杰 / 陈芷琰 / 李木戈 / 张定涵 / 吕行 / 石蕊 / 郭赫轩 / 于觐源 / 贺颖怡 / 师悦玲 / 中国大陆 / 李木戈 / 45分钟 / 剧情 / 爱情 / 奇幻 / 李旻 Min Li / 汪洪 Hong Wang / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-pagination">
+    <a class="hexo-douban-button hexo-douban-firstpage" href="javascript:;"> 首页</a>
+    <a class="hexo-douban-button hexo-douban-previouspage" href="javascript:;">上一页</a>
+    <span class="hexo-douban-pagenum">2 / 3</span>
+    <a class="hexo-douban-button hexo-douban-nextpage" href="javascript:;">下一页</a>
+    <a class="hexo-douban-button hexo-douban-lastpage" href="javascript:;">尾页</a>
+</div>
+    </div>
+    <div id="hexo-douban-item2">
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2654915204.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/33432655/">困在时间里的父亲 / The Father</a>
+        </div>
+        <div class="hexo-douban-meta">2020-01-27(圣丹斯电影节) / 2021-02-26(美国) / 2021-03-26(美国网络) / 2021-06-18(中国大陆) / 安东尼·霍普金斯 / 奥利维娅·科尔曼 / 马克·加蒂斯 / 奥莉维亚·威廉姆斯 / 伊莫琴·普茨 / 卢夫斯·塞维尔 / 阿耶莎·达尔克 / 罗曼·泽勒 / 雷·伯内特 / 阿德南·昆迪 / 斯科特·穆林斯 / 布赖恩·罗杰 / 艾薇·维 / 英国 / 法国 / 佛罗莱恩·泽勒 / 97分钟 / 困在时间里的父亲 / 剧情 / 克里斯托弗·汉普顿 Christopher Hampton / 佛罗莱恩·泽勒 Florian Zeller / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p1075586949.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3743114/">黄海 / 황해</a>
+        </div>
+        <div class="hexo-douban-meta">2010-12-22(韩国) / 河正宇 / 金允石 / 郑满植 / 李哲民  / 李艾 / 刘河福 / 赵河硕 / 全仁杰 / 姜贤重 / 白贤宇 / 徐东锡 / 金东贤 / 杨基元 / 尹炳熙 / 廉东铉 / 千明宰 / 孙康国 / 廉东宪 / 赵成夏 / 方惠英 / 郭度沅 / 李熙俊 / 林艺媛 / 卓成恩 / 赵在允 / 朴秉恩 / 李由美 / 崔旭 / 韩国 / 美国 / 中国香港 / 罗泓轸 / 157分钟(韩国) / 141分钟(导演剪辑版) / 黄海 / 剧情 / 动作 / 犯罪 / 罗泓轸 Hong-jin Na / 韩语 / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2516702580.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27114240/">冒牌上尉 / Der Hauptmann</a>
+        </div>
+        <div class="hexo-douban-meta">2017-09-07(多伦多电影节) / 2018-03-15(德国) / 麦克斯·胡巴赫 / 米兰·佩舍尔 / 弗雷德里克·劳 / 贝恩德·霍尔谢尔 / 瓦尔德马·科布斯 / 亚历山大·费林 / 萨缪尔·芬齐 / 欧根妮·安泽林 / 香侬·斯塔勒 / 德国 / 波兰 / 葡萄牙 / 法国 / 罗伯特·斯文克 / 118分钟 / 冒牌上尉 / 剧情 / 历史 / 战争 / 罗伯特·斯文克 Robert Schwentke / 德语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2304228229.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26310143/">信号 / 시그널</a>
+        </div>
+        <div class="hexo-douban-meta">2016-01-22(韩国) / 李帝勋 / 赵震雄 / 金惠秀 / 张铉诚 / 金元海 / 郑涵妃 / 郑海钧 / 梁银容 / 徐荣俊 / 李文秀 / 金旻奎 / 李彩京 / 徐珠熙 / 徐东甲 / 郑基燮 / 梁大赫 / 黄泰光 / 孟奉鶴 / 金基天 / 李英恩 / 郑钟宇 / 金秀珍 / 郑锡勇 / 郑英珠 / 李澾 / 金佳英 / 宋宥弦 / 朴盛勋 / 姜澯熙 / 林在建 / 李道烨 / 林容顺 / 金明重 / 任哲秀 / 利旻 / 严志满 / 金玄彬 / 刘河福 / 朴莳恩 / 徐恩雅 / 李诗雅 / 吴妍儿 / 徐智勋 / 李恩宇 / 黄胜妍 / 李相烨 / 李东河 / 张赫镇 / 林华映 / 金正英 / 李振权 / 薛昌熙 / 文英东 / 申怡濬 / 郑宗烈 / 金学善 / 李宥俊 / 金贤成 / 琴东贤 / 孙贤周 / 孙荣顺 / 金钟求 / 申文成 / 韩国 / program.interest.me/tvn/signal / 金元锡 / 64分钟 / 信号 / 剧情 / 科幻 / 犯罪 / 悬疑 / 金恩熙 Eun-hee Kim / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p452089833.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1293172/">末代皇帝 / The Last Emperor</a>
+        </div>
+        <div class="hexo-douban-meta">1987-10-04(东京国际电影节) / 1987-10-23(意大利) / 尊龙 / 陈冲 / 邬君梅 / 彼得·奥图尔 / 英若诚 / 吴涛 / 黄自强 / 丹尼斯·邓 / 坂本龙一 / 马吉·汉 / 里克·扬 / 田川洋行 / 苟杰德 / 理查德·吴 / 皱缇格 / 陈凯歌 / 卢燕 / 区亨利 / 陈述 / 鲍皓昕 / 黄文捷 / 邵茹贞 / 亨利·基 / 张良斌 / 梁冬 / 康斯坦丁·格雷戈里 / 黄汉琪 / 王涛 / 宋怀桂 / 蔡鸿翔 / 程淑艳 / 张天民 / 王彪 / 劳力 / 户田惠子 / 英国 / 意大利 / 中国大陆 / 法国 / 贝纳尔多·贝托鲁奇 / 163分钟 / 219分钟 (电视版) / 末代皇帝 / 剧情 / 传记 / 历史 / 贝纳尔多·贝托鲁奇 Bernardo Bertolucci / 马克·派普罗 Mark Peploe / 英语 / 汉语普通话 / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2587099240.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3011091/">忠犬八公的故事 / Hachi: A Dog&#39;s Tale</a>
+        </div>
+        <div class="hexo-douban-meta">2009-06-13(西雅图电影节) / 2010-03-12(英国) / 理查·基尔 / 萨拉·罗默尔 / 琼·艾伦 / 罗比·萨布莱特 / 艾瑞克·阿瓦利 / 田川洋行 / 杰森·亚历山大 / 罗伯特·卡普荣 / Ellen Becker-Gray / Ben Skinner / 凯文·德科斯泰 / Raymond Alongi / Michael Kelly / 达文尼亚·麦克法登 / 贝茨·怀尔德 / 亚美利哥·普雷休蒂 / 盖尔·布格贾 / 马丁·蒙塔纳 / 高岛彩 / 美国 / 英国 / 拉斯·霍尔斯道姆 / 93分钟 / 忠犬八公的故事 / 剧情 / Stephen P. Lindsey / 新藤兼人 Kaneto Shindô / 英语 / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2547694957.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27176742/">驭风男孩 / The Boy Who Harnessed the Wind</a>
+        </div>
+        <div class="hexo-douban-meta">2019-01-25(圣丹斯电影节) / 2019-03-01(英国) / 切瓦特·埃加福 / 麦斯威尔·辛巴 / 莉莉·班达 / 爱伊莎·玛依卡 / 诺玛·杜梅温尼 / 约瑟夫·马塞尔 / 英国 / 马拉维 / 切瓦特·埃加福 / 113分钟(圣丹斯电影节) / 驭风男孩 / 剧情 / 切瓦特·埃加福 Chiwetel Ejiofor / 威廉·卡玛夸文巴 William Kamkwamba / 布赖恩·梅亚勒 Bryan Mealer / 阿拉伯语 / 尼昂加语 / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2650578179.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3737287/">袁隆平</a>
+        </div>
+        <div class="hexo-douban-meta">2009-03-19(中国大陆) / 果靖霖 / 徐筠 / 袁隆平 / 翟乃社 / 曹艳艳 / 霍青 / 曹秋根 / 张论 / 王振 / 克里斯蒂·夏普洛 / 王春庭 / 邵胜杰 / 王俊忠 / 匡新立 / 刘佳鹏 / 严菊芳 / 王希里 / 舒高 / 中国大陆 / 史凤和 / 92分钟 / 剧情 / 传记 / 谭仲池 Zhongchi Tan / 骆炬 Ju Luo / 汉语普通话 / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2329080834.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26259677/">垫底辣妹 / ビリギャル</a>
+        </div>
+        <div class="hexo-douban-meta">2015-05-01(日本) / 2016-04-14(中国大陆) / 有村架纯 / 伊藤淳史 / 吉田羊 / 田中哲司 / 野村周平 / 安田显 / 阿部菜渚美 / 中村靖日 / 矢岛健一 / 峰村理惠 / 白土七菜 / 奥田心 / 蔵下穂波 / 大内田悠平 / 县森鱼 / 川上凛子 / 松井爱莉 / 山田望叶 / 日本 / www.birigal-movie.jp / 土井裕泰 / 117分钟 / 垫底辣妹 / 剧情 / 家庭 / 桥本裕志 Hiroshi Hashimoto / 坪田信贵 Nobutaka Tsubota / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2555295759.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30170448/">何以为家 / كفرناحوم</a>
+        </div>
+        <div class="hexo-douban-meta">2018-05-17(戛纳电影节) / 2018-09-20(黎巴嫩) / 2019-04-29(中国大陆) / 赞恩·阿尔·拉菲亚 / 约丹诺斯·希费罗 / 博鲁瓦蒂夫·特雷杰·班科尔 / 卡萨尔·艾尔·哈达德 / 法迪·尤瑟夫 / 海塔·塞德拉·伊扎姆 / 阿拉·乔什涅 / 娜丁·拉巴基 / 埃利亚斯·库利 / 努尔·艾尔·侯赛尼 / 黎巴嫩 / 美国 / 法国 / 塞浦路斯 / 卡塔尔 / 英国 / 娜丁·拉巴基 / 126分钟 / 117分钟(中国大陆) / 何以为家 / 剧情 / 娜丁·拉巴基 Nadine Labaki / 吉哈德·霍加里 Jihad Hojeily / 米歇尔·凯斯沃尼 Michelle Keserwany / 乔治斯·哈巴兹 Georges Khabbaz / 哈立德·穆扎纳 Khaled Mouzanar / 阿拉伯语 / 阿姆哈拉语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2623879042.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/33427574/">天堂的张望</a>
+        </div>
+        <div class="hexo-douban-meta">2020-11-20(中国大陆) / 杜奕衡 / 朱梓玥 / 王力可 / 马瑜遥 / 吴志雄 / 刘流 / 卢秋宏 / 宫晓瑄 / 张永达 / 杜芷萱 / 杜雨宸 / 杜丰宇 / 中国大陆 / 杜斌 / 116分钟 / 剧情 / 儿童 / 家庭 / 杜斌 Bin Du / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2118532944.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/21937452/">素媛 / 소원</a>
+        </div>
+        <div class="hexo-douban-meta">2013-10-02(韩国) / 薛景求 / 严志媛 / 李来 / 金海淑 / 金相浩 / 罗美兰 / 杨真诚 / 权泰元 / 赵福来 / 徐贤宇 / 宋英奎 / 郑敏圣 / 曹文义 / 金道烨 / 金美庆 / 韩国 / www.wish-movie.kr / 李濬益 / 122分钟 / 素媛 / 剧情 / 金智慧 Ji-hye Kim / 赵重勋 Joong-Hoon Jo / 金成旭 Seong-wook Kim / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2523632248.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26942645/">厕所英雄 / Toilet - Ek Prem Katha</a>
+        </div>
+        <div class="hexo-douban-meta">2017-08-11(印度) / 2018-06-08(中国大陆) / 阿克谢·库玛尔 / 阿努潘·凯尔 / 布米·佩德卡尔 / 拉杰什·沙玛 / 萨钦·克德卡 / 莎娜·可汗 / 迪韦严杜·沙玛 / Gunjan Malhotra / 印度 / 什里·那拉扬·辛 / 155分钟 / 150分钟(中国大陆) / 厕所英雄 / 剧情 / 喜剧 / 格丽玛 Garima / 西达尔特 Siddharth / 印地语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2459193246.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26995137/">忠爱无言</a>
+        </div>
+        <div class="hexo-douban-meta">2017-06-09(中国大陆) / 高强 / 于月仙 / 李玉峰 / 二货 / 储毅 / 王玉宁 / 陈凯瑞 / 中国大陆 / 谈宜之 / 97分钟 / 剧情 / 谈宜之 Yizhi Tan / 王然 Ran Wang / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2091289138.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/11510624/">全民目击</a>
+        </div>
+        <div class="hexo-douban-meta">2013-09-13(中国大陆) / 孙红雷 / 余男 / 郭富城 / 邓家佳 / 赵立新 / 佟丽娅 / 倪虹洁 / 陈思诚 / 周韦彤 / 廖晓琴 / 谭松韵 / 丁子烁 / 李兰迪 / 高大伟 / 李沁谣 / 罗悠月 / 赵彦乔 / 李子游 / 纪姿含 / 李宗雷 / 戴墨 / 张羽 / 张旭 / 中国大陆 / 非行 / 119分钟 / 剧情 / 犯罪 / 悬疑 / 非行 Fei Xing / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2462745948.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26445216/">军舰岛 / 군함도</a>
+        </div>
+        <div class="hexo-douban-meta">2017-07-26(韩国) / 黄政民 / 苏志燮 / 宋仲基 / 李贞贤 / 李璟荣 / 金秀安 / 尹敬浩 / 白承哲 / 金仁宇 / 郑满植 / 金敏载 / 池雄裴 / 金亨硕 / 金重熙 / 朴晟泽 / 申成日 / 金道贤 / 朴成日 / 赵河硕 / 韩在河 / 朴尚赫 / 秋延圭 / 申英奎 / 姜成哲 / 宋仁燮 / 金圭白 / 尹大烈 / 李芮轮 / 金元海 / 金丹律 / 杨惠智 / 文学真 / 郑炳斗 / 李文石 / 黄炳国 / 姜德重 / 函勝敏 / 林相俊 / 安世镐 / 李姃垠 / 李芝恩 / 全裴修 / 权韩率 / 孙承勋 / 韩哲宇 / 申承焕 / 金宝仑 / 朴熙健 / 裴济基 / 金俊翰 / 严智星 / 金艺恩 / 张成范 / 韩国 / 柳昇完 / 132分钟 / 150分钟(导演剪辑版) / 军舰岛 / 剧情 / 动作 / 历史 / 柳昇完 Seung-wan Ryoo / 申庆一 / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p1012930740.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/5247058/">星守之犬 / 星守る犬</a>
+        </div>
+        <div class="hexo-douban-meta">2011-06-10(日本) / 西田敏行 / 玉山铁二 / 川岛海荷 / 余贵美子 / 温水洋一 / 滨田麻里 / 盐见三省 / 中村狮童 / 岸本加世子 / 藤龙也 / 山崎树范 / 日本 / 泷本智行 / 128分钟 / 星守之犬 / 剧情 / 桥本裕志 Hiroshi Hashimoto / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p488186582.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2294565/">拉贝日记 / John Rabe</a>
+        </div>
+        <div class="hexo-douban-meta">2009-04-29(中国大陆) / 乌尔里希·图库尔 / 丹尼尔·布鲁赫 / 史蒂夫·布西密 / 张静初 / 香川照之 / 安妮·康斯金尼 / 达格玛·曼泽尔 / Mathias Herrmann / 杉本哲太 / 柄本明 / 井浦新 / 肖恩·劳顿 / Christian Rodska / 高夫莱德·约翰 / 林栋甫 / 高木贞佑 / 矢柴俊博 / 曼纽尔·杰里·科丁 / 高岛真一 / 茹天 / 纪元 / 伊川东吾 / 汉斯-埃卡特·埃克哈特 / 袁文康 / 李明 / 金雁 / 法国 / 中国大陆 / 德国 / 佛罗瑞·加仑伯格 / 134 分钟 / 拉贝日记 / 传记 / 剧情 / 历史 / 战争 / 佛罗瑞·加仑伯格 Florian Gallenberger / 粤语 / 汉语普通话 / 德语 / 日语 / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2623955494.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30482645/">数码宝贝：最后的进化 / デジモンアドベンチャー LAST EVOLUTION 絆</a>
+        </div>
+        <div class="hexo-douban-meta">2020-02-21(日本) / 2020-10-30(中国大陆) / 花江夏树 / 细谷佳正 / 三森铃子 / 田村睦心 / 吉田仁美 / 池田纯矢 / 榎木淳弥 / 市道真央 / 坂本千夏 / 山口真弓 / 重松花鸟 / 山田木野子 / 竹内顺子 / 樱井孝宏 / 松本美和 / 德光由禾 / 松冈茉优 / 小野大辅 / 日本 / digimon-adventure.net / 田口智久 / 94分钟 / 数码宝贝：最后的进化 / 动画 / 冒险 / 大和屋晓 Akatsuki Yamatoya / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2313669107.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/5919538/">只有你 / 오직 그대만</a>
+        </div>
+        <div class="hexo-douban-meta">2011-10-20(韩国) / 苏志燮 / 韩孝周 / 赵成夏 / 姜信日 / 朴哲民 / 金瑞庆 / 闵庆珍 / 秋贵晶 / 李真熙 / 朴成根 / 薛智允 / 秋宪坤 / 李雅璘 / 李彩媛 / 崔旭 / 金正碧 / 安世镐 / 郑东奎 / 晋久 / 吴光禄 / 金美京 / 徐俊英 / 金允庆 / 蝴瓓 / 金钟寿 / 李勇直 / 韩国 / 宋一坤 / 108分钟 / 只有你 / 剧情 / 爱情 / 宋一坤 Il-gon Song / 卢弘珍 Roh Hong-Jin / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2520568437.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27602137/">我的大叔 / 나의 아저씨</a>
+        </div>
+        <div class="hexo-douban-meta">2018-03-21(韩国) / 李知恩 / 李善均 / 高斗心 / 宋清晨 / 张基龙 / 权娜拉 / 李智雅 / 朴浩山 / 金俊元 / 申久 / 全国焕 / 郑海钧 / 朴海俊 / 郑宰成 / 安承钧 / 郑英珠 / 金永敏 / 柳善英 / 吴娜拉 / 朴修荣 / 郑亨奭 / 洪仁 / 李圭燮 / 金洛均 / 蔡东炫 / 河道权 / 徐尚沅 / 金佳英 / 金旻錫 / 李英锡 / 黄相庆 / 孙淑子 / 韩国 / program.tving.com/tvn/mymister / 金元锡 / 70分钟 / 我的大叔 / 剧情 / 朴惠英 Hae Young Park / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2639385663.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35027568/">窥探 / 마우스</a>
+        </div>
+        <div class="hexo-douban-meta">2021-03-03(韩国) / 李昇基 / 李熙俊 / 朴柱炫 / 景收真 / 安在旭 / 金贞兰 / 权华焕 / 赵在允 / 金英玉 / 安内相 / 金英在 / 表志勋 / 禹志贤 / 金嫝勋 / 徐东贤 / 孙武铉 / 朴昭怡 / 徐正妍 / 郑锡勇 / 郑恩彪 / 李言廷 / 白济宇 / 徐宇真 / 何英 / 金敏京 / 郑爱丽 / 姜灿阳 / 玄奉植 / 赵莞基 / 朱艺琳 / 姜末琴 / 刘河福 / 朴庸 / 李瑞准 / 金洁 / 韩昌贤 / 成灿镐 / 裴成一 / 尹瑞贤 / 郭民浩 / 朴在琓 / 宋富健 / 闵恩石 / 刘墉 / 金河彦 / 宋仁燮 / 宋珉哉 / 金美惠 / 安瑞妍 / 金东河 / 郑强熙 / 赵渊浩 / 吴敏俊 / 宋在熙 / 高娜恩 / 金秀仁 / 权芮恩 / 权赫洙 / 黄世温 / 洪锡然 / 郑贤锡 / 姜文庆 / 申妍淑 / 吕运福 / 全程日 / 朴基龙 / 权伍健 / 金文浩 / 张容哲 / 金民秀 / 洪恩静 / 申熙国 / 李道亨 / 崔松姬 / 金河念 / 吴承灿 / 徐允赫 / 加里森·迈克尔·法卡尔森-基纳 / 申秀贤 / 池太阳 / 金成俊 / 閔政燮 / 林容顺 / 宣雅琳 / 张在权 / 孙承勋 / 李采贤 / 杨夏尹 / 金成景 / 金雨珍 / 李龙女 / 雪妮丝·曼宁加 / 保罗·巴特尔 / 千贞河 / 朴惠娜 / 崔利善 / 韩国 / 崔俊裴 / 70分钟 / 窥探 / 剧情 / 犯罪 / 悬疑 / 崔兰 Choi Ran / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2468698085.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26605881/">大军师司马懿之军师联盟</a>
+        </div>
+        <div class="hexo-douban-meta">2017-06-22(中国大陆) / 吴秀波 / 刘涛 / 李晨 / 于和伟 / 张钧甯 / 唐艺昕 / 翟天临 / 张芷溪 / 王劲松 / 王东 / 肖顺尧 / 檀健次 / 章贺 / 刘欢 / 杜奕衡 / 曹磊 / 来喜 / 陆思宇 / 王仁君 / 陆妍淇 / 黄俊鹏 / 王伯昭 / 许还山 / 褚栓忠 / 张志忠 / 李佑伟 / 张逗逗 / 蒲萄 / 陈喆伦 / 韩东 / 时光 / 陈之辉 / 荣梓杉 / 虞书欣 / 赵蕴卓 / 王茂蕾 / 徐敏 / 陆玲 / 赵昕 / 黄毅 / 李雨洋 / 吴雨珏 / 姚欣言 / 郭洺宇 / 杨猛 / 任宇 / 赵彦民 / 尹国华 / 单旭东 / 刘凌志 / 王琇强 / 王泽清 / 达来哈里呼 / 蒋伟男 / 许占伟 / 杜星奇 / 李镇泽 / 中国大陆 / 张永新 / 45分钟 / 剧情 / 爱情 / 战争 / 古装 / 常江 Jiang Chang / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2221539583.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25994712/">伪装者</a>
+        </div>
+        <div class="hexo-douban-meta">2015-08-31(中国大陆) / 胡歌 / 靳东 / 刘敏涛 / 王凯 / 宋轶 / 王乐君 / 王鸥 / 刘奕君 / 岳旸 / 张棪琰 / 郭晓峰 / 松峰莉璃 / 王铮 / 高鑫 / 郭虹 / 平田康之 / 朱梦瑶 / 孙梦佳 / 冯晖 / 松浦敬之 / 刘陆 / 冯千 / 王宏 / 谢承颖 / 郭彤彤 / 孙征宇 / 张巨明 / 叶恺文 / 范哲琛 / 毕英杰 / 徐佳琦 / 宝木中阳 / 柳洋 / 张晓谦 / 高正 / 孙晨 / 金雁 / 白雪岑 / 吴昊宸 / 中国大陆 / 李雪 / 40分钟 / 剧情 / 悬疑 / 张勇 Yong Zhang / 汉语普通话 / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2213003660.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/7065161/">鸣梁海战 / 명량</a>
+        </div>
+        <div class="hexo-douban-meta">2014-07-30(韩国) / 2014-12-12(中国大陆) / 崔岷植 / 柳承龙 / 赵震雄 / 晋久 / 李贞贤 / 权律 / 大谷亮平 / 李成俊 / 金明坤 / 鲁敏宇 / 金太勋 / 朴宝剑 / 高庚杓 / 李立宏 / 金元海 / 朴努植 / 权律 / 周锡泰 / 崔德门 / 赵福来 / 李海荣 / 李泰亨 / 李晟宇 / 李胜浚 / 崔昌均 / 金江日 / 韩利进 / 韩国 / www.12vs330.co.kr / 金韩民 / 109分钟(中国大陆) / 128分钟(韩国) / 鸣梁海战 / 剧情 / 传记 / 动作 / 战争 / 全哲洪 Cheol-Hong Jeon / 金韩民 Han-min Kim / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2506348908.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26718828/">勇往直前 / Only the Brave</a>
+        </div>
+        <div class="hexo-douban-meta">2017-10-20(美国) / 2017-12-08(中国大陆) / 乔什·布洛林 / 迈尔斯·特勒 / 杰夫·布里吉斯 / 詹妮弗·康纳利 / 詹姆斯·戴尔 / 泰勒·克奇 / 安迪·麦克道威尔 / 吉欧夫·斯图兹 / 亚历克斯·罗素 / 萨德·拉金比尔 / 本·哈迪 / 斯科特·黑兹 / 杰克·皮克金 / 斯科特·福克斯 / 迪兰·科宁 / 娜塔莉·豪尔 / 贝尔·詹姆斯 / 肯尼斯·米勒 / 洛拉·玛汀内斯-康宁安 / 乔什·霍普金斯 / 美国 / www.onlythebrave-movie.com / 约瑟夫·科辛斯基 / 134分钟 / 127分钟(中国大陆) / 勇往直前 / 剧情 / 传记 / 灾难 / 肯·诺兰 Ken Nolan / 埃里克·辛格尔 Eric Singer / 肖恩·弗林 Sean Flynn / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2325706844.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26661608/">恶魔蛙男 / ミュージアム</a>
+        </div>
+        <div class="hexo-douban-meta">2016-10-08(釜山电影节) / 2016-11-12(日本) / 小栗旬 / 尾野真千子 / 野村周平 / 大森南朋 / 丸山智己 / 伊武雅刀 / 田畑智子 / 市川实日子 / 松重丰 / 妻夫木聪 / 渊上泰史 / 今村美乃 / 健太郎 / 日本 / wwws.warnerbros.co.jp/museum/ / 大友启史 / 132分钟 / 恶魔蛙男 / 剧情 / 犯罪 / 惊悚 / 大友启史 Keishi Ohtomo / 高桥泉 Izumi Takahashi / 藤井清美  Kiyomi Fujii / 巴亮介 Ryôsuke Tomoe / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2566870171.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34805219/">饥饿站台 / El hoyo</a>
+        </div>
+        <div class="hexo-douban-meta">2019-09-06(多伦多电影节) / 2019-11-08(西班牙) / 伊万·马萨格 / 佐伦·伊格 / 安东尼亚·圣胡安 / 埃米利奥·布阿勒 / 亚历山德拉·玛桑凯 / 马里奥·帕尔多 / 阿尔吉斯·阿洛斯卡斯 / 米莉安·马丁 / 西班牙 / elhoyolapelicula.com / 加尔德·加兹特鲁·乌鲁蒂亚 / 94分钟 / 饥饿站台 / 科幻 / 惊悚 / 大卫·德索拉 David Desola / 佩德罗·里韦罗 Pedro Rivero / 西班牙语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1803259035.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/5968834/">摩天楼 / 타워</a>
+        </div>
+        <div class="hexo-douban-meta">2012-12-25(韩国) / 薛景求 / 孙艺珍 / 金相庆 / 金仁权 / 安圣基 / 宋在浩 / 李珠实 / 李汉伟 / 权泰元 / 全国香 / 郑仁基 / 车仁表 / 全裴修 / 金成伍 / 朴敏英 / 都枝寒 / 李尚洪 / 朴哲民 / 朴政学 / 金应洙 / 朴龙修 / 赵敏儿 / 朴闵英 / 权贤尚 / 徐光载 / 金秀珍 / 薛昌熙 / 韩多恩 / 朴英庶 / 金多英 / 利禹镇 / 韩国 / 金志勋 / 121分钟 / 摩天楼 / 剧情 / 动作 / 灾难 / 金相敦 Sang-don Kim / 金志勋 Ji-hun Kim / 刘英雅 Yeong-ah Yoo / 韩语 / 法语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p1832875827.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2334904/">禁闭岛 / Shutter Island</a>
+        </div>
+        <div class="hexo-douban-meta">2010-02-13(柏林电影节) / 2010-02-19(美国) / 莱昂纳多·迪卡普里奥 / 马克·鲁弗洛 / 本·金斯利 / 马克斯·冯·叙多夫 / 米歇尔·威廉姆斯 / 艾米莉·莫迪默 / 派翠西娅·克拉克森 / 杰基·厄尔·哈利 / 泰德·拉文 / 约翰·卡洛·林奇 / 伊莱亚斯·科泰斯 / 罗宾·巴特利特 / 克里斯托弗·邓汉 / 约瑟夫·斯科拉 / 斯蒂夫·维亭 / 露比·杰琳斯 / 约瑟夫·莱迪 / 科迪·哈特 / 马修·考尔斯 / 迈克尔·拜伦 / 肯·奇斯曼 / 埃里克·罗林斯 / 亚历克斯·米尔恩 / 罗布·W·格雷 / 亚美利哥·普雷休蒂 / 拉尔斯·格哈德 / 丹尼·卡尼 / 贝茨·怀尔德 / 雷蒙德·安东尼·托马斯 / 丹尼斯·林奇 / 吉尔·拉森 / 美国 / 马丁·斯科塞斯 / 138 分钟 / 禁闭岛 / 剧情 / 悬疑 / 惊悚 / Laeta Kalogridis / Dennis Lehane / 英语 / 德语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2209066019.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1292343/">蝴蝶效应 / The Butterfly Effect</a>
+        </div>
+        <div class="hexo-douban-meta">2004-01-23(美国) / 阿什顿·库彻 / 梅洛拉·沃尔特斯 / 艾米·斯马特 / 埃尔登·汉森 / 威廉姆·李·斯科特 / 约翰·帕特里克·阿梅多利 / 艾琳·戈洛瓦娅 / 凯文·G·施密特 / 杰西·詹姆斯 / 罗根·勒曼 / 莎拉·威多斯 / 杰克·凯斯 / 卡梅隆·布莱特 / 埃里克·斯托尔兹 / 考乐姆·吉斯·雷尼 / 凯文·杜兰 / 伊桑·苏普利 / 杰西·哈奇 / 美国 / 加拿大 / 埃里克·布雷斯 / J·麦基·格鲁伯 / 113分钟 / 120分钟(导演剪辑版) / 蝴蝶效应 / 剧情 / 悬疑 / 科幻 / 惊悚 / J·麦基·格鲁伯 J. Mackye Gruber / 埃里克·布雷斯 Eric Bress / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2219586434.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1292223/">七宗罪 / Se7en</a>
+        </div>
+        <div class="hexo-douban-meta">1995-09-22(美国) / 摩根·弗里曼 / 布拉德·皮特 / 凯文·史派西 / 格温妮斯·帕特洛 / 安德鲁·凯文·沃克 / 约翰·卡西尼 / 雷格·E·凯蒂 / 李·厄米 / 理查德·希夫 / 约翰·C·麦金雷 / 利兰·奥瑟 / 查尔斯·达顿 / 哈里斯·萨维德斯 / 弗兰斯·安格拉德 / 迈克尔·麦斯 / 理查德·波特诺 / 迈克尔·雷德·麦基 / 莱克西·比格姆 / 安德烈·胡勒斯 / 美国 / 大卫·芬奇 / 127分钟 / 七宗罪 / 剧情 / 犯罪 / 悬疑 / 惊悚 / 安德鲁·凯文·沃克 Andrew Kevin Walker / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2498971355.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26580232/">看不见的客人 / Contratiempo</a>
+        </div>
+        <div class="hexo-douban-meta">2016-09-23(奇幻电影节) / 2017-01-06(西班牙) / 2017-09-15(中国大陆) / 马里奥·卡萨斯 / 阿娜·瓦格纳 / 何塞·科罗纳多 / 巴巴拉·莱涅 / 弗兰塞斯克·奥雷利亚 / 帕科·图斯 / 大卫·塞尔瓦斯 / 伊尼戈·加斯特西 / 圣·耶拉莫斯 / 马内尔·杜维索 / 布兰卡·马丁内斯 / 佩雷·布拉索 / 霍尔迪·布鲁内特 / 鲍比·冈萨雷斯 / 玛蒂娜·乌尔塔多 / 安妮可·韦尔茨 / 贝茜·特内兹 / 克里斯蒂安·巴伦西亚 / 露丝·略皮斯 / 西班牙 / 奥里奥尔·保罗 / 106分钟 / 看不见的客人 / 剧情 / 犯罪 / 悬疑 / 惊悚 / 奥里奥尔·保罗 Oriol Paulo / 西班牙语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p457760035.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1292722/">泰坦尼克号 / Titanic</a>
+        </div>
+        <div class="hexo-douban-meta">1997-11-01(东京电影节) / 1997-12-19(美国) / 1998-04-03(中国大陆) / 莱昂纳多·迪卡普里奥 / 凯特·温丝莱特 / 比利·赞恩 / 凯西·贝茨 / 弗兰西丝·费舍 / 格劳瑞亚·斯图尔特 / 比尔·帕克斯顿 / 伯纳德·希尔 / 大卫·沃纳 / 维克多·加博 / 乔纳森·海德 / 苏茜·爱米斯 / 刘易斯·阿伯内西 / 尼古拉斯·卡斯柯恩 / 阿那托利·萨加洛维奇 / 丹尼·努齐 / 杰森·贝瑞 / 伊万·斯图尔特 / 艾恩·格拉法德 / 乔纳森·菲利普斯 / 马克·林赛·查普曼 / 理查德·格拉翰 / 保罗·布赖特威尔 / 艾瑞克·布里登 / 夏洛特·查顿 / 博纳德·福克斯 / 迈克尔·英塞恩 / 法妮·布雷特 / 马丁·贾维斯 / 罗莎琳·艾尔斯 / 罗切尔·罗斯 / 乔纳森·伊万斯-琼斯 / 西蒙·克雷恩 / 爱德华德·弗莱彻 / 斯科特·安德森 / 马丁·伊斯特 / 克雷格·凯利 / 格雷戈里·库克 / 利亚姆·图伊 / 詹姆斯·兰开斯特 / 艾尔莎·瑞雯 / 卢·帕尔特 / 泰瑞·佛瑞斯塔 / 凯文·德·拉·诺伊 / 詹姆斯·卡梅隆 / 竹内结子 / 詹姆斯·霍纳 / 姜广涛 / 罗恩·多纳基 / 佐佐木澄江 / 史蒂文·奎里 / 詹妮特·戈德斯坦恩 / 林凡  / Linda Kerns / 马丁·哈伯 / 马丁·莱恩 / 德里克·李 / 保罗·赫伯特 / 亚历山大·欧文斯 / Julene Renee / 曲敬国 / 美国 / 墨西哥 / 澳大利亚 / 加拿大 / 詹姆斯·卡梅隆 / 194分钟 / 227分钟(白星版) / 泰坦尼克号 / 剧情 / 爱情 / 灾难 / 詹姆斯·卡梅隆 James Cameron / 英语 / 意大利语 / 德语 / 俄语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2461253191.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1292225/">闪灵 / The Shining</a>
+        </div>
+        <div class="hexo-douban-meta">1980-05-23(美国) / 杰克·尼科尔森 / 谢莉·杜瓦尔 / 丹尼·劳埃德 / 斯加特曼·克罗索斯 / 巴瑞·尼尔森 / 菲利普·斯通 / 乔·托克尔 / 安妮·杰克逊 / 托尼·伯顿 / 薇薇安·库布里克 / 莉娅·贝尔达姆 / 巴里·丹尼 / 丽莎·伯恩斯 / 路易丝·伯恩斯 / 英国 / 美国 / 斯坦利·库布里克 / 119分钟(欧洲版) / 142分钟(DVD) / 144分钟(北美版) / 146分钟(初始版) / 闪灵 / 剧情 / 悬疑 / 恐怖 / 斯坦利·库布里克 Stanley Kubrick / 黛安·约翰逊 Diane Johnson / 斯蒂芬·金 Stephen King / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2541824676.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30234315/">摄影机不要停！ / カメラを止めるな！</a>
+        </div>
+        <div class="hexo-douban-meta">2017-11-04(东京首映) / 2018-06-23(日本) / 滨津隆之 / 真鱼 / 主浜晴美 / 秋山柚稀 / 长屋和彰 / 细井学 / 市原洋 / 山崎俊太郎 / 大泽真一郎 / 竹原芳子 / 吉田美纪 / 合田纯奈 / 浅森咲希奈 / 山口友和 / 藤村拓矢 / 岩合智史 / 高桥恭子 / 生见司织 / 日本 / kametome.net / 上田慎一郎 / 96分钟 / 摄影机不要停！ / 喜剧 / 恐怖 / 上田慎一郎 Shin&#39;ichirô Ueda / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2276962949.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26419637/">误杀瞒天记 / Drishyam</a>
+        </div>
+        <div class="hexo-douban-meta">2015-07-31(印度) / 阿贾耶·德乌干 / 塔布 / 施芮娅·萨兰 / 拉贾特·卡普尔 / 伊西塔·杜塔 / 莫伦诺·贾达夫 / 皮拉桑纳·凯特卡尔 / 尤盖莎·索南 / 帕拉斯莫什·帕拉布 / 瑞瑟·查达哈 / 印度 / 尼西卡特·卡马特 / 163分钟 / 误杀瞒天记 / 剧情 / 犯罪 / 悬疑 / Upendra Sidhaye / 印地语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2551995207.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30334073/">调音师 / Andhadhun</a>
+        </div>
+        <div class="hexo-douban-meta">2018-10-05(印度) / 2019-04-03(中国大陆) / 阿尤斯曼·库拉纳 / 塔布 / 拉迪卡·艾普特 / 安尔·德霍万 / 马纳夫·维吉 / 阿什维尼·卡尔塞卡 / 查亚·卡达姆 / 萨基尔·侯赛因 / 拉什米·阿格德卡 / 莫希尼·凯瓦拉曼 / 卡比尔·谢赫 / 印度 / 斯里兰姆·拉格万 / 139分钟 / 调音师 / 喜剧 / 犯罪 / 悬疑 / 惊悚 / 阿里吉特·比斯沃斯 Arijit Biswas / 约戈什·查德卡尔 Yogesh Chandekar / 斯里兰姆·拉格万 Sriram Raghavan / 赫曼斯·饶 Hemanth M. Rao / 普哈·拉达·瑟蒂 Pooja Ladha Surti / 奥利维耶·特雷内  Olivier Treiner / 印地语 / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2505050710.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26863778/">铁雨 / 강철비</a>
+        </div>
+        <div class="hexo-douban-meta">2017-12-14(韩国) / 郑雨盛 / 郭度沅 / 金甲洙 / 金义城 / 李璟荣 / 赵宇镇 / 郑元中 / 张铉诚 / 金明坤 / 朴恩惠 / 朴善英 / 元真儿 / 李润健 / 金亨宗 / 金芝荷 / 罗光旭 / 玄奉植 / 金基贤 / 金泰汉 / 克里斯汀·达尔顿 / 安德烈亚斯·弗龙克 / 丹尼尔·乔伊·奥尔布赖特 / 郑美景 / 陈阳旭 / 郑钟宇 / 乔恩林 / 延素金 / 白钟焕 / 李煌义 / 金永今 / 全英美 / 权韩率 / 高娜熙 / 金韩民 / 成民秀 / 权范泽 / 李芷媛 / 吴敏俊 / 瑞安·毛瑞尔 / 金永 / 崔贤钟 / 申载敏 / 金基政 / 李喜元 / 李时宇 / 朴尚赫 / 姜德重 / 韩昌贤 / 朴珉熙 / 孙成灿 / 金重基 / 李在勇 / 韩汝云 / 罗恩·多纳基 / 崔圭换 / 李彩殷 / 韩国 / 杨宇硕 / 139分钟 / 铁雨 / 动作 / 惊悚 / 杨宇硕 Woo-seok Yang / 韩语 / 汉语普通话 / 日语 / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2524056711.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26602900/">魔女 / 마녀</a>
+        </div>
+        <div class="hexo-douban-meta">2018-06-27(韩国) / 金多美 / 赵敏修 / 朴熙顺 / 崔宇植 / 高旻示 / 吴美姬 / 崔政宇 / 多恩 / 金秉玉 / 李柱元 / 金河娜 / 李基英 / 权泰元 / 李时勋 / 白承哲 / 袁民奎 / 金宗勋 / 徐翰洁 / 吕茂英 / 朴向勋 / 金道爀 / 高奉久 /  Jeong-goo Seo / 金孝珍 / Seung-yoon Han  / Hyeok-seong Kwon  / Gwang-hee Jo / 金永 / 崔贤钟 / 申载敏 / 金基政 / 李夏英 / 李时宇 / 李圣贤 / 宋亨秀 / 郑雨琳 / 金龙云 / 玄奉植 / 白钟焕 / 郭振锡 / 韩国 / 朴勋政 / 125分钟 / 魔女 / 动作 / 悬疑 / 朴勋政 Hoon-jung Park / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2559890156.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30210691/">极限逃生 / 엑시트</a>
+        </div>
+        <div class="hexo-douban-meta">2019-07-31(韩国) / 曹政奭 / 林允儿 / 高斗心 / 朴仁焕 / 金智英 / 裴侑蓝 / 姜其永 / 李东辉 / 金钟求 / 金姜贤 / 吴熙俊 / 金嫝勋 / 吴侑珍 / 李华静 / 黄孝恩 / 金景龙 / 金泰律 / 裴海善 / 朴成日 / 韩国 / 李相槿 / 103分钟 / 极限逃生 / 喜剧 / 动作 / 灾难 / 李尚根 Sang-geun Lee / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2530599636.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27622447/">小偷家族 / 万引き家族</a>
+        </div>
+        <div class="hexo-douban-meta">2018-05-13(戛纳电影节) / 2018-06-08(日本) / 2018-08-03(中国大陆) / 中川雅也 / 安藤樱 / 松冈茉优 / 城桧吏 / 佐佐木美结 / 树木希林 / 绪形直人 / 池松壮亮 / 森口瑶子 / 山田裕贵 / 片山萌美 / 柄本明 / 高良健吾 / 池胁千鹤 / 足立智充 / 莳田彩珠 / 瑛莲 / 每熊克哉 / 沟口奈菜 / 清水一彰 / 友咲圆 / 日本 / gaga.ne.jp/manbiki-kazoku/ / 是枝裕和 / 117分钟(中国大陆) / 121分钟 / 小偷家族 / 剧情 / 犯罪 / 家庭 / 是枝裕和 Hirokazu Koreeda / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2608495324.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34845342/">侵入者 / 침입자</a>
+        </div>
+        <div class="hexo-douban-meta">2020-06-04(韩国) / 宋智孝 / 金武烈 / 艺秀晶 / 许俊硕 / 李海云 / 崔英佑 / 李济延 / 崔尚熏 / 苏熙静 / 张宋允 / 徐贤宇 / 韩国 / 孙元平 / 102分钟 / 侵入者 / 悬疑 / 惊悚 / 宋元平 Won-pyung  Sohn / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2537955628.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27617348/">门锁 / 도어락</a>
+        </div>
+        <div class="hexo-douban-meta">2018-12-05(韩国) / 孔晓振 / 金叡园 / 金成伍 / 赵福来 / 李家燮 / 李天熙 / 金在华 / 金光奎 / 韩智恩 / 车烨 / 裴明真 / 郑钟宇 / 李钟求 / 尹钟硕 / 李相熹 / 李宏内 / 张宥 / 韩国 / 李权 / 102分钟 / 门锁 / 悬疑 / 惊悚 / 朴正熙 Jeong-hee Park / 李权 Kwon Lee / 阿尔贝托·马里尼 Alberto Marini / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2496564367.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26946510/">犯罪都市 / 범죄도시</a>
+        </div>
+        <div class="hexo-douban-meta">2017-10-03(韩国) / 马东锡 / 尹启相 / 赵在允 / 崔奎华 / 林炯俊 / 陈善圭 / 洪基俊 / 许栋元 / 河俊 / 金成圭 / 朴智焕 / 许成泰 / 闵庆珍 / 尹炳熙 / 李相元 / 郑仁基 / 严智星 / 白仁权 / 裴振雄 / 韩成天 / 金久澤 / 金旲兴 / 崔成宰 / 赵震雄 / 允珠 / 俞智妍 / 朴相奎 / 裴真雅 / 郑载宪 / 琴光山 / 金茂 / 尹大烈 / 闵武济 / 芮呈和 / 李奎浩 / Kwon Jin-woo  / 金光炫 / 申基禄 / Kim Yoon-bae / 李晟宇 / 郑仁谦 / 李泰圭 / 郑亨锡 / 高恩伊 / 韩国 / 姜允成 / 121分钟 / 犯罪都市 / 动作 / 犯罪 / 姜允成 Yoon Sung Kang / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2587146023.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30252495/">1917</a>
+        </div>
+        <div class="hexo-douban-meta">2019-12-25(美国) / 2020-01-10(英国) / 2020-08-07(中国大陆) / 乔治·麦凯 / 迪恩·查尔斯·查普曼 / 科林·费尔斯 / 本尼迪克特·康伯巴奇 / 马克·斯特朗 / 理查德·麦登 / 安德鲁·斯科特 / 丹尼尔·梅斯 / 阿德里安·斯卡伯勒 / 约翰·霍林沃思 / 克里斯·瓦利 / 杰米·帕克 / 罗伯特‧马瑟 / 贾斯汀·爱德华兹 / 理查德·麦凯布 / 理查德·德姆西 / 安森·布恩 / 雅各布·詹姆斯·贝西克 / 特蕾莎·马奥尼 / 皮普·卡特 / 保罗·廷托 / 安迪·阿波罗 / 约瑟夫·戴维斯 / 比利·波斯特莱斯韦特 / 加布里埃尔·阿库乌迪克 / 斯派克·莱顿 / 亚当·赫吉尔 / 纳巴汉·里兹万 / 克莱尔·迪比尔克 / 乔纳·罗素 / 迈克尔·吉普森 / 格伦·霍威尔 / Taddeo Kufus / 美国 / 英国 / 印度 / 西班牙 / 加拿大 / 中国大陆 / 1917.movie / 萨姆·门德斯 / 119分钟 / 剧情 / 战争 / 萨姆·门德斯 Sam Mendes / 克里斯蒂·威尔逊-凯恩斯 Krysty Wilson-Cairns / 英语 / 法语 / 德语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2558678036.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26786669/">决战中途岛 / Midway</a>
+        </div>
+        <div class="hexo-douban-meta">2019-11-08(美国) / 2019-11-08(中国大陆) / 艾德·斯克林 / 帕特里克·威尔森 / 伍迪·哈里森 / 卢克·伊万斯 / 丹尼斯·奎德 / 曼迪·摩尔 / 亚历山大·路德韦格 / 艾伦·艾克哈特 / 达伦·克里斯 / 尼克·乔纳斯 / 卢克·克莱恩坦克 / 杰克·韦伯 / 基恩·约翰逊 / 浅野忠信 / 大卫·休莱特 / 马克·罗斯顿 / 布雷南·布朗 / 詹姆斯·卡佩内罗 / 马修·麦考尔 / 格雷格·霍瓦尼西安 / 杰克·曼利 / 杰弗里·布莱克 / 瑞秋·佩雷尔·佛斯基特 / 卡梅伦·布罗德 / 杰克博·布莱尔 / 克里斯蒂·布鲁克 / 国村隼 / 泰勒·艾略特·伯克 / 丰川悦司 / 艾梅伯·瓦尔斯 / 莫妮卡·比卡罗娃 / 托尼·克里斯托弗 / 加雷特·佐藤 / 罗伯特·克鲁克斯 / 埃里克·戴维斯 / 托马斯∙瓦利埃 / 约翰·洛巴托 / 迪索·拉莫斯 / 肯尼·梁 / 彼得·新田 / 麦迪逊·鲁克马 / 米克尔·康德 / 埃伦·杜宾 / 西蒙·佩莱蒂尔-吉尔伯特 / 中国大陆 / 中国香港 / 加拿大 / 美国 / midway.movie/ / 罗兰·艾默里奇 / 138分钟 / 136分钟(中国大陆) / 决战中途岛 / 剧情 / 历史 / 战争 / 韦斯·图克 Wes Tooke / 英语 / 日语 / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2422756815.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26334996/">雪路 / 눈길</a>
+        </div>
+        <div class="hexo-douban-meta">2015-02-28(电视版) / 2017-03-01(电影版) / 金香起 / 金赛纶 / 张荣男 / 徐荣柱 / 金英玉 / 曹秀香 / 李珠雨 / 朴明勋 / 李胜妍 / 李学周 / 朴明申 / 崔大哲 / 金南珍 / 金河燕 / 崔大成 / 金熙昌 / 金善华 / 韩国 / 李娜静 / 122分钟 / 雪路 / 剧情 / 历史 / 战争 / 刘宝拉 Yoo Bo-ra / 韩语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2620392435.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1293359/">菊次郎的夏天 / 菊次郎の夏</a>
+        </div>
+        <div class="hexo-douban-meta">1999-05-20(戛纳电影节) / 1999-06-05(日本) / 2020-09-25(中国大陆) / 北野武 / 关口雄介 / 岸本加世子 / 吉行和子 / 细川典江 / 大家由祐子 / 磨赤儿 / 铃木忠幸 / 井手博士 / 今村鼠 / 兼子二郎 / 田中要次 / 小岛可奈子 / 诹访太朗 / 日本 / 北野武 / 121分钟 / 菊次郎的夏天 / 剧情 / 喜剧 / 北野武 Takeshi Kitano / 日语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2620083313.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30128916/">夺冠</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-25(中国大陆) / 巩俐 / 黄渤 / 吴刚 / 彭昱畅 / 白浪 / 朱婷 / 徐云丽 / 张常宁 / 姚迪 / 林莉 / 刘晓彤 / 颜妮 / 惠若琪 / 丁霞 / 袁心玥 / 龚翔宇 / 李现 / 刘敏涛 / 陈展 / 罗慧 / 毛雯 / 李紫微 / 李冬徐 / 马雪纯 / 刘畅 / 刘贞宏 / 凌敏 / 李阳一 / 刘晨曦 / 邢佳栋 / 曾春蕾 / 刘晏含 / 王梦洁 / 郑益昕 / 杨涵玉 / 王媛媛 / 王路加 / 李珊 / 安家杰 / 玛丽安妮·斯泰因布莱彻 / 杰奎琳·卡瓦霍 / 帕乌拉·配奇诺 / 雅南 / 许文姗 / 宋世雄 / 高野浩幸 / 霍尔·约翰逊 / 孟子旋 / 李雅楠 / 小平花织 / 中道瞳 / 姜倩雯 / 刘抒妍 / 迈克·杰克逊 / 张寒艳 / 赵晨璐 / 刘桃 / 李孟婕 / 田欣 / 谢星 / 杜功海 / 王永强 / 中国大陆 / 中国香港 / 陈可辛 / 135分钟 / 剧情 / 运动 / 张冀 Ji Zhang / 汉语普通话 / 英语 / 日语 / 葡萄牙语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2621219978.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25907124/">姜子牙</a>
+        </div>
+        <div class="hexo-douban-meta">2020-10-01(中国大陆) / 郑希 / 杨凝 / 图特哈蒙 / 阎么么 / 季冠霖 / 姜广涛 / 山新 / 刘明月 / 佟心竹 / 郝祥海 / 叶知秋 / 李兰陵 / 藤新 / 陈思宇 / 闫夜桥 / 曹云图 / 李佳怡 / 沈念如 / 李轻扬 / 王晨光 / 瞳音 / 涂小鸦 / 张闻天 / 赵小双 / 李璐 / 程昕宇 / 姜英俊 / 赵一博 / 中国大陆 / 程腾 / 李炜 / 李夏 / 王昕 / 110分钟 / 剧情 / 动画 / 奇幻 / 谢茜颖 Qianying Xie / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2591289975.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26871906/">灰猎犬号 / Greyhound</a>
+        </div>
+        <div class="hexo-douban-meta">2020-07-10(美国) / 汤姆·汉克斯 / 斯蒂芬·格拉汉姆 / 伊丽莎白·苏 / 迈克尔·本茨 / 罗布·摩根 / 大卫·马尔登那多 / 吉米·坦顿 / 马特·赫尔姆 / 汤姆·布里特尼 / 曼努埃尔·加西亚-鲁尔福 / 特拉维斯·普里兹比尔斯基 / 杰里米·丹尼尔·麦登 / 戴文·德鲁伊 / 特拉维斯·昆汀 / 威尔·普伦 / 乔什·维金斯 / 迈克尔·卡罗洛 / 凯莱布·J·塔格德 / 格雷森·拉塞尔 / 杰夫·阿德勒 / 戴夫·戴维斯 / 李·诺里斯 / 切特·汉克斯 / 卡尔·格洛斯曼 / 马修·祖克 / B·马丁·威廉姆斯 / 乔恩·多纳休 / 伊恩·詹姆斯·科里特 / 马克西米利安·奥辛斯基 / 托马斯·克莱舒曼 / 美国 / 加拿大 / 中国大陆 / 亚伦·施耐德 / 91分钟 / 灰猎犬号 / 剧情 / 战争 / 汤姆·汉克斯 Tom Hanks / C·S·福里斯特 C.S. Forester / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2616355133.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3541415/">盗梦空间 / Inception</a>
+        </div>
+        <div class="hexo-douban-meta">2010-07-16(美国) / 2010-09-01(中国大陆) / 2020-08-28(中国大陆重映) / 莱昂纳多·迪卡普里奥 / 约瑟夫·高登-莱维特 / 艾利奥特·佩吉 / 汤姆·哈迪 / 渡边谦 / 迪利普·劳 / 基里安·墨菲 / 汤姆·贝伦杰 / 玛丽昂·歌迪亚 / 皮特·波斯尔思韦特 / 迈克尔·凯恩 / 卢卡斯·哈斯 / 李太力 / 克莱尔·吉尔蕾 / 马格努斯·诺兰 / 泰勒·吉蕾 / 乔纳森·吉尔 / 水源士郎 / 冈本玉二 / 厄尔·卡梅伦 / 瑞恩·海沃德 / 米兰达·诺兰 / 拉什·费加 / 蒂姆·科勒赫 / 妲露拉·莱莉 / 迈克尔·加斯顿 / 吉尔·马德雷尔 / 玛格丽特·因索利亚 / Natasha Beaumont / 美国 / 英国 / 克里斯托弗·诺兰 / 148分钟 / 盗梦空间 / 剧情 / 科幻 / 悬疑 / 冒险 / 克里斯托弗·诺兰 Christopher Nolan / 英语 / 日语 / 法语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2572813215.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26348103/">小妇人 / Little Women</a>
+        </div>
+        <div class="hexo-douban-meta">2019-12-25(美国) / 2020-08-25(中国大陆) / 西尔莎·罗南 / 艾玛·沃森 / 弗洛伦丝·皮尤 / 伊莱扎·斯坎伦 / 劳拉·邓恩 / 蒂莫西·柴勒梅德 / 梅丽尔·斯特里普 / 鲍勃·奥登科克 / 詹姆斯·诺顿 / 路易·加瑞尔 / 克里斯·库珀 / 崔西·莱茨 / 艾比·奎因 / 萨沙·弗若洛娃 / 莉莉·恩格勒特 / 爱德华德·弗莱彻 / 杰妮·霍蒂谢尔 / 多梅尼克·阿尔迪诺 / 汤姆·斯特拉特福 / 托马斯·马里亚诺 / 哈德莉·罗宾逊 / 杰米·加扎里安 / 泰勒·乔格森 / 玛丽安·普朗科特 / 美国 / www.littlewomen.movie/ / 格蕾塔·葛韦格 / 135分钟 / 小妇人 / 剧情 / 爱情 / 格蕾塔·葛韦格 Greta Gerwig / 路易莎·梅·奥尔科特 Louisa May Alcott / 英语</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2590336843.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26357307/">花木兰 / Mulan</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-04(美国网络) / 2020-09-11(中国大陆) / 刘亦菲 / 甄子丹 / 巩俐 / 李连杰 / 李截 / 安柚鑫 / 马泰 / 赵家玲 / 郑佩佩 / 温明娜 / 曾晓童 / 袁文忠 / 唐辰瀛 / 道阿·茂阿 / 黄谷悦 / 尼尔森·李 / 李勋 / 饶雪晶 / 袁之正 / 仁成外桥 / 加里·扬 / 邝泰恩 / 乌特卡什·安邦德卡尔 / 钱姆·艾希勒珀拉 / 大卫·T·林 / 詹森·郑 / Jun Yu / 美国 / 加拿大 / 中国香港 / 妮琪·卡罗 / 115分钟 / 花木兰 / 动作 / 冒险 / 古装 / 劳伦·希内克 Lauren Hynek / 里克·杰法 Rick Jaffa / 伊丽莎白·马丁 Elizabeth Martin / 阿曼达·斯尔沃 Amanda Silver / 英语 / 汉语普通话</div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-pagination">
+    <a class="hexo-douban-button hexo-douban-firstpage" href="javascript:;"> 首页</a>
+    <a class="hexo-douban-button hexo-douban-previouspage" href="javascript:;">上一页</a>
+    <span class="hexo-douban-pagenum">2 / 3</span>
+    <a class="hexo-douban-button hexo-douban-nextpage" href="javascript:;">下一页</a>
+    <a class="hexo-douban-button hexo-douban-lastpage" href="javascript:;">尾页</a>
+</div>
+    </div>
+    <div id="hexo-douban-item3">
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1793720172.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/10574622/">人再囧途之泰囧</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-28 /  搞笑 喜剧 温情 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2561172733.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30171425/">扫毒2天地对决 / 掃毒2：天地對決</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-27 /  缉毒 剧情 动作 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2305150960.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26603856/">老师晚上好</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-27 /  青春 搞笑 校园 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2432744632.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26759783/">救僵清道夫 / 救殭清道夫</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-27 /  恐怖 僵尸片 灵异 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2016930906.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/21360417/">恐怖直播 / 더 테러 라이브</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-26 /  剧情 犯罪 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2238949728.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25745752/">左耳</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-26 /  爱情 青春 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2639318976.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34973399/">你的婚礼</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-26 /  爱情 初恋 青春 / ★★☆☆☆ 较差 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2640758773.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/32493666/">追虎擒龙</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-25 /  犯罪 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2571445582.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27133050/">天作谜案 / Ittefaq</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-24 /  剧情 犯罪 反转 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2316177058.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/19944106/">美人鱼</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-24 /  喜剧 爱情 奇幻 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2641614433.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/32493124/">悬崖之上</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-19 /  剧情 谍战 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2656407373.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35198827/">当男人恋爱时 / 當男人戀愛時</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-13 /  爱情 翻拍 剧情 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2641420359.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34965118/">黑洞 / 다크홀</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-06 /  悬疑 OCN 韩国 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2641608918.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35164328/">扫黑·决战</a>
+        </div>
+        <div class="hexo-douban-meta">2021-06-03 /  犯罪 扫黑除恶 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2639035790.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34926405/">无罪之最 / El inocente</a>
+        </div>
+        <div class="hexo-douban-meta">2021-05-19 /  烧脑 剧情 悬疑 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2622388983.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27619748/">唐人街探案3</a>
+        </div>
+        <div class="hexo-douban-meta">2021-05-11 /  推理 犯罪 悬疑 喜剧 / ★★☆☆☆ 较差 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2632862664.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34880302/">人潮汹涌</a>
+        </div>
+        <div class="hexo-douban-meta">2021-04-19 /  喜剧 黑色幽默 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2632091530.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27594653/">发财日记</a>
+        </div>
+        <div class="hexo-douban-meta">2021-04-16 /  喜剧 回忆 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2628440875.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26826330/">刺杀小说家</a>
+        </div>
+        <div class="hexo-douban-meta">2021-04-15 /  剧情 文学作品改编 动作 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2630395918.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35043211/">LUCA：起源 / 루카:더 비기닝</a>
+        </div>
+        <div class="hexo-douban-meta">2021-03-19 /  悬疑 奇幻 犯罪 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2633779065.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27148168/">赘婿</a>
+        </div>
+        <div class="hexo-douban-meta">2021-03-05 /  搞笑 权谋 网剧 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2621379901.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30171424/">拆弹专家2</a>
+        </div>
+        <div class="hexo-douban-meta">2021-03-01 /  犯罪 剧情 动作 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2629413230.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34962956/">缉魂 / 緝魂</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-27 /  推理 小说改编 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2555440969.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/4840388/">新喜剧之王</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-24 /  喜剧 生活 温情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1625980712.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/6312211/">爱情公寓3</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-17 /  爱情公寓 喜剧 搞笑 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p765135303.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/4707205/">爱情公寓2</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-17 /  搞笑 爱情公寓 喜剧 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2325129230.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3926132/">爱情公寓</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-17 /  爆笑 爱情公寓 喜剧 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2452241358.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26727273/">人民的名义</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-17 /  反腐 突破 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2385311728.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25825412/">机械师2：复活 / Mechanic: Resurrection</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-15 /  暴力 杀手 犯罪 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2526405034.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25882296/">狄仁杰之四大天王</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-13 /  悬疑 魔幻 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2535260806.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26425063/">无双 / 無雙</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-13 /  烧脑 反转 犯罪 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2561210408.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30433323/">德鲁纳酒店 / 호텔 델루나</a>
+        </div>
+        <div class="hexo-douban-meta">2021-02-03 /  鬼怪 温情 爱情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2606299262.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34948080/">恶之花 / 악의 꽃</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-31 /  剧情 犯罪 悬疑 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2628058192.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34794707/">终极笔记</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-27 /  悬疑 盗墓笔记 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2581835383.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30306570/">囧妈</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-27 /  喜剧 贺岁 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2624372082.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35131277/">惊奇的传闻 / 경이로운 소문</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-25 /  猎魔 奇幻 漫改 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2531860054.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30145638/">鬼客 / 손 : The Guest</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-15 /  恐怖 鬼神 血腥 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2617955788.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35185735/">韩国都市怪谈 / 도시괴담</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-12 /  恐怖 惊悚 悬疑 / ★★☆☆☆ 较差 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2564369311.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26816090/">沉默的证人</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-12 /  犯罪 法医 动作 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2613127431.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35131427/">馗降：粽邪2</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-11 /  恐怖片 台湾 惊悚 / ★★☆☆☆ 较差 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2554145078.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/5397537/">我们仍未知道那天所看见的花的名字 / あの日見た花の名前を僕達はまだ知らない。</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-09 /  动漫 治愈 友情 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2533388717.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2264567/">迪迦奥特曼 / ウルトラマンティガ</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-09 /  奥特曼 童年 动画 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2579393076.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30354606/">唐人街探案</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  网剧 悬疑 推理 侦探 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2372098911.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26125779/">危城</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  古装 犯罪 剧情 武侠 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2217843198.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1302393/">僵尸叔叔 / 殭屍叔叔</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  午马 喜剧 恐怖 僵尸 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p462470694.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3011051/">恐怖游轮 / Triangle</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  剧情 轮回 悬疑 心理 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2173344236.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25782633/">名侦探柯南：异次元的狙击手 / 名探偵コナン 異次元の狙撃手</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  剧场版 柯南 推理 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2251539632.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26282448/">火影忍者剧场版：博人传 / BORUTO -NARUTO THE MOVIE-</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  火影忍者 剧场版 热血 动作 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2002724530.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1302090/">逃学威龙 / 逃學威龍</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  喜剧 周星星 经典 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2228195680.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1297863/">武状元苏乞儿 / 武狀元蘇乞兒</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  香港 古装 星爷 喜剧 搞笑 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2455844666.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1329936/">大内密探零零发 / 大內密探零零發</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  古装 喜剧 星爷 经典 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2507107765.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1297747/">少林足球</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  搞笑 动作 喜剧 周星驰 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2354353804.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1293351/">食神</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  喜剧 食神 周星驰 搞笑 经典 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2097947361.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1961963/">长江七号</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  搞笑 周星驰 喜剧 亲情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2219011938.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1291543/">功夫</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  喜剧 周星驰 动作 经典 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p648370300.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1297518/">九品芝麻官</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  周星驰 搞笑 喜剧 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2357915564.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1306249/">唐伯虎点秋香 / 唐伯虎點秋香</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  周星驰 搞笑 喜剧 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2238829096.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2127676/">驱魔道长 / 驅魔道長</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  恐怖 僵尸 林正英 午马 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2286726959.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2125241/">音乐僵尸 / 音樂殭屍</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  恐怖 僵尸 林正英 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1994722564.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2127388/">灵幻先生 / 靈幻先生</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  僵尸 林正英 吴耀汉 动作 喜剧 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2162764447.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1299667/">驱魔警察 / 驅魔警察</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  僵尸 恐怖 林正英 喜剧 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2457362230.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1305789/">新僵尸先生 / 新殭屍先生</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  僵尸 恐怖 林正英 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p1994728933.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1306403/">僵尸家族 / 殭屍家族</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  僵尸 搞笑 林正英 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2246195318.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1472783/">一眉道人</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  喜剧 林正英 僵尸 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2561349592.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1295933/">僵尸先生 / 殭屍先生</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  恐怖 僵尸 喜剧 林正英 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2408407697.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26862259/">乘风破浪</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  怀旧 成长 剧情 文艺 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2498558511.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26926321/">缝纫机乐队</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  梦想 音乐 搞笑 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2499793218.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27038183/">羞羞的铁拳</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  搞笑 开心麻花 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2395733377.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26683290/">你的名字。 / 君の名は。</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  治愈 感动 动画 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2559100280.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30175306/">追龙Ⅱ / 追龍2：賊王</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  黑帮 剧情 犯罪 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2380677316.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25815034/">湄公河行动</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  毒品 剧情 动作 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2302930556.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26311973/">唐人街探案</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  喜剧 推理 剧情 悬疑 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2544988187.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26816076/">“大”人物</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  剧情 动作 社会黑暗面 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2099623528.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/5996801/">狄仁杰之神都龙王</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  悬疑 动作 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2504481743.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26322642/">猎场</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  职场 成长 爱情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2568577681.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30413052/">攀登者</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-08 /  珠峰 登山 热血 爱国 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2623798236.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34845781/">鬼灭之刃 剧场版 无限列车篇 / 劇場版 鬼滅の刃 無限列車編</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-04 /  / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2625777429.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30373723/">除暴</a>
+        </div>
+        <div class="hexo-douban-meta">2021-01-04 /  犯罪 警匪 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2623301908.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/35155748/">金刚川</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-28 /  战争 抗美援朝 历史 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2431980130.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25765735/">金刚狼3：殊死一战 / Logan</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-27 /  科幻 超能力 动作 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2404604903.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26298935/">鬼吹灯之精绝古城</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-27 /  悬疑 小说改编 鬼吹灯 盗墓 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2271982968.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25754848/">琅琊榜</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-27 /  剧情 胡歌 古装 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2628271537.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34970316/">昆仑神宫</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-27 /  盗墓 悬疑 / ★★☆☆☆ 较差 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p1951590607.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/21937438/">蒙太奇 / 몽타주</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-25 /  犯罪 剧情 悬疑罪案 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2465858820.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26748673/">拆弹专家</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-23 /  悬疑 警匪 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2166635320.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3412830/">狄仁杰之通天帝国</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-23 /  剧情 悬疑 推理 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2499052494.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26425068/">追龙 / 追龍</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-23 /  香港 黑帮 犯罪 动作 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2568258113.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30295905/">中国机长</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-23 /  真实事件改编 灾难 空难 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2563630521.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30221757/">烈火英雄</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-23 /  消防 真实事件改编 灾难 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2363084076.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3569910/">自杀小队 / Suicide Squad</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-23 /  犯罪 漫画改编 DC / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p892692364.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/6019180/">开心家族 / 헬로우 고스트</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-22 /  感人 亲情 温情 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2619027144.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27195078/">急先锋</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-20 /  喜剧 动作 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2628425414.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34858078/">甜蜜家园 / 스위트홈</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-20 /  惊悚 丧尸 Netflix / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2624050592.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34477588/">弥留之国的爱丽丝 第一季 / 今際の国のアリス</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-14 /  漫画改编 日剧 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2625879789.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30346025/">电话 / 콜</a>
+        </div>
+        <div class="hexo-douban-meta">2020-12-06 /  剧情 悬疑 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2621021428.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27087882/">亿万懦夫</a>
+        </div>
+        <div class="hexo-douban-meta">2020-11-19 /  喜剧 黑色幽默 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2614225081.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26661193/">我在时间尽头等你</a>
+        </div>
+        <div class="hexo-douban-meta">2020-10-26 /  爱情 奇幻 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2398141939.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26325320/">血战钢锯岭 / Hacksaw Ridge</a>
+        </div>
+        <div class="hexo-douban-meta">2020-10-25 /  真实事件改编 二战 战争 传记 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2358109451.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26410594/">隧道 / 터널</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-21 /  灾难 人性 温情 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2551222097.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30210221/">鬼灭之刃 / 鬼滅の刃</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  日本 热血 鬼怪 战斗 成长 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2556232270.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27052168/">破冰行动</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  毒品 犯罪 缉毒 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2194066391.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/24745500/">绣春刀</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  武侠 动作 古装 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2267511583.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25798448/">解救吾先生</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  真实事件改编 剧情 犯罪 警匪 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2285115802.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26366465/">我的少女时代 / 我的少女時代</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  青春 成长 校园 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2292976849.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/24751756/">老炮儿</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  剧情 父子情 老炮儿 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2501863104.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27024903/">天才枪手 / ฉลาดเกมส์โกง</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  考试 校园 作弊 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2561713454.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26270502/">绣春刀II：修罗战场</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  锦衣卫 武侠 古装 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2507227732.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26862829/">芳华</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  战争 文艺 青春 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2513360824.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26945085/">昆池岩 / 곤지암</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  惊悚 灵异 恐怖 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2529571873.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26985127/">一出好戏</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  人性 喜剧 搞笑 剧情 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2529206747.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27605698/">西虹市首富</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  喜剧 搞笑 人性 社会 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2512717519.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26698897/">唐人街探案2</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  喜剧 犯罪 剧情 搞笑 推理 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2539661066.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/27110296/">无名之辈</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  喜剧 剧情 小人物 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2514119443.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26861685/">红海行动</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  真实事件改编 热血 军事 爱国 战争 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2561305376.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26752088/">我不是药神</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  生命 剧情 人性 生活 社会 真实事件改编 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2545472803.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26266893/">流浪地球</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  灾难 奇幻 科幻 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2563780504.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26794435/">哪吒之魔童降世</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  搞笑 动画 神话 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2360940399.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25986180/">釜山行 / 부산행</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  灾难 恐怖 惊悚 人性 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2555084871.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30211551/">恶人传 / 악인전</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  暴力 犯罪 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p1055410077.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2054070/">老师的恩惠 / 스승의 은혜</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  复仇 恐怖 血腥 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2029391129.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/10432911/">流感 / 감기</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-20 /  人性 亲情 剧情 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2610358497.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30299515/">釜山行2：半岛 / 부산행2-반도</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-17 /  丧尸 人性 剧情 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2167306070.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/23712401/">当男人恋爱时 / 남자가 사랑할 때</a>
+        </div>
+        <div class="hexo-douban-meta">2020-09-17 /  剧情 爱情 还算不错的一部虐心电影 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2615992304.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26754233/">八佰</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-19 /  抗日 战争 淞沪会战 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p1816927454.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/10527209/">笑傲江湖</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  古装 武侠 金庸 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p1639170690.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3901418/">倚天屠龙记</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  武侠 古装 金庸 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2561696294.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/3227335/">仙剑奇侠传三</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  仙剑 爱情 古装 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2561931895.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2210031/">仙剑奇侠传</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  仙剑 古装 武侠 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2159824821.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/24697826/">古剑奇谭</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  游戏改编 古装 奇幻 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2608228659.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/33385793/">痕迹</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  法医 悬疑 推理 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2260245867.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25815602/">斩·赤红之瞳 / アカメが斬る!</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  热血 动漫 日本 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2204929585.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25938113/">火影忍者剧场版：终章 / THE LAST -NARUTO THE MOVIE-</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  剧场版 火影忍者 动漫 青春 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2554038556.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2053598/">火影忍者 疾风传 / NARUTO -ナルト- 疾風伝</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  热血 动漫 成长 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2264901843.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1427318/">火影忍者 / NARUTO -ナルト-</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  经典 热血 动漫 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2575362797.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25853071/">庆余年 第一季</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  权谋 剧情 穿越 小说改编 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2153223458.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/22715021/">僵尸 / 殭屍</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  恐怖 惊悚 僵尸 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2563751491.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30423193/">使徒行者2：谍影行动</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2577578115.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26885074/">叶问4：完结篇 / 葉問4：完結篇</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2401676338.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26387939/">摔跤吧！爸爸 / Dangal</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  励志 传记 成长 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2432493858.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/6873143/">一条狗的使命 / A Dog&#39;s Purpose</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  爱 感人 动物 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2494701965.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26363254/">战狼2</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  热血 特种部队 动作 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2264377763.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/25964071/">夏洛特烦恼</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  喜剧 开心麻花 搞笑 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2614359276.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1849031/">当幸福来敲门 / The Pursuit of Happyness</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  励志 感动 家庭 人生 经典 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2613925251.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26705567/">征途</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  剧情 冒险 游戏改编 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2604626010.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/34462775/">#活着 / #살아있다</a>
+        </div>
+        <div class="hexo-douban-meta">2020-08-08 /  丧尸 韩国 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p2565877341.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/26331839/">保持沉默</a>
+        </div>
+        <div class="hexo-douban-meta">2019-10-04 /  香港 犯罪 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2561542089.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/30282387/">银河补习班</a>
+        </div>
+        <div class="hexo-douban-meta">2019-10-04 /  成长 父爱 教育 / ★★★☆☆ 还行 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img2.doubanio.com/view/photo/s_ratio_poster/public/p541027481.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/2067450/">那家伙的声音 / 그놈 목소리</a>
+        </div>
+        <div class="hexo-douban-meta">2019-10-03 /  真实案件 绑架 悬疑 那家伙的声音 / ★★★★☆ 推荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-item">
+    <div class="hexo-douban-picture"><img src="/assets/douban-loading.gif" data-src="https://img3.doubanio.com/view/photo/s_ratio_poster/public/p657823840.jpg" referrerPolicy="no-referrer" /></div>
+    <div class="hexo-douban-info">
+        <div class="hexo-douban-title">
+            <a target="_blank" href="https://movie.douban.com/subject/1300299/">杀人回忆 / 살인의 추억</a>
+        </div>
+        <div class="hexo-douban-meta">2019-10-03 /  杀人回忆 真实事件改编 悬疑 犯罪 / ★★★★★ 力荐 </div>
+        <div class="hexo-douban-comments"> </div>
+    </div>
+</div>
+
+
+        
+        <div class="hexo-douban-pagination">
+    <a class="hexo-douban-button hexo-douban-firstpage" href="javascript:;"> 首页</a>
+    <a class="hexo-douban-button hexo-douban-previouspage" href="javascript:;">上一页</a>
+    <span class="hexo-douban-pagenum">2 / 3</span>
+    <a class="hexo-douban-button hexo-douban-nextpage" href="javascript:;">下一页</a>
+    <a class="hexo-douban-button hexo-douban-lastpage" href="javascript:;">尾页</a>
+</div>
+    </div>
+</div>
+
+<script>
+    /**
+ * Created by myths on 18-2-8.
+ */
+
+Element.prototype.siblings = function () {
+    var siblingElement = [];
+    var sibs = this.parentNode.children;
+    for (var i = 0; i < sibs.length; i++) {
+        if (sibs[i] !== this) {
+            siblingElement.push(sibs[i]);
+        }
+    }
+    return siblingElement;
+};
+function tabClick() {
+    //修改标签样式
+    this.classList.add('hexo-douban-active');
+    var sibs = this.siblings();
+    for (var j = 0; j < sibs.length; j++) {
+        sibs[j].classList.remove('hexo-douban-active');
+    }
+    //显示对应板块
+    var itemId = this.id.replace('tab', 'item');
+    var target = document.getElementById(itemId);
+    target.classList.remove('hexo-douban-hide');
+    target.classList.add('hexo-douban-show');
+    sibs = document.getElementById(itemId).siblings();
+    for (var k = 0; k < sibs.length; k++) {
+        sibs[k].classList.remove('hexo-douban-show');
+        sibs[k].classList.add('hexo-douban-hide');
+    }
+}
+var tabs = document.getElementsByClassName("hexo-douban-tab");
+for (var i = 0; i < tabs.length; i++) {
+    tabs[i].onclick = tabClick;
+    tabs[i].onclick.apply(tabs[i]);
+}
+tabs[2].click();
+
+    var firstpages = document.getElementsByClassName("hexo-douban-firstpage");
+var previouspages = document.getElementsByClassName("hexo-douban-previouspage");
+var nextpages = document.getElementsByClassName("hexo-douban-nextpage");
+var lastpages = document.getElementsByClassName("hexo-douban-lastpage");
+var pagenums = document.getElementsByClassName("hexo-douban-pagenum");
+
+function makePageNum(num, arr) {
+    return (num + 1) + ' / ' + (Math.ceil(arr.length / 10 === 0 ? 1 : Math.ceil(arr.length / 10)));
+}
+
+function firstBtn() {
+    var sibs = this.parentNode.siblings();
+    displayPage(sibs, 0);
+    this.parentNode.getElementsByClassName('hexo-douban-pagenum')[0].innerText = makePageNum(0, sibs);
+}
+
+function previousBtn() {
+    var sibs = this.parentNode.siblings();
+    var currNum = this.parentNode.getElementsByClassName('hexo-douban-pagenum')[0].innerText;
+    currNum = currNum.substr(0, currNum.indexOf('/') - 1);
+    currNum = parseInt(currNum, 10) - 1;
+    if (currNum > 0) {
+        currNum--;
+    }
+    displayPage(sibs, currNum);
+    this.parentNode.getElementsByClassName('hexo-douban-pagenum')[0].innerText = makePageNum(currNum, sibs);
+}
+
+function nextBtn() {
+    var sibs = this.parentNode.siblings();
+    var currNum = this.parentNode.getElementsByClassName('hexo-douban-pagenum')[0].innerText;
+    currNum = currNum.substr(0, currNum.indexOf('/') - 1);
+    currNum = parseInt(currNum, 10) - 1;
+    if (currNum < Math.ceil(sibs.length / 10) - 1) {
+        currNum++;
+    }
+    displayPage(sibs, currNum);
+    this.parentNode.getElementsByClassName('hexo-douban-pagenum')[0].innerText = makePageNum(currNum, sibs);
+}
+
+function lastBtn() {
+    var sibs = this.parentNode.siblings();
+    displayPage(sibs, Math.ceil(sibs.length / 10) - 1);
+    this.parentNode.getElementsByClassName('hexo-douban-pagenum')[0].innerText = makePageNum(Math.ceil(sibs.length / 10) - 1 === -1 ? 0 : Math.ceil(sibs.length / 10) - 1, sibs);
+}
+
+function displayPage(arr, num) {
+    for (var i = 0; i < arr.length; i++) {
+        if (Math.floor(i / 10) === num) {
+            arr[i].classList.remove('hexo-douban-hide');
+            var img = arr[i].getElementsByTagName('img')[0];
+            img.src = img.getAttribute('data-src');
+        } else {
+            arr[i].classList.add('hexo-douban-hide');
+        }
+    }
+}
+
+for (var i = 0; i < firstpages.length; i++) {
+
+    //add listener
+    firstpages[i].onclick = firstBtn;
+    previouspages[i].onclick = previousBtn;
+    nextpages[i].onclick = nextBtn;
+    lastpages[i].onclick = lastBtn;
+
+    //set page num
+    var size = pagenums[i].parentNode.siblings().length;
+    pagenums[i].innerText = '1 / ' + (Math.ceil(size / 10) === 0 ? 1 : Math.ceil(size / 10));
+    firstpages[i].click();
+}
+
+</script>
+
+</div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">twf</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives"><div class="headline">文章</div><div class="length_num">173</div></a></div><div class="card-info-data-item is-center">      <a href="/tags"><div class="headline">标签</div><div class="length_num">37</div></a></div><div class="card-info-data-item is-center"><a href="/categories"><div class="headline">分类</div><div class="length_num">29</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1335402049"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1335402049" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1335402049@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-recent-item"><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/28/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4Arthas-%E5%9C%A8%E7%BA%BF%E8%AF%8A%E6%96%AD%E5%B7%A5%E5%85%B7/" title="阿里巴巴Arthas-在线诊断工具"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阿里巴巴Arthas-在线诊断工具"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/28/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4Arthas-%E5%9C%A8%E7%BA%BF%E8%AF%8A%E6%96%AD%E5%B7%A5%E5%85%B7/" title="阿里巴巴Arthas-在线诊断工具">阿里巴巴Arthas-在线诊断工具</a><time class="aside-post_meta post-meta-date" datetime="2021-06-28T12:05:01.000Z" title="发表于 2021-06-28 20:05:01">2021-06-28</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/04/G1%E8%B0%83%E4%BC%98/" title="G1调优"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="G1调优"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/04/G1%E8%B0%83%E4%BC%98/" title="G1调优">G1调优</a><time class="aside-post_meta post-meta-date" datetime="2021-06-04T12:18:50.000Z" title="发表于 2021-06-04 20:18:50">2021-06-04</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/04/CMS%E8%B0%83%E4%BC%98/" title="CMS调优"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CMS调优"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/04/CMS%E8%B0%83%E4%BC%98/" title="CMS调优">CMS调优</a><time class="aside-post_meta post-meta-date" datetime="2021-06-04T12:17:58.000Z" title="发表于 2021-06-04 20:17:58">2021-06-04</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/03/Garbage-Collection/" title="Garbage Collection"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Garbage Collection"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/03/Garbage-Collection/" title="Garbage Collection">Garbage Collection</a><time class="aside-post_meta post-meta-date" datetime="2021-06-03T10:54:19.000Z" title="发表于 2021-06-03 18:54:19">2021-06-03</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/05/27/Kubernetes%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8D%87%E7%BA%A7/" title="Kubernetes二进制升级"><img class="aside-post-bg" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kubernetes二进制升级"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/05/27/Kubernetes%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8D%87%E7%BA%A7/" title="Kubernetes二进制升级">Kubernetes二进制升级</a><time class="aside-post_meta post-meta-date" datetime="2021-05-27T10:40:25.000Z" title="发表于 2021-05-27 18:40:25">2021-05-27</time></div></div></div></div></div><div class="card-widget card-categories"><div class="card-content"><div class="item-headline"><i class="fas fa-folder-open"></i><span>分类</span></div><ul class="card-category-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Ansible/"><span class="card-category-list-name">Ansible</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Atlas/"><span class="card-category-list-name">Atlas</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Docker/"><span class="card-category-list-name">Docker</span><span class="card-category-list-count">10</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/EFK/"><span class="card-category-list-name">EFK</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/ELK/"><span class="card-category-list-name">ELK</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/ELK-Stack/"><span class="card-category-list-name">ELK Stack</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/GitLab/"><span class="card-category-list-name">GitLab</span><span class="card-category-list-count">4</span></a></li><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/GitLab/Jenkins/"><span class="card-category-list-name">Jenkins</span><span class="card-category-list-count">1</span></a></li></ul>
+            <li class="card-category-list-item more is-center"><a class="card-category-list-link-more" href="/categories">
+                <span>查看更多</span><i class="fas fa-angle-right"></i></a></li>           
+            </ul></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/Ansible/" style="font-size: 17px; color: #999c9f">Ansible</a> <a href="/tags/Ansibleble/" style="font-size: 16px; color: #999">Ansibleble</a> <a href="/tags/Atlas/" style="font-size: 16px; color: #999">Atlas</a> <a href="/tags/Docker/" style="font-size: 20px; color: #99a4b2">Docker</a> <a href="/tags/EFK/" style="font-size: 16px; color: #999">EFK</a> <a href="/tags/ELK/" style="font-size: 16.5px; color: #999a9c">ELK</a> <a href="/tags/ELK-Stack/" style="font-size: 19px; color: #99a1ac">ELK Stack</a> <a href="/tags/GitLab/" style="font-size: 17.5px; color: #999da3">GitLab</a> <a href="/tags/HAProxy/" style="font-size: 16.5px; color: #999a9c">HAProxy</a> <a href="/tags/Harbor/" style="font-size: 16px; color: #999">Harbor</a> <a href="/tags/Hexo/" style="font-size: 16px; color: #999">Hexo</a> <a href="/tags/Istio/" style="font-size: 21.5px; color: #99a8bc">Istio</a> <a href="/tags/JIRA/" style="font-size: 16px; color: #999">JIRA</a> <a href="/tags/Java/" style="font-size: 18px; color: #999ea6">Java</a> <a href="/tags/Jenkins/" style="font-size: 20.5px; color: #99a5b6">Jenkins</a> <a href="/tags/Keepalived/" style="font-size: 16.5px; color: #999a9c">Keepalived</a> <a href="/tags/Kubernetes/" style="font-size: 22px; color: #99a9bf">Kubernetes</a> <a href="/tags/LVS/" style="font-size: 16.5px; color: #999a9c">LVS</a> <a href="/tags/LVS-Keepalived/" style="font-size: 16px; color: #999">LVS Keepalived</a> <a href="/tags/Linux/" style="font-size: 18.5px; color: #99a0a9">Linux</a> <a href="/tags/Mailx/" style="font-size: 16px; color: #999">Mailx</a> <a href="/tags/Maven/" style="font-size: 16.5px; color: #999a9c">Maven</a> <a href="/tags/MySQL/" style="font-size: 19.5px; color: #99a2af">MySQL</a> <a href="/tags/Nginx/" style="font-size: 18px; color: #999ea6">Nginx</a> <a href="/tags/PTS/" style="font-size: 16px; color: #999">PTS</a> <a href="/tags/PXC/" style="font-size: 16px; color: #999">PXC</a> <a href="/tags/Prometheus/" style="font-size: 21px; color: #99a6b9">Prometheus</a> <a href="/tags/Rancher/" style="font-size: 17px; color: #999c9f">Rancher</a> <a href="/tags/Redis/" style="font-size: 17px; color: #999c9f">Redis</a> <a href="/tags/SSH/" style="font-size: 16px; color: #999">SSH</a> <a href="/tags/SonarQube/" style="font-size: 16.5px; color: #999a9c">SonarQube</a> <a href="/tags/Tomcat/" style="font-size: 16px; color: #999">Tomcat</a> <a href="/tags/Vagrant/" style="font-size: 17.5px; color: #999da3">Vagrant</a> <a href="/tags/Zabbix/" style="font-size: 18px; color: #999ea6">Zabbix</a> <a href="/tags/frp/" style="font-size: 16px; color: #999">frp</a> <a href="/tags/logrotate/" style="font-size: 16.5px; color: #999a9c">logrotate</a> <a href="/tags/%E8%B0%83%E4%BC%98/" style="font-size: 16px; color: #999">调优</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/06/"><span class="card-archive-list-date">六月 2021</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/05/"><span class="card-archive-list-date">五月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/04/"><span class="card-archive-list-date">四月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/03/"><span class="card-archive-list-date">三月 2021</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/02/"><span class="card-archive-list-date">二月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/01/"><span class="card-archive-list-date">一月 2021</span><span class="card-archive-list-count">24</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/12/"><span class="card-archive-list-date">十二月 2020</span><span class="card-archive-list-count">25</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/11/"><span class="card-archive-list-date">十一月 2020</span><span class="card-archive-list-count">12</span></a></li><li class="card-archive-list-item more is-center"><a class="card-archive-list-link-more" href="/archives">
+              <span>查看更多</span><i class="fas fa-angle-right"  ></i></a></li></ul></div></div><div class="card-widget card-map"><div class="card-content"><div class="item-headline"><i class="fa fa-globe-asia" aria-hidden="true"></i><span>访客地图</span></div><script id="clstr_globe" type="text/javascript" defer="defer" src="//clustrmaps.com/globe.js?d=bGuZd7Et4pPX9223GhOr-m_Zdlbr9hFosOajYheL7Bs"></script></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="webinfo-article-name">文章数目 :</div><div class="webinfo-article-count">173</div></div><div class="webinfo-item"><div class="webinfo-runtime-name">已运行时间 :</div><div class="webinfo-runtime-count" id="webinfo-runtime-count" publish_date="8/7/2019 00:00:00">     </div></div><div class="webinfo-item"><div class="webinfo-site-wordcount-name">本站总字数 :</div><div class="webinfo-site-wordcount">128.9k</div></div><div class="webinfo-item">      <div class="webinfo-site-uv-name">本站访客数 :</div><div class="webinfo-site-uv-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="webinfo-site-name">本站总访问量 :</div><div class="webinfo-site-pv-count" id="busuanzi_value_site_pv"></div></div></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '3938fd68fb897cabf46913e9bd07810b',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>

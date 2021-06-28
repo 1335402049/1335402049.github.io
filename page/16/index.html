@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Silence</title><meta name="description"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/page/16/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="website"><meta property="og:title" content="Silence"><meta property="og:url" content="http://yoursite.com/page/16/"><meta property="og:site_name" content="Silence"><meta property="og:description"><meta property="og:image" content="http://yoursite.com/img/default-avatar.webp"><meta property="article:published_time" content="2021-06-28T12:21:43.488Z"><meta property="article:modified_time" content="2021-06-28T12:21:43.488Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isSidebar: false,
+  postUpdate: '2021-06-28 20:21:43'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">173</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(https://cdn.pixabay.com/photo/2021/02/08/20/24/lake-5996427_960_720.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="site-info"><h1 id="site_title">Silence</h1><div id="site_subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/1335402049" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1335402049@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div id="scroll_down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout_page" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/03/08/Nginx%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" title="Nginx笔记二(反向代理)">     <img class="post_bg" data-lazy-src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3968007614,1554103190&amp;fm=26&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Nginx笔记二(反向代理)"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/03/08/Nginx%E7%AC%94%E8%AE%B0%E4%BA%8C-%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" title="Nginx笔记二(反向代理)">Nginx笔记二(反向代理)</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-03-08T12:47:24.000Z" title="发表于 2020-03-08 20:47:24">2020-03-08</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Nginx/">Nginx</a></span></div><div class="content">实验环境192.168.186.129 centos7本地windows
+
+关闭防火墙和selinuxsystemctl stop firewalldsetenforce 0
+
+安装nginx、httpdyum install nginx -yyum install httpd -y#在/etc/httpd/conf/httpd.conf修改httpd端口listen 8080#启动服务systemctl start httpd
+
+修改hosts文件#打开windows的C:\Windows\System32\drivers\etc的hosts文件，追加一行192.168.186.129  www.abctwf.com
+
+编辑配置文件vim /etc/nginx/nginx.confserver &#123;        listen       80 default_server;        listen       [::]:80 default_server;        server_name  192.168.186.129;        root          ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2020/03/08/Nginx%E7%AC%94%E8%AE%B0%E4%B8%80/" title="Nginx笔记一">     <img class="post_bg" data-lazy-src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3968007614,1554103190&amp;fm=26&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Nginx笔记一"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/03/08/Nginx%E7%AC%94%E8%AE%B0%E4%B8%80/" title="Nginx笔记一">Nginx笔记一</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-03-08T11:24:51.000Z" title="发表于 2020-03-08 19:24:51">2020-03-08</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Nginx/">Nginx</a></span></div><div class="content">nginx概述Nginx是一个高性能的HTTP和反向代理服务器，特点占用内存少，并发能力强，常用于负载均衡服务器。
+
+
+反向代理nginx不仅可以做反向代理，实现负载均衡，还可用作正向代理来进行上网等功能。正向代理：例如大陆用户需要访问谷歌，但是一般来说，大陆用户是无法访问谷歌的，这时候需要在浏览器设置代理，通过代理服务器访问谷歌。简单说正向代理代理的是客户端。反向代理：其实客户端对代理是无感知的，因为客户端不需要任何配置就可以访问，我们只需要将请求发送到反向代理服务器，由反向代理服务器去选择目标服务器获取数据后，在返回给客户端，此时反向代理服务器和目标服务器对外暴露的就是一个服务器，暴露的是反向代理服务器，隐藏真实服务器的ip地址。简单的说正向代理即代理的是服务端
+负载均衡客户端发送多个请求到服务端，服务端处理请求，有一些可能要与数据库进行交互，服务器处理完毕后，再将结果返回客户端。这种架构模式会造成服务器处理请求日益缓慢，并发特别大的时候，甚至可能导致服务器宕机，一旦服务端宕机，整个系统就直接崩溃了，而负载均衡技术就可以解决这种业务情景。负载均衡就是客户端在发送请求，请求并不直接到 ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2020/01/30/Java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" title="Java生产环境下性能监控">     <img class="post_bg" data-lazy-src="https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1530665328,2361502470&amp;fm=26&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java生产环境下性能监控"></a></div><div class="recent-post-info"><a class="article-title" href="/2020/01/30/Java%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%B8%8B%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" title="Java生产环境下性能监控">Java生产环境下性能监控</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2020-01-30T11:36:21.000Z" title="发表于 2020-01-30 19:36:21">2020-01-30</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Linux/">Linux</a></span></div><div class="content">本文是基于jdk1.8，其他版本稍有不同
+
+JVM参数类型（1）标准参数-help-server -client-version -showversion-cp -classpath（2）X参数非标准化参数-Xint:解释执行-Xcomp:第一次使用就编译成本地代码-Xmixed:混合模式，由JVM自己来决定是否编译成本地代码（3）XX参数非标准化参数相对不稳定主要用于JVM调优和Debug
+XX参数分类（1）Boolean类型格式：-XX:[+-]表示启动或禁用name属性比如：-XX:+UseConcMarkSweepGC      -XX:+UseG1GC（2）非Boolean类型格式：-XX:=表示name属性的值是value比如：-XX:MaxGCPauseMillis=500      XX:GCTimeRatio=19
+jps工具查看java进程
+#常用指令jpsjps -l
+
+jinfo工具查看Java进程运行的JVM参数
+#常用指令jinfo -flag &lt;JVM参数&gt; pid
+
+jstat工具监控进程的类装载、内存、垃圾收集、JIT编译等运行数据jsta ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2019/11/30/Zabbix%E9%82%AE%E4%BB%B6%E5%91%8A%E8%AD%A6/" title="Zabbix邮件告警">     <img class="post_bg" data-lazy-src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1497391358,2800491244&amp;fm=26&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Zabbix邮件告警"></a></div><div class="recent-post-info"><a class="article-title" href="/2019/11/30/Zabbix%E9%82%AE%E4%BB%B6%E5%91%8A%E8%AD%A6/" title="Zabbix邮件告警">Zabbix邮件告警</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-30T07:45:56.000Z" title="发表于 2019-11-30 15:45:56">2019-11-30</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Zabbix/">Zabbix</a></span></div><div class="content">下面我们对内存使用率进行监控，并设置邮件告警。
+
+
+设置QQ邮箱在设置-&gt;账户里面，开启POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务，获取授权码
+设置自定义监控项的key#进入被监控主机,打开/etc/zabbix/zabbix-agent.conf，在最后一行添加UserParameter=memory_used,free -m | awk &#x27;/^Mem/ &#123;print $3/$2&#125;&#x27;#重启agent服务systemctl restart zabbix-agent#在zabbix server端测试keyzabbix_get -s 192.168.136.135 -p 10050 -k memory_used
+
+创建监控项
+创建监控图形
+添加触发器
+安装mailx工具，配置Zabbix服务端外部邮箱#安装mailxyum install mailx#配置/etc/mail.rc文件，在末尾加上smtp相关配置set bsdcompatset from=1335402049@qq.comset smtp= ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2019/11/24/Zabbix%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/" title="Zabbix安装与部署">     <img class="post_bg" data-lazy-src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1497391358,2800491244&amp;fm=26&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Zabbix安装与部署"></a></div><div class="recent-post-info"><a class="article-title" href="/2019/11/24/Zabbix%E5%AE%89%E8%A3%85%E4%B8%8E%E9%83%A8%E7%BD%B2/" title="Zabbix安装与部署">Zabbix安装与部署</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-24T02:18:40.000Z" title="发表于 2019-11-24 10:18:40">2019-11-24</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Zabbix/">Zabbix</a></span></div><div class="content">zabbix是一款基于web界面的提供分布式系统监控以及网络监视功能的企业级的开源解决方案zabbix能监视各种网络参数，保证服务器系统的安全运营；并提供灵活的通知机制让系统管理员快速定位，解决存在的各种问题zabbix由2部分构成，zabbix server与可选组件zabbix agentzabbix server可以通过SNMP、zabbix agent、ping、端口监视等方法提供对远程服务器、网络状态的监视，以及数据收集等功能，它可以运行在Linux、Solaris、HP-UX、ALX、Free BSD、Open BSD，OS X等平台上
+
+
+关闭防火墙和selinux#临时关闭setenforce 0systemctl stop firewalld
+
+安装httpd服务#安装yum install -y httpd#启动httpd，并设置开机自启systemctl start httpd &amp;&amp; systemctl enable httpd#查看httpd启动情况systemctl status httpd
+
+安装mariadb数据库#安装yum instal ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2019/11/23/LVS-Keepalived%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8/" title="LVS+Keepalived实现高可用">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LVS+Keepalived实现高可用"></a></div><div class="recent-post-info"><a class="article-title" href="/2019/11/23/LVS-Keepalived%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8/" title="LVS+Keepalived实现高可用">LVS+Keepalived实现高可用</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-23T04:20:08.000Z" title="发表于 2019-11-23 12:20:08">2019-11-23</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Keepalived/">Keepalived</a></span></div><div class="content">Keepalived是专门针对LVS设计的一款强大的辅助工具，主要用来提供故障切换和健康检查功能–判断LVS负载调度器、节点服务器的可用性，及时隔离并替换新的服务器，当故障主机恢复后将其重新加入集群。
+
+
+实验环境客户端：192.168.136.130虚拟IP：192.168.136.100LVS1：192.168.136.133LVS2: 192.168.136.137RS1： 192.168.136.134RS2： 192.168.136.135
+#关闭防火墙systemctl stop firewalld#临时关闭selinuxsetenforce 0
+
+LVS配置#下载lvs和keepalivedyum install -y keepalived -y ipvsadm#修改LVS1的/etc/keepalived下的keepalived.confglobal_defs &#123;   router_id LVS-1&#125;vrrp_instance VI_1 &#123;    state MASTER    interface ens33    virtual_rout ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2019/11/17/LVS%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F%E5%AE%9E%E9%AA%8C/" title="LVS工作模式实验">     <img class="post_bg" data-lazy-src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fa-ssl.duitang.com%2Fuploads%2Fitem%2F201801%2F15%2F20180115151255_dqnds.jpg&amp;refer=http%3A%2F%2Fa-ssl.duitang.com&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1611921567&amp;t=22beda43f98ee34543141ffc0a096e76" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LVS工作模式实验"></a></div><div class="recent-post-info"><a class="article-title" href="/2019/11/17/LVS%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F%E5%AE%9E%E9%AA%8C/" title="LVS工作模式实验">LVS工作模式实验</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-17T06:11:17.000Z" title="发表于 2019-11-17 14:11:17">2019-11-17</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/LVS/">LVS</a></span></div><div class="content">主要演示LVS工作模式的DR模式和NAT模式实战
+
+DR模式实验环境192.168.136.130 客户机192.168.136.133 LVS负载均衡器   虚拟IP地址 192.168.136.123192.168.136.134 RS真实服务器    虚拟IP地址 192.168.136.123192.168.136.135 RS真实服务器    虚拟IP地址 192.168.136.123
+LVS负载均衡器配置（1）LVS准备VIP和路由
+#配置虚拟ipifconfig ens33:0 192.168.136.123 broadcast 192.168.136.255 netmask 255.255.255.0#配置路由route add -net 192.168.136.123 dev ens33:0
+#设置路由转发vi /etc/sysctl.confnet.ipv4.ip_forward=1                   #开启路由转发net.ipv4.conf.all.send_redirects=0      #禁用路由重定向转发net.ipv4.conf.en ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2019/11/17/%E5%88%9D%E8%AF%86LVS/" title="初识LVS">     <img class="post_bg" data-lazy-src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="初识LVS"></a></div><div class="recent-post-info"><a class="article-title" href="/2019/11/17/%E5%88%9D%E8%AF%86LVS/" title="初识LVS">初识LVS</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-17T01:21:41.000Z" title="发表于 2019-11-17 09:21:41">2019-11-17</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/LVS/">LVS</a></span></div><div class="content">LVS（Linux Virtual Server）即Linux虚拟服务器，是章文嵩博士主导的开源负载均衡项目，LVS本身并不提供服务，只是把特定的请求转发给相应的真实服务器（real server），从而实现集群环境中的负载均衡。
+
+
+LVS工作模式LVS工作模式主要有DR直接路由模式、NAT模式、TUN模式、FULL-NAT模式，这边我们主要讲DR模式和NAT模式。
+DR模式（1）客户端将请求发往前端的负载均衡器，请求报文源地址是CIP，目标地址是VIP（2）负载均衡器收到报文后，发现请求的是规则里面存在的地址，那么它将客户端请求报文的源MAC地址改为自己DIP的MAC地址，将目标MAC地址改为RIP的MAC地址，并将此请求发给RS服务器（3）RS发现请求报文中目的MAC是自己的，就会将此报文接收下来，处理完请求报文后，将响应报文通过lo接口送给eth0网卡直接发送给客户端
+NAT模式（1）客户端将请求发往前端的负载均衡器，此请求报文源地址是CIP（客户端IP），目标地址VIP（负载均衡器地址）（2）负载均衡器接收到报文后，发现请求是规则里面存在的地址，那么它将客户端请求报文的目标I ...</div></div></div><div class="recent-post-item"><div class="post_cover left_radius"><a href="/2019/11/09/Ansible-role%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="Ansible role的基本使用">     <img class="post_bg" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1597249040361&amp;di=1b1c214639af254780c1bba05183c322&amp;imgtype=0&amp;src=http%3A%2F%2Fwww.imzcy.cn%2Fwp-content%2Fuploads%2F2018%2F10%2Fansible.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ansible role的基本使用"></a></div><div class="recent-post-info"><a class="article-title" href="/2019/11/09/Ansible-role%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="Ansible role的基本使用">Ansible role的基本使用</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-09T09:45:05.000Z" title="发表于 2019-11-09 17:45:05">2019-11-09</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Ansible/">Ansible</a></span></div><div class="content">roles是ansible自1.2版本引入的新特性，用于层次性、结构化地组织playbook。roles能够根据层次型结构自动装载变量文件、tasks以及handlers等。要使用roles只需要在playbook中使用include指令即可。简单来讲，roles就是通过分别将变量、文件、任务、模板及处理器放置于单独的目录中，并可以便捷地include它们的一种机制。角色一般用于基于主机构建服务的场景中，但也可以是用于构建守护进程等场景中
+
+复杂场景：建议使用roles,代码复用性高
+Roles各目录作用/roles/project/:项目名称，有以下子目录    1）files/：存放由copy或script模板等调用的文件    2）templates/：template模块查找所需要模板文件的目录    3）tasks/：定义task，role的基本元素，至少应该包含一个名为main.yml的文件；其他文件需要在此文件中通过include进行包含    4）handlers/：至少包含一个名为main.yml的文件；其他文件需要在此文件中通过include进行包含    5）va ...</div></div></div><div class="recent-post-item"><div class="post_cover right_radius"><a href="/2019/11/09/Ansible-playbook%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="Ansible playbook的基本使用">     <img class="post_bg" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1597249040361&amp;di=1b1c214639af254780c1bba05183c322&amp;imgtype=0&amp;src=http%3A%2F%2Fwww.imzcy.cn%2Fwp-content%2Fuploads%2F2018%2F10%2Fansible.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Ansible playbook的基本使用"></a></div><div class="recent-post-info"><a class="article-title" href="/2019/11/09/Ansible-playbook%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" title="Ansible playbook的基本使用">Ansible playbook的基本使用</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2019-11-09T03:26:11.000Z" title="发表于 2019-11-09 11:26:11">2019-11-09</time></span><span class="article-meta"><span class="article-meta__separator">|</span><i class="fas fa-inbox article-meta__icon"></i><a class="article-meta__categories" href="/categories/Ansible/">Ansible</a></span></div><div class="content">playbook是一个不同于ansible命令行方式的模式，其功能更强大灵活。简单地说，playbook是一个非常适合部署复杂应用程序的基础，它可以定制部署，可以按照指定的操作有序执行，支持同步和异步方式。playbook是通过yaml或者yml格式进行描述定义的。
+
+playbook核心元素（1）Hosts   执行远程主机列表（2）Tasks   任务集（3）Varniables   内置变量或自定义变量在playbook中调用（4）Templates   模板，可替代模板文件中的变量并实现一些简单逻辑的文件（5）Handlers和notify   这2个需要结合使用，由特定条件触发的操作，满足条件方才执行（6）tags  标签，指定某条任务执行，用于运行playbook中的部分代码。ansible具有幂等性，因此会自动跳过没有变化的部分，即便如此，有些代码为测试其确实没有发生变化的时间依然非常长。此时，如果确定没有变化，可以通过tags跳过一些代码片段
+运行playbook运行playbook的方式ansible-playbook &lt;filename.yml&gt; ... ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/page/15/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><span class="page-number current">16</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/17/"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside_content" id="aside_content"><div class="card-widget card-info"><div class="card-content"><div class="card-info-avatar is-center"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">twf</div><div class="author-info__description"></div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives"><div class="headline">文章</div><div class="length_num">173</div></a></div><div class="card-info-data-item is-center">      <a href="/tags"><div class="headline">标签</div><div class="length_num">37</div></a></div><div class="card-info-data-item is-center"><a href="/categories"><div class="headline">分类</div><div class="length_num">29</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/1335402049"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/1335402049" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:1335402049@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div></div><div class="card-widget card-announcement"><div class="card-content"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div></div><div class="card-widget card-recent-post"><div class="card-content"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-recent-item"><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/28/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4Arthas-%E5%9C%A8%E7%BA%BF%E8%AF%8A%E6%96%AD%E5%B7%A5%E5%85%B7/" title="阿里巴巴Arthas-在线诊断工具"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="阿里巴巴Arthas-在线诊断工具"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/28/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4Arthas-%E5%9C%A8%E7%BA%BF%E8%AF%8A%E6%96%AD%E5%B7%A5%E5%85%B7/" title="阿里巴巴Arthas-在线诊断工具">阿里巴巴Arthas-在线诊断工具</a><time class="aside-post_meta post-meta-date" datetime="2021-06-28T12:05:01.000Z" title="发表于 2021-06-28 20:05:01">2021-06-28</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/04/G1%E8%B0%83%E4%BC%98/" title="G1调优"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="G1调优"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/04/G1%E8%B0%83%E4%BC%98/" title="G1调优">G1调优</a><time class="aside-post_meta post-meta-date" datetime="2021-06-04T12:18:50.000Z" title="发表于 2021-06-04 20:18:50">2021-06-04</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/04/CMS%E8%B0%83%E4%BC%98/" title="CMS调优"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CMS调优"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/04/CMS%E8%B0%83%E4%BC%98/" title="CMS调优">CMS调优</a><time class="aside-post_meta post-meta-date" datetime="2021-06-04T12:17:58.000Z" title="发表于 2021-06-04 20:17:58">2021-06-04</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/06/03/Garbage-Collection/" title="Garbage Collection"><img class="aside-post-bg" data-lazy-src="https://img2.baidu.com/it/u=1991900475,2005155140&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Garbage Collection"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/06/03/Garbage-Collection/" title="Garbage Collection">Garbage Collection</a><time class="aside-post_meta post-meta-date" datetime="2021-06-03T10:54:19.000Z" title="发表于 2021-06-03 18:54:19">2021-06-03</time></div></div><div class="aside-recent-post"><a class="aside-post-cover" href="/2021/05/27/Kubernetes%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8D%87%E7%BA%A7/" title="Kubernetes二进制升级"><img class="aside-post-bg" data-lazy-src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=4143693660,733639719&amp;fm=26&amp;gp=0.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kubernetes二进制升级"/></a><div class="aside-post-info"><a class="aside-post-title" href="/2021/05/27/Kubernetes%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8D%87%E7%BA%A7/" title="Kubernetes二进制升级">Kubernetes二进制升级</a><time class="aside-post_meta post-meta-date" datetime="2021-05-27T10:40:25.000Z" title="发表于 2021-05-27 18:40:25">2021-05-27</time></div></div></div></div></div><div class="card-widget card-categories"><div class="card-content"><div class="item-headline"><i class="fas fa-folder-open"></i><span>分类</span></div><ul class="card-category-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Ansible/"><span class="card-category-list-name">Ansible</span><span class="card-category-list-count">4</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Atlas/"><span class="card-category-list-name">Atlas</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Docker/"><span class="card-category-list-name">Docker</span><span class="card-category-list-count">10</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/EFK/"><span class="card-category-list-name">EFK</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/ELK/"><span class="card-category-list-name">ELK</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/ELK-Stack/"><span class="card-category-list-name">ELK Stack</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/GitLab/"><span class="card-category-list-name">GitLab</span><span class="card-category-list-count">4</span></a></li><ul class="card-category-list child"><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/GitLab/Jenkins/"><span class="card-category-list-name">Jenkins</span><span class="card-category-list-count">1</span></a></li></ul>
+            <li class="card-category-list-item more is-center"><a class="card-category-list-link-more" href="/categories">
+                <span>查看更多</span><i class="fas fa-angle-right"></i></a></li>           
+            </ul></div></div><div class="card-widget card-tags"><div class="card-content"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/Ansible/" style="font-size: 17px; color: #999c9f">Ansible</a> <a href="/tags/Ansibleble/" style="font-size: 16px; color: #999">Ansibleble</a> <a href="/tags/Atlas/" style="font-size: 16px; color: #999">Atlas</a> <a href="/tags/Docker/" style="font-size: 20px; color: #99a4b2">Docker</a> <a href="/tags/EFK/" style="font-size: 16px; color: #999">EFK</a> <a href="/tags/ELK/" style="font-size: 16.5px; color: #999a9c">ELK</a> <a href="/tags/ELK-Stack/" style="font-size: 19px; color: #99a1ac">ELK Stack</a> <a href="/tags/GitLab/" style="font-size: 17.5px; color: #999da3">GitLab</a> <a href="/tags/HAProxy/" style="font-size: 16.5px; color: #999a9c">HAProxy</a> <a href="/tags/Harbor/" style="font-size: 16px; color: #999">Harbor</a> <a href="/tags/Hexo/" style="font-size: 16px; color: #999">Hexo</a> <a href="/tags/Istio/" style="font-size: 21.5px; color: #99a8bc">Istio</a> <a href="/tags/JIRA/" style="font-size: 16px; color: #999">JIRA</a> <a href="/tags/Java/" style="font-size: 18px; color: #999ea6">Java</a> <a href="/tags/Jenkins/" style="font-size: 20.5px; color: #99a5b6">Jenkins</a> <a href="/tags/Keepalived/" style="font-size: 16.5px; color: #999a9c">Keepalived</a> <a href="/tags/Kubernetes/" style="font-size: 22px; color: #99a9bf">Kubernetes</a> <a href="/tags/LVS/" style="font-size: 16.5px; color: #999a9c">LVS</a> <a href="/tags/LVS-Keepalived/" style="font-size: 16px; color: #999">LVS Keepalived</a> <a href="/tags/Linux/" style="font-size: 18.5px; color: #99a0a9">Linux</a> <a href="/tags/Mailx/" style="font-size: 16px; color: #999">Mailx</a> <a href="/tags/Maven/" style="font-size: 16.5px; color: #999a9c">Maven</a> <a href="/tags/MySQL/" style="font-size: 19.5px; color: #99a2af">MySQL</a> <a href="/tags/Nginx/" style="font-size: 18px; color: #999ea6">Nginx</a> <a href="/tags/PTS/" style="font-size: 16px; color: #999">PTS</a> <a href="/tags/PXC/" style="font-size: 16px; color: #999">PXC</a> <a href="/tags/Prometheus/" style="font-size: 21px; color: #99a6b9">Prometheus</a> <a href="/tags/Rancher/" style="font-size: 17px; color: #999c9f">Rancher</a> <a href="/tags/Redis/" style="font-size: 17px; color: #999c9f">Redis</a> <a href="/tags/SSH/" style="font-size: 16px; color: #999">SSH</a> <a href="/tags/SonarQube/" style="font-size: 16.5px; color: #999a9c">SonarQube</a> <a href="/tags/Tomcat/" style="font-size: 16px; color: #999">Tomcat</a> <a href="/tags/Vagrant/" style="font-size: 17.5px; color: #999da3">Vagrant</a> <a href="/tags/Zabbix/" style="font-size: 18px; color: #999ea6">Zabbix</a> <a href="/tags/frp/" style="font-size: 16px; color: #999">frp</a> <a href="/tags/logrotate/" style="font-size: 16.5px; color: #999a9c">logrotate</a> <a href="/tags/%E8%B0%83%E4%BC%98/" style="font-size: 16px; color: #999">调优</a></div></div></div><div class="card-widget card-archives"><div class="card-content"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/06/"><span class="card-archive-list-date">六月 2021</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/05/"><span class="card-archive-list-date">五月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/04/"><span class="card-archive-list-date">四月 2021</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/03/"><span class="card-archive-list-date">三月 2021</span><span class="card-archive-list-count">4</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/02/"><span class="card-archive-list-date">二月 2021</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2021/01/"><span class="card-archive-list-date">一月 2021</span><span class="card-archive-list-count">24</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/12/"><span class="card-archive-list-date">十二月 2020</span><span class="card-archive-list-count">25</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2020/11/"><span class="card-archive-list-date">十一月 2020</span><span class="card-archive-list-count">12</span></a></li><li class="card-archive-list-item more is-center"><a class="card-archive-list-link-more" href="/archives">
+              <span>查看更多</span><i class="fas fa-angle-right"  ></i></a></li></ul></div></div><div class="card-widget card-map"><div class="card-content"><div class="item-headline"><i class="fa fa-globe-asia" aria-hidden="true"></i><span>访客地图</span></div><script id="clstr_globe" type="text/javascript" defer="defer" src="//clustrmaps.com/globe.js?d=bGuZd7Et4pPX9223GhOr-m_Zdlbr9hFosOajYheL7Bs"></script></div></div><div class="card-widget card-webinfo"><div class="card-content"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="webinfo-article-name">文章数目 :</div><div class="webinfo-article-count">173</div></div><div class="webinfo-item"><div class="webinfo-runtime-name">已运行时间 :</div><div class="webinfo-runtime-count" id="webinfo-runtime-count" publish_date="8/7/2019 00:00:00">     </div></div><div class="webinfo-item"><div class="webinfo-site-wordcount-name">本站总字数 :</div><div class="webinfo-site-wordcount">128.9k</div></div><div class="webinfo-item">      <div class="webinfo-site-uv-name">本站访客数 :</div><div class="webinfo-site-uv-count" id="busuanzi_value_site_uv"></div></div><div class="webinfo-item"><div class="webinfo-site-name">本站总访问量 :</div><div class="webinfo-site-pv-count" id="busuanzi_value_site_pv"></div></div></div></div></div></div></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function subtitleType () {
+  $.getJSON('https://api.btstu.cn/yan/api.php?charset=utf-8&encode=json',function (data) {
+    if (true) {
+      var sub = "青春是萤火绚丽的流动星河，灿烂却也极致短暂。,安于一隅，就是浪费生命。,鸿鹄之志，不在林间。,眉毛上的汗水和眉毛下的泪水只能选择一个。,真正的大师永远都怀着一颗学徒的心".length == 0 ? new Array() : "青春是萤火绚丽的流动星河，灿烂却也极致短暂。,安于一隅，就是浪费生命。,鸿鹄之志，不在林间。,眉毛上的汗水和眉毛下的泪水只能选择一个。,真正的大师永远都怀着一颗学徒的心".split(',')
+      var both = sub.unshift(data.text)
+      typed = new Typed('#subtitle', {
+        strings: sub,
+        startDelay: 300,
+        typeSpeed: 150,
+        loop: true,
+        backSpeed: 50,
+      })
+    } else {
+      document.getElementById('subtitle').innerHTML = data.text
+    }
+  })
+}
+
+if (true) {
+  if (typeof Typed === 'function') subtitleType()
+  else $.getScript('https://cdn.jsdelivr.net/npm/typed.js/lib/typed.min.js', subtitleType)
+} else {
+  subtitleType()
+}
+</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>
