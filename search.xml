@@ -4,6 +4,81 @@
   
     
     <entry>
+      <title>Jenkins升级出现An attempt to save the global configuration was made before it was loaded</title>
+      <link href="2021/09/02/Jenkins%E5%8D%87%E7%BA%A7%E5%87%BA%E7%8E%B0An-attempt-to-save-the-global-configuration-was-made-before-it-was-loaded/"/>
+      <url>2021/09/02/Jenkins%E5%8D%87%E7%BA%A7%E5%87%BA%E7%8E%B0An-attempt-to-save-the-global-configuration-was-made-before-it-was-loaded/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>CentOS7升级yum安装的Jenkins，升级之后无法进入Jenkins页面，出现以下错误：</p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java.lang.IllegalStateException: An attempt to save the global configuration was made before it was loaded</span><br><span class="line">    at jenkins.model.Jenkins.save(Jenkins.java:3379)</span><br><span class="line">    at jenkins.model.Jenkins.saveQuietly(Jenkins.java:3398)</span><br><span class="line">    at jenkins.model.Jenkins.setSecurityRealm(Jenkins.java:2637)</span><br><span class="line">    at jenkins.model.Jenkins$16.run(Jenkins.java:3342)</span><br><span class="line">    at org.jvnet.hudson.reactor.TaskGraphBuilder$TaskImpl.run(TaskGraphBuilder.java:169)</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor.runTask(Reactor.java:296)</span><br><span class="line">    at jenkins.model.Jenkins$5.runTask(Jenkins.java:1129)</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor$2.run(Reactor.java:214)</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor$Node.run(Reactor.java:117)</span><br><span class="line">    at jenkins.security.ImpersonatingExecutorService$1.run(ImpersonatingExecutorService.java:68)</span><br><span class="line">    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)</span><br><span class="line">    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)</span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)</span><br><span class="line">Caused: org.jvnet.hudson.reactor.ReactorException</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor.execute(Reactor.java:282)</span><br><span class="line">    at jenkins.InitReactorRunner.run(InitReactorRunner.java:50)</span><br><span class="line">    at jenkins.model.Jenkins.executeReactor(Jenkins.java:1162)</span><br><span class="line">    at jenkins.model.Jenkins.&lt;init&gt;(Jenkins.java:962)</span><br><span class="line">    at hudson.model.Hudson.&lt;init&gt;(Hudson.java:85)</span><br><span class="line">    at hudson.model.Hudson.&lt;init&gt;(Hudson.java:81)</span><br><span class="line">    at hudson.WebAppMain$3.run(WebAppMain.java:295)</span><br><span class="line">Caused: hudson.util.HudsonFailedToLoad</span><br><span class="line">    at hudson.WebAppMain$3.run(WebAppMain.java:312)</span><br></pre></td></tr></table></figure><h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>下载 hpi 并将 hpi 文件放到 JENKINS_HOME/plugins 文件夹中，通常Jenkins插件目录是/var/lib/jenkins/plugins/。</p><p>下载地址：<a href="https://updates.jenkins.io/download/plugins/role-strategy/">https://updates.jenkins.io/download/plugins/role-strategy/</a></p><p>最后重新启动即可：systemctl restart jenkins</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Jenkins </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Jenkins </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Prometheus监控JVM</title>
+      <link href="2021/09/02/Prometheus%E7%9B%91%E6%8E%A7JVM/"/>
+      <url>2021/09/02/Prometheus%E7%9B%91%E6%8E%A7JVM/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p>下载 jmx_exporter：<a href="https://github.com/prometheus/jmx_exporter">https://github.com/prometheus/jmx_exporter</a></p><h2 id="配置jmx-exporter"><a href="#配置jmx-exporter" class="headerlink" title="配置jmx_exporter"></a>配置jmx_exporter</h2><blockquote><p>vim /usr/local/jmx_exporter/simple-config.yml</p></blockquote><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">lowercaseOutputLabelNames: true</span><br><span class="line">lowercaseOutputName: true</span><br><span class="line">whitelistObjectNames: [&quot;java.lang:type&#x3D;OperatingSystem&quot;]</span><br><span class="line">rules:</span><br><span class="line"> - pattern: &#39;java.lang&lt;type&#x3D;OperatingSystem&gt;&lt;&gt;((?!process_cpu_time)\w+):&#39;</span><br><span class="line">   name: os_$1</span><br><span class="line">   type: GAUGE</span><br><span class="line">   attrNameSnakeCase: true</span><br></pre></td></tr></table></figure><h2 id="在应用程序启动命令中添加配置"><a href="#在应用程序启动命令中添加配置" class="headerlink" title="在应用程序启动命令中添加配置"></a>在应用程序启动命令中添加配置</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-javaagent:&#x2F;usr&#x2F;local&#x2F;jmx_exporter&#x2F;jmx_prometheus_javaagent-0.12.0.jar&#x3D;3010:&#x2F;usr&#x2F;local&#x2F;jmx_exporter&#x2F;simple-config.yml</span><br></pre></td></tr></table></figure><h2 id="配置prometheus"><a href="#配置prometheus" class="headerlink" title="配置prometheus"></a>配置prometheus</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">- job_name: &#39;java&#39;</span><br><span class="line">  scrape_interval: 30s</span><br><span class="line">  static_configs:</span><br><span class="line">    - targets: [&#39;192.168.1.110:3010&#39;]</span><br></pre></td></tr></table></figure><h2 id="导入grafana模板"><a href="#导入grafana模板" class="headerlink" title="导入grafana模板"></a>导入grafana模板</h2><p>导入模板id：8563</p><h2 id="配置rules告警规则"><a href="#配置rules告警规则" class="headerlink" title="配置rules告警规则"></a>配置rules告警规则</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">groups:</span><br><span class="line">- name: jmx_rules</span><br><span class="line">  rules:</span><br><span class="line">  - alert: JvmMemoryFillingUp</span><br><span class="line">    expr: (sum by (instance)(jvm_memory_bytes_used&#123;area&#x3D;&quot;heap&quot;&#125;) &#x2F; sum by (instance)(jvm_memory_bytes_max&#123;area&#x3D;&quot;heap&quot;&#125;)) * 100 &gt; 80</span><br><span class="line">    for: 2m</span><br><span class="line">    labels:</span><br><span class="line">      severity: warning</span><br><span class="line">    annotations:</span><br><span class="line">      summary: JVM memory filling up (instance &#123;&#123; $labels.instance &#125;&#125;)</span><br><span class="line">      description: &quot;JVM memory is filling up (&gt; 80%)\n  VALUE &#x3D; &#123;&#123; $value &#125;&#125;\n  LABELS &#x3D; &#123;&#123; $labels &#125;&#125;&quot;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> Prometheus </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Prometheus </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Prometheus快照</title>
+      <link href="2021/09/02/Prometheus%E5%BF%AB%E7%85%A7/"/>
+      <url>2021/09/02/Prometheus%E5%BF%AB%E7%85%A7/</url>
+      
+        <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><h2 id="创建快照"><a href="#创建快照" class="headerlink" title="创建快照"></a>创建快照</h2><p>在启动配置中添加 ：</p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--storage.tsdb.path&#x3D;&#x2F;prometheus&#x2F;data --web.enable-admin-api</span><br></pre></td></tr></table></figure><p>创建快照：</p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">curl -XPOST http:&#x2F;&#x2F;localhost:9090&#x2F;api&#x2F;v2&#x2F;admin&#x2F;tsdb&#x2F;snapshot</span><br></pre></td></tr></table></figure><p>执行完成之后，会在/prometheus/data/下生成snapshot目录，并且里面存放以日期开头的快照目录</p><h2 id="恢复快照"><a href="#恢复快照" class="headerlink" title="恢复快照"></a>恢复快照</h2><ol><li>关闭prometheus服务</li><li>将/prometheus/data改名为/prometheus/data-bak </li><li>将/prometheus/data-bak/snapshot的一个日期目录改名为data，并移动到/prometheus目录下</li><li>启动prometheus服务</li></ol><h2 id="定时备份"><a href="#定时备份" class="headerlink" title="定时备份"></a>定时备份</h2><p>在crontab里面添加定时计划：</p><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#每周日凌晨备份prometheus数据</span><br><span class="line">0 0 * * 0 &#x2F;usr&#x2F;bin&#x2F;curl -XPOST http:&#x2F;&#x2F;localhost:9090&#x2F;api&#x2F;v2&#x2F;admin&#x2F;tsdb&#x2F;snapshot</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> Prometheus </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Prometheus </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>使用Nginx Ingress实现金丝雀发布</title>
       <link href="2021/07/13/%E4%BD%BF%E7%94%A8Nginx-Ingress%E5%AE%9E%E7%8E%B0%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83/"/>
       <url>2021/07/13/%E4%BD%BF%E7%94%A8Nginx-Ingress%E5%AE%9E%E7%8E%B0%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83/</url>

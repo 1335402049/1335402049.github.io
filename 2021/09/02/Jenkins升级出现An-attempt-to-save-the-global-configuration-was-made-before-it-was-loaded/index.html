@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Jenkins升级出现An attempt to save the global configuration was made before it was loaded | Silence</title><meta name="description" content="CentOS7升级yum安装的Jenkins，升级之后无法进入Jenkins页面，出现以下错误： java.lang.IllegalStateException: An attempt to save the global configuration was made before it was loaded    at jenkins.model.Jenkins.save(Jenkins.jav"><meta name="keywords" content="Jenkins"><meta name="author" content="twf"><meta name="copyright" content="twf"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://yoursite.com/2021/09/02/Jenkins%E5%8D%87%E7%BA%A7%E5%87%BA%E7%8E%B0An-attempt-to-save-the-global-configuration-was-made-before-it-was-loaded/"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta property="og:type" content="article"><meta property="og:title" content="Jenkins升级出现An attempt to save the global configuration was made before it was loaded"><meta property="og:url" content="http://yoursite.com/2021/09/02/Jenkins%E5%8D%87%E7%BA%A7%E5%87%BA%E7%8E%B0An-attempt-to-save-the-global-configuration-was-made-before-it-was-loaded/"><meta property="og:site_name" content="Silence"><meta property="og:description" content="CentOS7升级yum安装的Jenkins，升级之后无法进入Jenkins页面，出现以下错误： java.lang.IllegalStateException: An attempt to save the global configuration was made before it was loaded    at jenkins.model.Jenkins.save(Jenkins.jav"><meta property="og:image" content="https://image.baidu.com/search/detail?ct=503316480&amp;z=undefined&amp;tn=baiduimagedetail&amp;ipn=d&amp;word=jenkins&amp;step_word=&amp;ie=utf-8&amp;in=&amp;cl=2&amp;lm=-1&amp;st=undefined&amp;hd=undefined&amp;latest=undefined&amp;copyright=undefined&amp;cs=1349347081,1338015825&amp;os=621084480,647508540&amp;simid=4097763135,292178517&amp;pn=8&amp;rn=1&amp;di=145640&amp;ln=1592&amp;fr=&amp;fmq=1630587966360_R&amp;fm=&amp;ic=undefined&amp;s=undefined&amp;se=&amp;sme=&amp;tab=0&amp;width=undefined&amp;height=undefined&amp;face=undefined&amp;is=0,0&amp;istype=0&amp;ist=&amp;jit=&amp;bdtype=0&amp;spn=0&amp;pi=0&amp;gsm=0&amp;objurl=https%3A%2F%2Fgimg2.baidu.com%2Fimage_search%2Fsrc%3Dhttp%253A%252F%252Fp6.qhimg.com%252Ft01244bc5d60a061b50.png%26refer%3Dhttp%253A%252F%252Fp6.qhimg.com%26app%3D2002%26size%3Df9999%2C10000%26q%3Da80%26n%3D0%26g%3D0n%26fmt%3Djpeg%3Fsec%3D1633179967%26t%3D6f8758d085e339de0a6baf47933a1e79&amp;rpstart=0&amp;rpnum=0&amp;adpicid=0&amp;nojc=undefined"><meta property="article:published_time" content="2021-09-02T13:04:48.000Z"><meta property="article:modified_time" content="2021-09-02T13:06:29.523Z"><meta name="twitter:card" content="summary"><script>var activateDarkMode = function () {
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#000')
+  }
+}
+var activateLightMode = function () {
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fff')
+  }
+}
+
+var getCookies = function (name) {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
+var autoChangeMode = 'true'
+var t = getCookies('theme')
+if (autoChangeMode === '1') {
+  var isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  var isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+  var isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined) {
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport) {
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour <= 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+      if (Cookies.get('theme') === undefined) {
+        e.matches ? activateDarkMode() : activateLightMode()
+      }
+    })
+  } else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else if (autoChangeMode === '2') {
+  now = new Date()
+  hour = now.getHours()
+  isNight = hour <= 6 || hour >= 18
+  if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode()
+} else {
+  if (t === 'dark') activateDarkMode()
+  else if (t === 'light') activateLightMode()
+}</script><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: {"bookmark":{"message_prev":"按","message_next":"键将本页加入书签"},"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  baiduPush: false,
+  highlightCopy: true,
+  highlightLang: true,
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isanchor: false    
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2021-09-02 21:06:29'
+}</script><noscript><style>
+#nav {
+  opacity: 1
+}
+.justified-gallery img {
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 5.0.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" data-lazy-src="/img/default-avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">文章</div><div class="length_num">178</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">标签</div><div class="length_num">37</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">分类</div><div class="length_num">29</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">1.</span> <span class="toc-text">解决方法</span></a></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/./Gallery/img/background.jpg)"><nav id="nav"><span class="pull-left" id="blog_name"><a class="blog_title" id="site-name" href="/">Silence</a></span><span class="pull-right menus"><div id="search_button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 娱乐</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 电影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">Jenkins升级出现An attempt to save the global configuration was made before it was loaded</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-09-02T13:04:48.000Z" title="发表于 2021-09-02 21:04:48">2021-09-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-09-02T13:06:29.523Z" title="更新于 2021-09-02 21:06:29">2021-09-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Jenkins/">Jenkins</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">296</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>1分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><p>CentOS7升级yum安装的Jenkins，升级之后无法进入Jenkins页面，出现以下错误：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">java.lang.IllegalStateException: An attempt to save the global configuration was made before it was loaded</span><br><span class="line">    at jenkins.model.Jenkins.save(Jenkins.java:3379)</span><br><span class="line">    at jenkins.model.Jenkins.saveQuietly(Jenkins.java:3398)</span><br><span class="line">    at jenkins.model.Jenkins.setSecurityRealm(Jenkins.java:2637)</span><br><span class="line">    at jenkins.model.Jenkins$16.run(Jenkins.java:3342)</span><br><span class="line">    at org.jvnet.hudson.reactor.TaskGraphBuilder$TaskImpl.run(TaskGraphBuilder.java:169)</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor.runTask(Reactor.java:296)</span><br><span class="line">    at jenkins.model.Jenkins$5.runTask(Jenkins.java:1129)</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor$2.run(Reactor.java:214)</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor$Node.run(Reactor.java:117)</span><br><span class="line">    at jenkins.security.ImpersonatingExecutorService$1.run(ImpersonatingExecutorService.java:68)</span><br><span class="line">    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)</span><br><span class="line">    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)</span><br><span class="line">    at java.lang.Thread.run(Thread.java:745)</span><br><span class="line">Caused: org.jvnet.hudson.reactor.ReactorException</span><br><span class="line">    at org.jvnet.hudson.reactor.Reactor.execute(Reactor.java:282)</span><br><span class="line">    at jenkins.InitReactorRunner.run(InitReactorRunner.java:50)</span><br><span class="line">    at jenkins.model.Jenkins.executeReactor(Jenkins.java:1162)</span><br><span class="line">    at jenkins.model.Jenkins.&lt;init&gt;(Jenkins.java:962)</span><br><span class="line">    at hudson.model.Hudson.&lt;init&gt;(Hudson.java:85)</span><br><span class="line">    at hudson.model.Hudson.&lt;init&gt;(Hudson.java:81)</span><br><span class="line">    at hudson.WebAppMain$3.run(WebAppMain.java:295)</span><br><span class="line">Caused: hudson.util.HudsonFailedToLoad</span><br><span class="line">    at hudson.WebAppMain$3.run(WebAppMain.java:312)</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>下载 hpi 并将 hpi 文件放到 JENKINS_HOME/plugins 文件夹中，通常Jenkins插件目录是/var/lib/jenkins/plugins/。</p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://updates.jenkins.io/download/plugins/role-strategy/">https://updates.jenkins.io/download/plugins/role-strategy/</a></p>
+<p>最后重新启动即可：systemctl restart jenkins</p>
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Jenkins/">Jenkins</a></div><div class="post_share"><div class="social-share" data-image="https://image.baidu.com/search/detail?ct=503316480&amp;z=undefined&amp;tn=baiduimagedetail&amp;ipn=d&amp;word=jenkins&amp;step_word=&amp;ie=utf-8&amp;in=&amp;cl=2&amp;lm=-1&amp;st=undefined&amp;hd=undefined&amp;latest=undefined&amp;copyright=undefined&amp;cs=1349347081,1338015825&amp;os=621084480,647508540&amp;simid=4097763135,292178517&amp;pn=8&amp;rn=1&amp;di=145640&amp;ln=1592&amp;fr=&amp;fmq=1630587966360_R&amp;fm=&amp;ic=undefined&amp;s=undefined&amp;se=&amp;sme=&amp;tab=0&amp;width=undefined&amp;height=undefined&amp;face=undefined&amp;is=0,0&amp;istype=0&amp;ist=&amp;jit=&amp;bdtype=0&amp;spn=0&amp;pi=0&amp;gsm=0&amp;objurl=https%3A%2F%2Fgimg2.baidu.com%2Fimage_search%2Fsrc%3Dhttp%253A%252F%252Fp6.qhimg.com%252Ft01244bc5d60a061b50.png%26refer%3Dhttp%253A%252F%252Fp6.qhimg.com%26app%3D2002%26size%3Df9999%2C10000%26q%3Da80%26n%3D0%26g%3D0n%26fmt%3Djpeg%3Fsec%3D1633179967%26t%3D6f8758d085e339de0a6baf47933a1e79&amp;rpstart=0&amp;rpnum=0&amp;adpicid=0&amp;nojc=undefined" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏<div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/wechat.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.png" target="_blank"><img class="post-qr-code-img" data-lazy-src="/img/alipay.png" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2021/09/02/Prometheus%E7%9B%91%E6%8E%A7JVM/"><img class="next-cover" data-lazy-src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=758288117,3049842011&amp;fm=26&amp;gp=0.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Prometheus监控JVM</div></div></a></div></nav><div class="relatedPosts"><div class="relatedPosts_headline"><i class="fas fa-thumbs-up fa-fw"></i><span> 相关推荐</span></div><div class="relatedPosts_list"><div class="relatedPosts_item"><a href="/2020/12/30/Jenkins从远程git仓库执行jenkinsfile/" title="Jenkins从远程git仓库执行jenkinsfile"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597248734973&di=f5209af1b40f905a8926791f8fd17e24&imgtype=0&src=http%3A%2F%2Fblog.nsfocus.net%2Fwp-content%2Fuploads%2F2017%2F12%2FJenkins-1.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-30</div><div class="relatedPosts_title">Jenkins从远程git仓库执行jenkinsfile</div></div></a></div><div class="relatedPosts_item"><a href="/2020/12/30/Jenkins发布pod到Kubernetes/" title="Jenkins发布pod到Kubernetes"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597248734973&di=f5209af1b40f905a8926791f8fd17e24&imgtype=0&src=http%3A%2F%2Fblog.nsfocus.net%2Fwp-content%2Fuploads%2F2017%2F12%2FJenkins-1.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-30</div><div class="relatedPosts_title">Jenkins发布pod到Kubernetes</div></div></a></div><div class="relatedPosts_item"><a href="/2020/09/10/Jenkins启动tomcat后，随着job结束，tomcat进程也结束/" title="Jenkins启动tomcat后，随着job结束，tomcat进程也结束"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597248734973&di=f5209af1b40f905a8926791f8fd17e24&imgtype=0&src=http%3A%2F%2Fblog.nsfocus.net%2Fwp-content%2Fuploads%2F2017%2F12%2FJenkins-1.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-10</div><div class="relatedPosts_title">Jenkins启动tomcat后，随着job结束，tomcat进程也结束</div></div></a></div><div class="relatedPosts_item"><a href="/2020/04/15/Jenkins安装部署/" title="Jenkins安装部署"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597248734973&di=f5209af1b40f905a8926791f8fd17e24&imgtype=0&src=http%3A%2F%2Fblog.nsfocus.net%2Fwp-content%2Fuploads%2F2017%2F12%2FJenkins-1.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-15</div><div class="relatedPosts_title">Jenkins安装部署</div></div></a></div><div class="relatedPosts_item"><a href="/2020/05/05/Jenkins打包GitHub项目/" title="Jenkins打包GitHub项目"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597248734973&di=f5209af1b40f905a8926791f8fd17e24&imgtype=0&src=http%3A%2F%2Fblog.nsfocus.net%2Fwp-content%2Fuploads%2F2017%2F12%2FJenkins-1.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-05</div><div class="relatedPosts_title">Jenkins打包GitHub项目</div></div></a></div><div class="relatedPosts_item"><a href="/2020/12/30/Jenkins拉取GitLab上的代码/" title="Jenkins拉取GitLab上的代码"><img class="relatedPosts_cover" data-lazy-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597248734973&di=f5209af1b40f905a8926791f8fd17e24&imgtype=0&src=http%3A%2F%2Fblog.nsfocus.net%2Fwp-content%2Fuploads%2F2017%2F12%2FJenkins-1.png"><div class="relatedPosts_main is-center"><div class="relatedPosts_date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-30</div><div class="relatedPosts_title">Jenkins拉取GitLab上的代码</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></article></main><footer id="footer" data-type="color"><div id="footer-wrap"><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://1335402049.github.io/">blog</a>!</div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font_plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font_minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></section><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>由</span> <a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a>
+ <span>提供支持</span></div></div></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module" defer></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js" async></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script src="/js/search/local-search.js"></script><script>var endLoading = function () {
+  document.body.style.overflow = 'auto';
+  document.getElementById('loading-box').classList.add("loaded")
+}
+window.addEventListener('load',endLoading)</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk({
+      clientID: '74fc53d667bd1c3e4bf7',
+      clientSecret: '14be1f16a6a68b9b04f0c11e5e37dec6c7bd2cc8',
+      repo: 'blog_comment',
+      owner: '1335402049',
+      admin: ['1335402049'],
+      id: '0ea72777b47322b4158592444ba2c76e',
+      language: 'zh-CN',
+      perPage: 15,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    })
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    $.getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js', initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !true) {
+  if (true) loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script defer="defer" id="ribbon_piao" mobile="true" src="/js/third-party/piao.js"></script><script src="/js/third-party/click_heart.js" async="async"></script><script>(function(d, w, c) {
+    w.ChatraID = 'hWsGZeyQEZFZAfnLj';
+    var s = d.createElement('script');
+    w[c] = w[c] || function() {
+        (w[c].q = w[c].q || []).push(arguments);
+    };
+    s.async = true;
+    s.src = 'https://call.chatra.io/chatra.js';
+    if (d.head) d.head.appendChild(s);
+})(document, window, 'Chatra');
+
+if (false) {
+  var chatBtnFn = () => {
+    var chatBtn = document.getElementById("chat_btn")
+    chatBtn.addEventListener("click", function(){
+      Chatra('openChat')
+    });
+  }
+  chatBtnFn()
+} else {
+  if (false) {
+    function chatBtnHide () {
+      Chatra('hide')
+    }
+    function chatBtnShow () {
+      Chatra('show')
+    }
+  }
+}</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/gh/metowolf/MetingJS@1.2/dist/Meting.min.js"></script></div></body></html>
